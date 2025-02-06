@@ -15,7 +15,7 @@ class DailyProgress(models.Model):
     _rec_name = 'resource_user_id'
 
     resource_user_id = fields.Many2one('res.users', string='Resource Name *', default=lambda self: self.env.user.id)
-    date_of_project = fields.Date("Today Date", required=True)
+    date_of_project = fields.Date("Today Date", required=True, default=lambda self: date.today())
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')
     ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned')
     avg_resolved_ticket = fields.Integer(string='Tasks / Tickets Resolved')
@@ -24,6 +24,14 @@ class DailyProgress(models.Model):
     billable_hours = fields.Float(string='Billable Hours %')
     no_calls_duration = fields.Integer(string='Number of Calls Attended')
 
+    # for required fields or not
+    # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
+    is_required_avg_resolved_ticket = fields.Boolean('Is Tasks / Tickets Resolved Required?')
+    # is_required_avg_resolution_time = fields.Boolean('Is Avg. Resolution Time (min.) Required?')
+    # is_required_csat_new = fields.Boolean('Is CSAT % Required?')
+    is_required_billable_hours = fields.Boolean('Is Billable Hours % Required?')
+    is_required_no_calls_duration = fields.Boolean('Is Number of Calls Attended Required?')
+
     @api.model
     def create(self, vals):
         record = super(DailyProgress, self).create(vals)
@@ -31,22 +39,29 @@ class DailyProgress(models.Model):
             employee = record.resource_user_id.employee_id
             if not employee:
                 return record
+
+            # Define fields to check, excluding fields if their respective "is_required" flag is checked
             fields_to_check = {
-                'avg_resolved_ticket': employee.d_ticket_resolved,
+                'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
                 'avg_resolution_time': employee.d_avg_resolution_time,
                 'csat_new': employee.d_CAST,
-                'billable_hours': employee.d_billable_hours,
-                'no_calls_duration': employee.d_no_of_call_attended,
+                'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
+                'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
             }
+
             field_metadata = self.fields_get()
-            # Combine updated values and existing record values to check mandatory fields
+
+            # Identify missing fields
             missing_fields = [
                 field_metadata[field_name]['string']
                 for field_name, value in fields_to_check.items()
                 if value and not record[field_name]
             ]
+
+            # Raise error if any required fields are missing
             if missing_fields:
                 raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+
         return record
 
     def write(self, vals):
@@ -56,22 +71,29 @@ class DailyProgress(models.Model):
             if user_id:
                 employee = user_id.employee_id
                 if employee:
+                    # Define fields to check, excluding fields if their respective "is_required" flag is checked
                     fields_to_check = {
-                        'avg_resolved_ticket': employee.d_ticket_resolved,
+                        'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
                         'avg_resolution_time': employee.d_avg_resolution_time,
                         'csat_new': employee.d_CAST,
-                        'billable_hours': employee.d_billable_hours,
-                        'no_calls_duration': employee.d_no_of_call_attended,
+                        'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
+                        'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
                     }
+
                     field_metadata = self.fields_get()
-                    # Combine updated values and existing record values to check mandatory fields
+
+                    # Identify missing fields
                     missing_fields = [
                         field_metadata[field_name]['string']
                         for field_name, value in fields_to_check.items()
                         if value and not record[field_name]
                     ]
+
+                    # Raise error if any required fields are missing
                     if missing_fields:
-                        raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+                        raise ValidationError(
+                            "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+
         return res
 
     @api.depends('resource_user_id')
