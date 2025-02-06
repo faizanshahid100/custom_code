@@ -44,13 +44,21 @@
                         <group>
                             <field name="resource_user_id"/>
                             <field name="is_admin" invisible="1"/>
-                            <field name="date_of_project"/>
                             <field name="ticket_assigned_new"/>
                             <field name="avg_resolved_ticket"/>
                             <field name="avg_resolution_time"/>
                             <field name="csat_new"/>
                             <field name="billable_hours"/>
                             <field name="no_calls_duration"/>
+                        </group>
+                        <group>
+                            <field name="date_of_project"/>
+<!--                            <field name="is_required_ticket_assigned_new" attrs="{'invisible': [('ticket_assigned_new', '!=', 0)]}"/>-->
+                            <field name="is_required_avg_resolved_ticket" attrs="{'invisible': [('avg_resolved_ticket', '!=', 0)]}"/>
+<!--                            <field name="is_required_avg_resolution_time" attrs="{'invisible': [('avg_resolution_time', '!=', 0)]}"/>-->
+<!--                            <field name="is_required_csat_new" attrs="{'invisible': [('csat_new', '!=', 0)]}"/>-->
+                            <field name="is_required_billable_hours" attrs="{'invisible': [('billable_hours', '!=', 0)]}"/>
+                            <field name="is_required_no_calls_duration" attrs="{'invisible': [('no_calls_duration', '!=', 0)]}"/>
                         </group>
                     </group>
                 </sheet>
