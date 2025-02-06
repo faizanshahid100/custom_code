@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_credentials,custom.credentials,model_custom_credentials,,1,1,1,1
+access_access_type_config,access.type.config,model_access_type_config,,1,1,1,1
+access_vpn_config,vpn.config,model_vpn_config,,1,1,1,1

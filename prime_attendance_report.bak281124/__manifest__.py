@@ -1,0 +1,22 @@
+{
+    'name': 'HR Attendance Report',
+    'version': '16.0.0.0',
+    'category': 'Human Resources',
+    'summary': 'HR Employee attendance report',
+    'description': """The HR Attendance Report.""",
+    'author': "Raza",
+    "website" : "https://www.xyz.com",
+    'depends': ['base', 'hr', 'hr_attendance'],
+    'data': [
+            'security/ir.model.access.csv',
+            'wizards/attendance_register_wizard.xml',
+            'wizards/daily_progress_report.xml',
+            'wizards/monthly_progress_report.xml',
+             ],
+    'demo': [],
+    'css': [],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+    'license': 'LGPL-3',
+}

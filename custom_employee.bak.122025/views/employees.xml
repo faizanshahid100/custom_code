@@ -1,0 +1,116 @@
+<odoo>
+
+    <record id="view_hr_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='lang']" position="after">
+                    <field name="blood_group"/>
+                    <field name="employee_status"/>
+                    <field name="chronic_diseases"/>
+                    <field name="meds_in_use"/>
+                    <field name="signed"/>
+                    <field name="joining_date"/>
+                    <field name="confirmation_date"/>
+                    <field name="leaving_date"/>
+                    <field name="joining_salary"/>
+                    <field name="current_salary"/>
+                </xpath>
+
+                <xpath expr="//field[@name='identification_id']" position="after">
+                    <field name="cnic_expiry"/>
+                    <field name="citizenship_id"/>
+                    <field name="province"/>
+                </xpath>
+
+                <xpath expr="//field[@name='children']" position="after">
+                    <field name="emp_father_name"/>
+                    <field name="emp_father_cnic"/>
+                    <field name="next_to_kin"/>
+                    <field name="next_to_kin_relation"/>
+                    <field name="reference_check"/>
+                    <field name="background_check"/>
+                    <field name="credit_check"/>
+                </xpath>
+
+                <xpath expr="//field[@name='emergency_phone']" position="after">
+                    <field name="emergency_contact_relation"/>
+                </xpath>
+
+                <xpath expr="//page[@name='hr_settings']" position="after">
+                    <page name="health_insurance_info_ids" string="Health Insurance Info">
+                        <field name="health_insurance_info_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" invisible="1"/>
+                                <field name="spouse_name"/>
+                                <field name="spouse_cnic"/>
+                                <field name="spouse_dob"/>
+                                <field name="child_name"/>
+                                <field name="child_relation"/>
+                                <field name="child_dob"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="employee_professional_info_ids" string="Employee Professional Info">
+                        <field name="employee_professional_info_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" invisible="1"/>
+                                <field name="last_degree"/>
+                                <field name="year_of_grade"/>
+                                <field name="school_college_uni"/>
+                                <field name="hec_attested"/>
+                                <field name="no_of_exp"/>
+                                <field name="area_of_expertise"/>
+                                <field name="previous_company"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="employee_contractor_info_ids" string="Employee Contractor Info">
+                        <field name="employee_contractor_info_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" invisible="1"/>
+                                <field name="contractor"/>
+                                <field name="contractor_id"/>
+                                <field name="business_unit"/>
+                                <field name="pl_code"/>
+                                <field name="department"/>
+                                <field name="manager"/>
+                                <field name="dept_hod"/>
+                                <field name="serving_region"/>
+                                <field name="shift_time"/>
+                                <field name="job_title"/>
+                                <field name="level"/>
+                                <field name="working_location"/>
+                                <field name="rotation_based"/>
+                                <field name="pss_group"/>
+                                <field name="contract_type"/>
+                                <field name="contract_start"/>
+                                <field name="contract_end"/>
+                                <field name="work_mode"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="employee_performance_ids" string="Employee Performance">
+                        <field name="employee_performance_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" invisible="1"/>
+                                <field name="punctuality"/>
+                                <field name="problem_solving"/>
+                                <field name="knowledge"/>
+                                <field name="team_work"/>
+                                <field name="communication"/>
+                                <field name="meet_kpi"/>
+                                <field name="avg_grande"/>
+                                <field name="month"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+            </data>
+        </field>
+    </record>
+
+</odoo>

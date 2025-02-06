@@ -1,0 +1,37 @@
+<odoo>
+    <record id="category_leave_attendance_id" model="ir.module.category">
+        <field name="name">Leave Attendance</field>
+    </record>
+
+    <!-- Security Groups for Leave Attendance -->
+    <record id="group_services_delivery_manager" model="res.groups">
+        <field name="name">Services Delivery Manager</field>
+        <field name="category_id" ref="leave_attendance_approval.category_leave_attendance_id"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="group_hr" model="res.groups">
+        <field name="name">HR</field>
+        <field name="category_id" ref="leave_attendance_approval.category_leave_attendance_id"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+<!--    Record Rules-->
+    <record id="leave_attendance_rule_user" model="ir.rule">
+        <field name="name">Leave Attendance: User's own records</field>
+        <field name="model_id" ref="model_leave_attendance"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="leave_attendance_rule_manager_hr" model="ir.rule">
+        <field name="name">Leave Attendance: Managers and HR have full access</field>
+        <field name="model_id" ref="model_leave_attendance"/>
+        <field name="domain_force">[]</field>
+        <field name="groups" eval="[(4, ref('leave_attendance_approval.group_services_delivery_manager')), (4, ref('leave_attendance_approval.group_hr'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+</odoo>

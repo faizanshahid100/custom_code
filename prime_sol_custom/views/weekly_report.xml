@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="weekly_progress_rule_admin" model="ir.rule">
+        <field name="name">Weekly Progress: admin access</field>
+        <field name="model_id" ref="model_weekly_progress"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <!-- Record rule for non-admin users to see only their records -->
+    <record id="weekly_progress_rule_user" model="ir.rule">
+        <field name="name">Weekly Progress: user access</field>
+        <field name="model_id" ref="model_weekly_progress"/>
+        <field name="domain_force">[('resource_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!--   <template id="inherited_login_layout" inherit_id="web.login_layout" name="My Theme Login">-->
+    <!--            <xpath expr="//div[@class='oe_single_form_footer']" position="replace">-->
+    <!--                <div class="oe_single_form_footer" style="bottom: -50px;">-->
+    <!--                 Developed By: Hassan Enterprises-->
+    <!--                 <span class="oe_footer_seperator"> | </span>-->
+    <!--                 Phone: +92 321 1234567-->
+    <!--                 <span class="oe_footer_seperator"></span>-->
+    <!--                 Email: abc@gmail.com-->
+    <!--                </div>-->
+    <!--            </xpath>-->
+    <!--        </template>-->
+    <record id="view_weekly_progress_tree" model="ir.ui.view">
+        <field name="name">weekly.progress.tree</field>
+        <field name="model">weekly.progress</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="display_name"/>
+                <field name="date_of_project"/>
+                <field name="formatted_date" readonly="1"/>
+                <field name="ticket_assigned_new"/>
+                <field name="avg_resolved_ticket"/>
+                <field name="avg_resolution_time"/>
+                <field name="avg_resolution_backlogs"/>
+                <field name="csat_new"/>
+                <field name="billable_hours"/>
+                <field name="no_calls_duration"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_weekly_progress_form" model="ir.ui.view">
+        <field name="name">weekly.progress.form</field>
+        <field name="model">weekly.progress</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="resource_name"
+                                   attrs="{'readonly': [('is_admin', '=', False)], 'invisible': [('is_admin', '=', True)]}"/>
+                            <field name="resource_user_id" attrs="{'invisible': [('is_admin', '=', False)]}"/>
+                            <field name="is_admin" invisible="1"/>
+                            <field name="date_of_project"/>
+                            <field name="formatted_date" readonly="1"/>
+                            <field name="ticket_assigned_new"/>
+                            <field name="avg_resolved_ticket"/>
+                            <field name="avg_resolution_time"/>
+                            <!--                            <field name="avg_resolution_datetime"/>-->
+                            <field name="csat_new"/>
+                            <field name="billable_hours"/>
+                            <field name="no_calls_duration"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids" options="{'post_refresh':'receipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_project_weekly_progress" model="ir.actions.act_window">
+        <field name="name">Project Weekly Progress</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">weekly.progress</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_project_weekly_progress" name="Weekly Progress" parent="project.menu_main_pm"
+              action="action_project_weekly_progress" sequence="23"/>
+</odoo>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="view_hr_employee_form" model="ir.ui.view">
+            <field name="name">hr.employee.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr_attendance.view_employee_form_inherit_hr_attendance" />
+            <field name="arch" type="xml">
+                <field name="id" position="after">
+                    <field name="hour_start_from" string="Hour Start From" t-options="{'widget': 'time'}"/>
+                    <field name="total_working_hour" string="Total Working Hour" t-options="{'widget': 'time'}"/>
+                </field>
+                <xpath expr="//notebook/page[last()]" position="after">
+                    <page string="Daily Target" name="daily_target">
+                        <group>
+                            <group>
+                                <field name="d_ticket_resolved"/>
+                                <field name="d_avg_resolution_time"/>
+                                <field name="d_no_of_call_attended"/>
+                            </group>
+                            <group>
+                                <field name="d_CAST"/>
+                                <field name="d_billable_hours"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Weekly Target" name="weekly_target">
+                        <group>
+                            <group>
+                                <field name="ticket_resolved"/>
+                                <field name="avg_resolution_time"/>
+                            </group>
+                            <group>
+                                <field name="CAST"/>
+                                <field name="billable_hours"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

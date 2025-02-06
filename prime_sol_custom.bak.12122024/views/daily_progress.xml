@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="daily_progress_rule_admin" model="ir.rule">
+        <field name="name">Daily Progress: admin access</field>
+        <field name="model_id" ref="model_daily_progress"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+    <!-- Record rule for non-admin users to see only their records -->
+    <record id="daily_progress_rule_user" model="ir.rule">
+        <field name="name">Daily Progress: user access</field>
+        <field name="model_id" ref="model_daily_progress"/>
+        <field name="domain_force">[('resource_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="view_daily_progress_tree" model="ir.ui.view">
+        <field name="name">daily.progress.tree</field>
+        <field name="model">daily.progress</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="resource_user_id"/>
+                <field name="date_of_project"/>
+                <field name="ticket_assigned_new"/>
+                <field name="avg_resolved_ticket"/>
+                <field name="avg_resolution_time"/>
+                <field name="csat_new"/>
+                <field name="billable_hours"/>
+                <field name="no_calls_duration"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_daily_progress_form" model="ir.ui.view">
+        <field name="name">daily.progress.form</field>
+        <field name="model">daily.progress</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="resource_user_id"/>
+                            <field name="is_admin" invisible="1"/>
+                            <field name="date_of_project"/>
+                            <field name="ticket_assigned_new"/>
+                            <field name="avg_resolved_ticket"/>
+                            <field name="avg_resolution_time"/>
+                            <field name="csat_new"/>
+                            <field name="billable_hours"/>
+                            <field name="no_calls_duration"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids" options="{'post_refresh':'receipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_daily_progress" model="ir.actions.act_window">
+        <field name="name">Project Daily Progress</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">daily.progress</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_project_daily_progress"
+              name="Daily Progress"
+              parent="project.menu_main_pm"
+              action="action_project_daily_progress"
+              sequence="22"/>
+</odoo>

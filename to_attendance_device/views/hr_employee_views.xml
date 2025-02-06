@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<!-- <record model="ir.ui.view" id="hr_view_employee_form_rxt">
+			<field name="name">employee.form.ext</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+				<field name="barcode" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+			</field>
+		</record> -->
+
+		<record model="ir.ui.view" id="view_employee_form">
+			<field name="name">employee.form</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr_attendance.view_employee_form_inherit_hr_attendance" />
+			<field name="arch" type="xml">
+				<field name="name" position="attributes">
+                    <attribute name="string">Student Name</attribute>
+                </field>
+				<xpath expr="//notebook[1]/page[3]" position="after">
+					<page string="Unmapped Attendance Devices"
+						attrs="{'invisible': [('unamapped_attendance_device_ids', '=', [])]}"
+						groups="hr_attendance.group_hr_attendance_user">
+						<field name="unamapped_attendance_device_ids">
+							<tree name="unamapped_attendance_device_ids" nolabel="1"
+								create="false" delete="false" edit="false">
+								<field name="name" />
+								<field name="ip" groups="hr_attendance.group_hr_attendance_user" />
+								<field name="port" groups="hr_attendance.group_hr_attendance_user" />
+								<field name="location_id" />
+								<field name="state" invisible="1" />
+							</tree>
+						</field>
+					</page>
+				</xpath>
+				<xpath expr="//header/*" position="inside">
+					<button name="action_view_finger_template" type="object"
+						groups="to_attendance_device.group_attendance_devices_manager"
+						class="oe_stat_button" icon="fa-address-card"
+						help="Show fingerprint templates of this employee">
+						<field name="total_finger_template_records" widget="statinfo" />
+					</button>
+				</xpath>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_employee_filter">
+			<field name="name">hr.employee.search</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_filter" />
+			<field name="arch" type="xml">
+				<xpath expr="//filter[@name='inactive']" position="after">
+					<separator />
+					<filter string="Created from an Attendance Device"
+						name="created_from_attendance_device"
+						domain="[('created_from_attendance_device','=',True)]" />
+				</xpath>
+			</field>
+		</record>
+
+        <record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+            <field name="name">Employee</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{'chat_icon': True}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="hr.view_employee_filter"/>
+            <field name="help" type="html">
+             <p class="o_view_nocontent_smiling_face">
+               Add a new student
+             </p><p>
+               With just a quick glance on the Odoo student screen, you
+               can easily find all the information you need for each person;
+               contact data, job position, availability, etc.
+             </p>
+            </field>
+        </record>
+
+        <record id="hr.menu_hr_root" model="ir.ui.menu">
+            <field name="name">Employee</field>
+        </record>
+
+        <record id="hr.menu_hr_employee_payroll" model="ir.ui.menu">
+            <field name="name">Employee</field>
+        </record>
+
+        <record id="hr.menu_hr_employee_user" model="ir.ui.menu">
+            <field name="name">Employee</field>
+        </record>
+
+        <record id="hr.menu_config_employee" model="ir.ui.menu">
+            <field name="name">Employee</field>
+        </record>
+
+        <record id="hr.menu_view_hr_contract_type" model="ir.ui.menu">
+            <field name="name">Employee Types</field>
+        </record>
+	</data>
+</odoo>

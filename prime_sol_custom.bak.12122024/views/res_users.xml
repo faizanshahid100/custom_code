@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_users_tree_inherited" model="ir.ui.view">
+        <field name="name">res.users.tree.inherit.status</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="user_status" widget="badge"/>
+<!--                widget="badge"-->
+<!--                        decoration-info="state == 'in_active'" decoration-success="state == 'active'"/>/>-->
+            </xpath>
+<!--            <xpath expr="//label[@for='user_status']" position="attributes">-->
+<!--                <attribute name="style">color: <t t-esc="record.user_status.raw_value == 'active' and 'green' or 'white'"/></attribute>-->
+<!--            </xpath>-->
+        </field>
+    </record>
+
+</odoo>
