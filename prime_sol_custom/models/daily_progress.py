@@ -43,8 +43,6 @@ class DailyProgress(models.Model):
             # Define fields to check, excluding fields if their respective "is_required" flag is checked
             fields_to_check = {
                 'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
-                'avg_resolution_time': employee.d_avg_resolution_time,
-                'csat_new': employee.d_CAST,
                 'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
                 'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
             }
@@ -74,8 +72,6 @@ class DailyProgress(models.Model):
                     # Define fields to check, excluding fields if their respective "is_required" flag is checked
                     fields_to_check = {
                         'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
-                        'avg_resolution_time': employee.d_avg_resolution_time,
-                        'csat_new': employee.d_CAST,
                         'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
                         'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
                     }
