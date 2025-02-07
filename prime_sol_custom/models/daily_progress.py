@@ -26,11 +26,11 @@ class DailyProgress(models.Model):
 
     # for required fields or not
     # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
-    is_required_avg_resolved_ticket = fields.Boolean('Is Tasks / Tickets Resolved Required?')
+    is_required_avg_resolved_ticket = fields.Boolean('Tasks / Tickets Resolved Not Required?')
     # is_required_avg_resolution_time = fields.Boolean('Is Avg. Resolution Time (min.) Required?')
     # is_required_csat_new = fields.Boolean('Is CSAT % Required?')
-    is_required_billable_hours = fields.Boolean('Is Billable Hours % Required?')
-    is_required_no_calls_duration = fields.Boolean('Is Number of Calls Attended Required?')
+    is_required_billable_hours = fields.Boolean('Billable Hours % Not Required?')
+    is_required_no_calls_duration = fields.Boolean('Number of Calls Attended Not Required?')
 
     @api.model
     def create(self, vals):

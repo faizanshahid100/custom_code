@@ -88,6 +88,6 @@
     </record>
 
 
-    <menuitem id="menu_project_weekly_progress" name="Weekly Progress" parent="project.menu_main_pm"
-              action="action_project_weekly_progress" sequence="23"/>
+<!--    <menuitem id="menu_project_weekly_progress" name="Weekly Progress" parent="project.menu_main_pm"-->
+<!--              action="action_project_weekly_progress" sequence="23"/>-->
 </odoo>

@@ -18,13 +18,23 @@ class DailyProgressExt(models.Model):
                 'employee_id': employee.id,
                 'check_in': self.date_start,
                 'check_out': self.date_end,
+                'approval_request_id': self.id,
             })
 
     def action_approve(self, approver=None):
         # Call the original method
         res = super(DailyProgressExt, self).action_approve(approver)
 
-        # Call the attendance entry method
-        self._create_attendance_entry()
+        if self.category_id.sequence_code == 'PMAF':
+            # Call the attendance entry method
+            self._create_attendance_entry()
 
         return res  # Return the original result if needed
+
+    def action_withdraw(self, approver=None):
+        # Call the original method
+        res = super(DailyProgressExt, self).action_withdraw(approver)
+        if self.category_id.sequence_code == 'PMAF':
+            attendance = self.env['hr.attendance'].search([('approval_request_id', '=', self.id)], limit=1)
+            attendance.unlink()
+        return res

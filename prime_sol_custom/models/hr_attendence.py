@@ -6,6 +6,8 @@ class HrAttendance(models.Model):
     _inherit = 'hr.attendance'
 
 
+    approval_request_id = fields.Many2one('approval.request')
+
     @api.model
     def create(self, vals):
         res = super(HrAttendance, self).create(vals)
