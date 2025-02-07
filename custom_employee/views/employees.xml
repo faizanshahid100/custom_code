@@ -6,6 +6,12 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='hr_settings']/group/group[@name='active_group']/field[@name='user_id']" position="after">
+                    <field name="working_country_id"/>
+                    <field name="job_type"/>
+                    <field name="notice_period"/>
+                    <field name="notice_period_date" attrs="{'invisible': [('notice_period', '=', False)]}"/>
+                </xpath>
                 <xpath expr="//field[@name='lang']" position="after">
                     <field name="blood_group"/>
                     <field name="employee_status"/>
