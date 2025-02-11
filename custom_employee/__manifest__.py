@@ -14,6 +14,7 @@
     'version': '16.0.0.1',
     'depends': ['base', 'hr'],
     'data': [
+        'data/scheduled_action.xml',
         'views/employees.xml',
         'views/res_partner_bank.xml',
     ],
