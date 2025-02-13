@@ -59,6 +59,10 @@ class EmployeeDailyProgress(models.TransientModel):
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour light_green;border: left thin,right thin,top thin,bottom thin')
         table_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour aqua;border: left thin,right thin,top thin,bottom thin')
+        mtd_table_heading_style = xlwt.easyxf(
+            'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour teal;border: left thin,right thin,top thin,bottom thin')
+        attendance_table_heading_style = xlwt.easyxf(
+            'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour yellow;border: left thin,right thin,top thin,bottom thin')
         dept_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz left; align: wrap yes,vert centre;pattern: pattern solid, fore-colour light_green;border: left thin,right thin,top thin,bottom thin')
         columns_center_bold_style = xlwt.easyxf(
@@ -90,6 +94,7 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.col(3).width = 7000  # Designation
         worksheet.col(4).width = 5000  # Contractor
         worksheet.row(2).height = 400
+        worksheet.row(3).height = 400
         worksheet.row(4).height = 500
         worksheet.col(5).width = 5000  # Gender
         worksheet.col(6).width = 6000
@@ -179,17 +184,38 @@ class EmployeeDailyProgress(models.TransientModel):
 
                     col_index += 4  # Move to next set of columns
 
+                # Add the MTD (Month-to-Date) column headers at the end
+                worksheet.write_merge(3, 3, col_index, col_index + 3, 'MTD', mtd_table_heading_style)
+                worksheet.write(4, col_index, 'Total Resolved', mtd_table_heading_style)
+                worksheet.write(4, col_index + 1, 'Total Billable Hours', mtd_table_heading_style)
+                worksheet.write(4, col_index + 2, 'Total No of Calls', mtd_table_heading_style)
+                worksheet.write(4, col_index + 3, 'Total Presents', mtd_table_heading_style)
+                # Set dynamic column widths (including MTD columns)
+                for i in range(6, col_index + 4):  # +4 to include MTD columns
+                    worksheet.col(i).width = 5000
+
+                # Calculate and write MTD totals for the employee
+                total_resolved = sum(progress.mapped('avg_resolved_ticket'))
+                total_billable = sum(progress.mapped('billable_hours'))
+                total_calls = sum(progress.mapped('no_calls_duration'))
+                total_presents = sum(1 for p in progress if p.avg_resolved_ticket or p.billable_hours or p.no_calls_duration)
+
+                worksheet.write(row, col_index, total_resolved, columns_center_bold_style)
+                worksheet.write(row, col_index + 1, total_billable, columns_center_bold_style)
+                worksheet.write(row, col_index + 2, total_calls, columns_center_bold_style)
+                worksheet.write(row, col_index + 3, total_presents, attendance_table_heading_style)
+
 
                 sr_no+=1
                 row += 1
                 worksheet.row(row).height = 400
                 # # Last Line of Total Amount
-                worksheet.write(row, 0, _(''), table_heading_style)
-                worksheet.write(row, 1, _(''), table_heading_style)
-                worksheet.write(row, 2, _(''), table_heading_style)
-                worksheet.write(row, 3, _(''), table_heading_style)
-                worksheet.write(row, 4, _(''), table_heading_style)
-                worksheet.write(row, 5, _(''), table_heading_style)
+                # worksheet.write(row, 0, _(''), table_heading_style)
+                # worksheet.write(row, 1, _(''), table_heading_style)
+                # worksheet.write(row, 2, _(''), table_heading_style)
+                # worksheet.write(row, 3, _(''), table_heading_style)
+                # worksheet.write(row, 4, _(''), table_heading_style)
+                # worksheet.write(row, 5, _(''), table_heading_style)
 
 
         else:
