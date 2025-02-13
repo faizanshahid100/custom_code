@@ -61,8 +61,10 @@ class EmployeeDailyProgress(models.TransientModel):
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour aqua;border: left thin,right thin,top thin,bottom thin')
         mtd_table_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour teal;border: left thin,right thin,top thin,bottom thin')
-        attendance_table_heading_style = xlwt.easyxf(
+        yellow_table_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour yellow;border: left thin,right thin,top thin,bottom thin')
+        plum_table_heading_style = xlwt.easyxf(
+            'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour plum;border: left thin,right thin,top thin,bottom thin')
         dept_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz left; align: wrap yes,vert centre;pattern: pattern solid, fore-colour light_green;border: left thin,right thin,top thin,bottom thin')
         columns_center_bold_style = xlwt.easyxf(
@@ -114,11 +116,11 @@ class EmployeeDailyProgress(models.TransientModel):
         # Write headers for each date dynamically
         for date in date_range:
             date_str = date.strftime('%-d %b %Y') # Example: 1 Feb 2025
-            worksheet.write_merge(3, 3, col_index, col_index + 3, date_str, table_heading_style)
-            worksheet.write(4, col_index, 'Ticket Resolved', table_heading_style)
-            worksheet.write(4, col_index + 1, 'Billable Hours', table_heading_style)
-            worksheet.write(4, col_index + 2, 'No of Calls', table_heading_style)
-            worksheet.write(4, col_index + 3, 'Attendance', table_heading_style)
+            worksheet.write_merge(3, 3, col_index, col_index + 3, date_str, plum_table_heading_style)
+            worksheet.write(4, col_index, 'Ticket Resolved', yellow_table_heading_style)
+            worksheet.write(4, col_index + 1, 'Billable Hours', yellow_table_heading_style)
+            worksheet.write(4, col_index + 2, 'No of Calls', yellow_table_heading_style)
+            worksheet.write(4, col_index + 3, 'Attendance', yellow_table_heading_style)
             col_index += 4  # Move to the next set of columns
 
         # Set dynamic column widths
@@ -203,12 +205,12 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, col_index, total_resolved, columns_center_bold_style)
                 worksheet.write(row, col_index + 1, total_billable, columns_center_bold_style)
                 worksheet.write(row, col_index + 2, total_calls, columns_center_bold_style)
-                worksheet.write(row, col_index + 3, total_presents, attendance_table_heading_style)
+                worksheet.write(row, col_index + 3, total_presents, yellow_table_heading_style)
 
 
                 sr_no+=1
-                row += 1
                 worksheet.row(row).height = 400
+                row += 1
                 # # Last Line of Total Amount
                 # worksheet.write(row, 0, _(''), table_heading_style)
                 # worksheet.write(row, 1, _(''), table_heading_style)
