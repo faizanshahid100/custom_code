@@ -43,6 +43,7 @@ class HREmployeeInherit(models.Model):
 
     # Contract
     contractor = fields.Char(string="Contractor")
+    contractor_email = fields.Char('Contractor Email')
     contractor_id = fields.Char(string="ID")
     business_unit = fields.Char(string="Business Unit")
     pl_code = fields.Char(string="PL Code")
