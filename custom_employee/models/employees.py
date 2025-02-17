@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class HREmployeeInherit(models.Model):
     _inherit = 'hr.employee'
@@ -34,9 +36,14 @@ class HREmployeeInherit(models.Model):
     reference_check = fields.Char(string="Reference Check")
     background_check = fields.Char(string="Background Check")
     credit_check = fields.Char(string="Credit Check")
+    working_country_id = fields.Many2one('res.country')
+    job_type = fields.Selection([('full_time', 'Full-Time'), ('half_time', 'Half-Time')], string="Job Type", default='full_time', required=True)
+    notice_period = fields.Boolean(string="Under Notice Period", default=False)
+    notice_period_date = fields.Date(string="Notice Period End Date")
 
     # Contract
     contractor = fields.Char(string="Contractor")
+    contractor_email = fields.Char('Contractor Email')
     contractor_id = fields.Char(string="ID")
     business_unit = fields.Char(string="Business Unit")
     pl_code = fields.Char(string="PL Code")
@@ -88,3 +95,46 @@ class HREmployeeInherit(models.Model):
     child_name = fields.Char(string="Child Name")
     child_relation = fields.Char(string="Child Relation")
     child_dob = fields.Date(string="Child DOB")
+
+    @api.model
+    def update_dashboard_employee_view(self):
+        """
+        Drops and recreates the dashboard_employee_view in PostgreSQL.
+        This function is meant to be executed as a scheduled action.
+        """
+        query = """
+            DROP VIEW IF EXISTS dashboard_employee_view;
+
+            CREATE VIEW dashboard_employee_view AS
+            SELECT
+                e.id,
+                e.name,
+                e.active,
+                e.joining_date,
+                e.leaving_date,
+                c.name AS country_name,  
+                e.working_location,
+                e.gender,
+                e.contractor,
+                e.serving_region,
+                e.manager,
+                d.name AS department_name,  
+                j.name AS job_name,  
+                e.job_type,
+                e.notice_period,
+                e.notice_period_date,
+                e.birthday
+            FROM
+                hr_employee e
+            LEFT JOIN
+                res_country c ON e.working_country_id = c.id
+            LEFT JOIN
+                hr_department d ON e.department_id = d.id
+            LEFT JOIN
+                hr_job j ON e.job_id = j.id;
+            """
+        try:
+            self.env.cr.execute(query)
+            _logger.info("Successfully updated dashboard_employee_view.")
+        except Exception as e:
+            _logger.error("Error updating dashboard_employee_view: %s", str(e))

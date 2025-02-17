@@ -15,12 +15,13 @@ class EmployeeAttendanceRegister(models.TransientModel):
     def default_get(self, default_fields):
         res = super(EmployeeAttendanceRegister, self).default_get(default_fields)
         today = datetime.date.today()
-        first = today.replace(day=1)
-        last_month_first = (today - timedelta(days=today.day)).replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
+
+        first_day_current_month = today.replace(day=1)  # 1st day of the current month
+        yesterday = today - datetime.timedelta(days=1)  # Yesterday (today - 1 day)
+
         res.update({
-            'start_date': last_month_first or False,
-            'end_date': last_month or False
+            'start_date': first_day_current_month or False,
+            'end_date': yesterday or False
         })
         return res
 
@@ -156,7 +157,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
         worksheet.set_column('A:A', 5)
         worksheet.set_column('B:D', 30)
         worksheet.set_column('E:E', 10)
-        worksheet.set_column('F:DK', 5)
+        worksheet.set_column('F:DK', 12)
 
         # Title
         worksheet.merge_range('B2:Y3', 'Attendance Report', header_format)
@@ -170,7 +171,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             month = self.start_date.month
             year = self.start_date.year
             full_date = datetime.datetime(year, month, day)
-            day_of_week = full_date.strftime("%a")
+            day_of_week = full_date.strftime("%d %b")
             days_list.append(day_of_week)
 
         # Write headers

@@ -11,7 +11,7 @@ class HrEmployee(models.Model):
     d_ticket_resolved = fields.Integer('Ticket Resolved')
     d_avg_resolution_time = fields.Integer('Avg.Resolution Time')
     d_CAST = fields.Integer('CAST %')
-    d_billable_hours = fields.Integer('Billable Hours')
+    d_billable_hours = fields.Integer('Billable Hours%')
     d_no_of_call_attended = fields.Integer('No Of Call Attended')
 
     ticket_resolved = fields.Integer('Ticket Resolved')

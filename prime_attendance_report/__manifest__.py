@@ -12,6 +12,7 @@
             'wizards/attendance_register_wizard.xml',
             'wizards/daily_progress_report.xml',
             'wizards/monthly_progress_report.xml',
+            'wizards/employee_daily_progress.xml',
              ],
     'demo': [],
     'css': [],

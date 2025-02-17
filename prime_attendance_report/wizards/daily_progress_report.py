@@ -15,12 +15,13 @@ class DailyProgressReport(models.TransientModel):
     def default_get(self, default_fields):
         res = super(DailyProgressReport, self).default_get(default_fields)
         today = datetime.date.today()
-        first = today.replace(day=1)
-        last_month_first = (today - timedelta(days=today.day)).replace(day=1)
-        last_month = first - datetime.timedelta(days=1)
+
+        first_day_current_month = today.replace(day=1)  # 1st day of the current month
+        yesterday = today - datetime.timedelta(days=1)  # Yesterday (today - 1 day)
+
         res.update({
-            'date_from': last_month_first or False,
-            'date_to': last_month or False
+            'date_from': first_day_current_month or False,
+            'date_to': yesterday or False
         })
         return res
 
