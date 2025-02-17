@@ -1,7 +1,6 @@
 import logging
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.exceptions import UserError
 from datetime import date
 
 
@@ -36,6 +35,19 @@ class DailyProgress(models.Model):
     is_required_billable_hours = fields.Boolean('No Billable Hours Today')
     is_required_no_calls_duration = fields.Boolean('No Call Received Today')
 
+    @api.constrains('date_of_project', 'resource_user_id')
+    def _check_unique_date_and_user(self):
+        """Ensure that no two records have the same date_of_project and resource_user_id."""
+        for record in self:
+            existing_record = self.env['daily.progress'].search([
+                ('date_of_project', '=', record.date_of_project),
+                ('resource_user_id', '=', record.resource_user_id.id),
+                ('id', '!=', record.id)  # Exclude the current record in case of update
+            ])
+            if existing_record:
+                raise ValidationError(
+                    "A record with the same 'Today Date' and 'Resource Name' already exists. You cannot create duplicate records for the same user on the same date.")
+
     @api.model
     def create(self, vals):
         record = super(DailyProgress, self).create(vals)
@@ -69,7 +81,7 @@ class DailyProgress(models.Model):
     def write(self, vals):
         res = super(DailyProgress, self).write(vals)
         for record in self:
-            user_id = vals.get('resource_user_id') or record.resource_user_id
+            user_id = self.env['res.users'].browse(vals.get('resource_user_id')) or record.resource_user_id
             if user_id:
                 employee = user_id.employee_id
                 if employee:
