@@ -61,6 +61,19 @@
                             <field name="is_required_no_calls_duration" attrs="{'invisible': [('no_calls_duration', '!=', 0)]}"/>
                         </group>
                     </group>
+                    <notebook>
+                    <page name="target" string="Daily Target">
+                        <group>
+                            <group>
+                                <field name="daily_target_tickets_resolved"/>
+                                <field name="daily_target_billable_hours"/>
+                            </group>
+                            <group>
+                                <field name="daily_target_call_attended"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

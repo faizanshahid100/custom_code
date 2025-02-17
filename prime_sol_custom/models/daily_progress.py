@@ -23,14 +23,18 @@ class DailyProgress(models.Model):
     csat_new = fields.Float(string='CSAT %')
     billable_hours = fields.Float(string='Billable Hours %')
     no_calls_duration = fields.Integer(string='Number of Calls Attended')
+    # Daily Target
+    daily_target_tickets_resolved = fields.Integer(related="resource_user_id.employee_id.d_ticket_resolved", string="Daily Target Tickets Resolved")
+    daily_target_billable_hours = fields.Integer(related="resource_user_id.employee_id.d_billable_hours", string="Daily Target Billable Hours")
+    daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended", string="Daily Target Call Attended")
 
     # for required fields or not
     # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
-    is_required_avg_resolved_ticket = fields.Boolean('Tasks / Tickets Resolved Not Required?')
+    is_required_avg_resolved_ticket = fields.Boolean('No Ticket Resolved Today')
     # is_required_avg_resolution_time = fields.Boolean('Is Avg. Resolution Time (min.) Required?')
     # is_required_csat_new = fields.Boolean('Is CSAT % Required?')
-    is_required_billable_hours = fields.Boolean('Billable Hours % Not Required?')
-    is_required_no_calls_duration = fields.Boolean('Number of Calls Attended Not Required?')
+    is_required_billable_hours = fields.Boolean('No Billable Hours Today')
+    is_required_no_calls_duration = fields.Boolean('No Call Received Today')
 
     @api.model
     def create(self, vals):
