@@ -64,7 +64,7 @@ class EmployeeDailyProgress(models.TransientModel):
         yellow_table_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour yellow;border: left thin,right thin,top thin,bottom thin')
         plum_table_heading_style = xlwt.easyxf(
-            'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour plum;border: left thin,right thin,top thin,bottom thin')
+            'font: bold on,height 220;align: wrap on,vert centre, horiz center; align: wrap yes,vert centre, horiz center;pattern: pattern solid, fore-colour blue;border: left thin,right thin,top thin,bottom thin')
         dept_heading_style = xlwt.easyxf(
             'font: bold on,height 220;align: wrap on,vert centre, horiz left; align: wrap yes,vert centre;pattern: pattern solid, fore-colour light_green;border: left thin,right thin,top thin,bottom thin')
         columns_center_bold_style = xlwt.easyxf(
@@ -99,7 +99,7 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.row(3).height = 400
         worksheet.row(4).height = 500
         worksheet.col(5).width = 5000  # Gender
-        worksheet.col(6).width = 6000
+        worksheet.col(6).width = 6000  # Level
         worksheet.col(7).width = 6000
         worksheet.col(8).width = 6000
 
@@ -110,8 +110,8 @@ class EmployeeDailyProgress(models.TransientModel):
             date_range.append(current_date)
             current_date += timedelta(days=1)
 
-        # Set initial column index after Gender (col 5)
-        col_index = 6
+        # Set initial column index after Gender (col 6)
+        col_index = 7
 
         # Write headers for each date dynamically
         for date in date_range:
@@ -134,13 +134,14 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.write_merge(2, 2, 0, 0, _('Till Date'), top_center_bold_style)
         worksheet.write_merge(2, 2, 1, 1, _(self.date_to.strftime('%d-%m-%Y')), top_center_bold_style)
 
-        worksheet.write_merge(3, 3, 0, 5, 'Daily Progress Report', table_heading_style)
+        worksheet.write_merge(3, 3, 0, 6, 'Daily Progress Report', table_heading_style)
         worksheet.write(4, 0, 'Sr No.', table_heading_style)
         worksheet.write(4, 1, 'Employee Name', table_heading_style)
         worksheet.write(4, 2, 'Department', table_heading_style)
         worksheet.write(4, 3, 'Designation', table_heading_style)
         worksheet.write(4, 4, 'Contractor', table_heading_style)
         worksheet.write(4, 5, 'Gender', table_heading_style)
+        worksheet.write(4, 6, 'Level', table_heading_style)
 
 
         if not self.department_id and not self.user_ids:
@@ -165,9 +166,10 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.job_id.name), columns_left_bold_style)
                 worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor or ''), columns_left_bold_style)
                 worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(progress[0].resource_user_id.employee_id.gender, '')), columns_left_bold_style)
+                worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.level or ''), columns_left_bold_style)
 
                 # Start filling the dynamic columns after Gender (Column 6)
-                col_index = 6
+                col_index = 7
 
                 for date in date_range:
                     # Fetch progress record for the specific date and user
@@ -193,7 +195,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(4, col_index + 2, 'Total No of Calls', mtd_table_heading_style)
                 worksheet.write(4, col_index + 3, 'Total Presents', mtd_table_heading_style)
                 # Set dynamic column widths (including MTD columns)
-                for i in range(6, col_index + 4):  # +4 to include MTD columns
+                for i in range(7, col_index + 4):  # +4 to include MTD columns
                     worksheet.col(i).width = 5000
 
                 # Calculate and write MTD totals for the employee
@@ -205,7 +207,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, col_index, total_resolved, columns_center_bold_style)
                 worksheet.write(row, col_index + 1, total_billable, columns_center_bold_style)
                 worksheet.write(row, col_index + 2, total_calls, columns_center_bold_style)
-                worksheet.write(row, col_index + 3, total_presents, yellow_table_heading_style)
+                worksheet.write(row, col_index + 3, total_presents, columns_center_bold_style) # yellow_table_heading_style
 
 
                 sr_no+=1
