@@ -21,6 +21,18 @@ class DailyProgressExt(models.Model):
                 'approval_request_id': self.id,
             })
 
+    def action_confirm(self):
+        # Call the original method
+        res = super(DailyProgressExt, self).action_confirm()
+        if self.category_id.sequence_code == 'PMAF':
+            time_diff = (self.date_end - self.date_start).total_seconds() / 3600
+            if time_diff > 9:
+                raise ValidationError(_("The time difference between Start Time and End Time cannot exceed 9 hours."))
+            # Call the attendance entry method
+            self._create_attendance_entry()
+
+        return res  # Return the original result if needed
+
     def action_approve(self, approver=None):
         # Call the original method
         res = super(DailyProgressExt, self).action_approve(approver)

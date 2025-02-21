@@ -46,6 +46,36 @@ class EmployeeDailyProgress(models.TransientModel):
             if record.date_from > record.date_to:
                 raise ValidationError(_("The 'Date From' must be before or equal to 'Date To'."))
 
+    def calculate_employee_off_days(self, emp, start_date, end_date):
+        if emp and not emp.resource_calendar_id:
+            raise ValidationError(f"Employee {emp} has no working schedule assigned.")
+        off_days = []
+        working_hours = emp.resource_calendar_id
+        working_days = set(attendance.dayofweek for attendance in working_hours.attendance_ids)
+        date_range = [
+            (start_date + timedelta(days=i))
+            for i in range((end_date - start_date).days + 1)
+        ]
+        for date in date_range:
+            if str(date.weekday()) not in working_days:
+                off_days.append(date.day)
+        return off_days
+
+    def get_employee_leave_dates(self, emp, start_date, end_date):
+        leave_records = self.env['hr.leave'].search([
+            ('employee_id', '=', emp.id),
+            ('state', '=', 'validate'),
+            ('request_date_from', '>=', start_date),
+            ('request_date_to', '<=', end_date),
+        ])
+        leave_dates = []
+        for leave in leave_records:
+            current_day = leave.request_date_from
+            while current_day <= leave.request_date_to:
+                leave_dates.append(current_day.day)
+                current_day += timedelta(days=1)
+        return leave_dates
+
     # For Excel Report
     my_xl_file = fields.Binary('Excel Report')
     file_name = fields.Char('File Name')
@@ -74,6 +104,24 @@ class EmployeeDailyProgress(models.TransientModel):
             'align: wrap on, vert centre, horiz center;'
             'border: left thin, right thin, top thin, bottom thin;'
             'pattern: pattern solid, fore-colour red;'
+        )
+        format_present = xlwt.easyxf(
+            'font: height 200;'
+            'align: wrap on, vert centre, horiz center;'
+            'border: left thin, right thin, top thin, bottom thin;'
+            'pattern: pattern solid, fore_color light_green;'
+        )
+        format_off_day = xlwt.easyxf(
+            'font: height 200;'
+            'align: wrap on, vert centre, horiz center;'
+            'border: left thin, right thin, top thin, bottom thin;'
+            'pattern: pattern solid, fore_color gray25;'
+        )
+        format_leave = xlwt.easyxf(
+            'font: height 200;'
+            'align: wrap on, vert centre, horiz center;'
+            'border: left thin, right thin, top thin, bottom thin;'
+            'pattern: pattern solid, fore_color yellow;'
         )
         columns_center_bold_green_style = xlwt.easyxf(
             'font: height 200;'
@@ -165,7 +213,8 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, 2, _(progress[0].resource_user_id.employee_id.department_id.name), columns_left_bold_style)
                 worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.job_id.name), columns_left_bold_style)
                 worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor or ''), columns_left_bold_style)
-                worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(progress[0].resource_user_id.employee_id.gender, '')), columns_left_bold_style)
+                worksheet.write(row, 5, _(str(progress[0].resource_user_id.employee_id.gender).title() if progress[0].resource_user_id.employee_id.gender != False else ''), columns_left_bold_style)
+                # worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(getattr(progress[0].resource_user_id.employee_id, 'gender', ''), '')), columns_left_bold_style)
                 worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.level or ''), columns_left_bold_style)
 
                 # Start filling the dynamic columns after Gender (Column 6)
@@ -174,17 +223,24 @@ class EmployeeDailyProgress(models.TransientModel):
                 for date in date_range:
                     # Fetch progress record for the specific date and user
                     daily_record = progress.filtered(lambda p: p.date_of_project == date)
+                    off_day = self.calculate_employee_off_days(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
+                    leaves_day = self.get_employee_leave_dates(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
 
                     if daily_record:
                         worksheet.write(row, col_index, daily_record.avg_resolved_ticket or 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 1, daily_record.billable_hours or 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 2, daily_record.no_calls_duration or 0, columns_center_bold_style)
-                        worksheet.write(row, col_index + 3, 'Present', columns_center_bold_green_style)
+                        worksheet.write(row, col_index + 3, 'Present', format_present)
                     else:
                         worksheet.write(row, col_index, 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 1, 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 2, 0, columns_center_bold_style)
-                        worksheet.write(row, col_index + 3, 'Absent', columns_center_bold_red_style)
+                        if date.day in off_day:
+                            worksheet.write(row, col_index + 3, 'Rest', format_off_day)
+                        elif date.day in leaves_day:
+                            worksheet.write(row, col_index + 3, 'Leave', format_leave)
+                        else:
+                            worksheet.write(row, col_index + 3, 'Absent', columns_center_bold_red_style)
 
                     col_index += 4  # Move to next set of columns
 

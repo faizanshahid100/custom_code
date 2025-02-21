@@ -57,7 +57,7 @@
                             <field name="is_required_avg_resolved_ticket" attrs="{'invisible': [('avg_resolved_ticket', '!=', 0)]}"/>
 <!--                            <field name="is_required_avg_resolution_time" attrs="{'invisible': [('avg_resolution_time', '!=', 0)]}"/>-->
 <!--                            <field name="is_required_csat_new" attrs="{'invisible': [('csat_new', '!=', 0)]}"/>-->
-                            <field name="is_required_billable_hours" attrs="{'invisible': [('billable_hours', '!=', 0)]}"/>
+<!--                            <field name="is_required_billable_hours" attrs="{'invisible': [('billable_hours', '!=', 0)]}"/>-->
                             <field name="is_required_no_calls_duration" attrs="{'invisible': [('no_calls_duration', '!=', 0)]}"/>
                         </group>
                     </group>
