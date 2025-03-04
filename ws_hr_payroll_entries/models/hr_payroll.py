@@ -110,7 +110,7 @@ class HrPayslip(models.Model):
 
             """Overtime Count"""
             overtime = self.env['approval.request'].search(
-                [('category_id', '=', 9)
+                [('category_id.sequence_code', '=', 'OVERTIME')
                  , ('request_owner_id', '=', payslip.employee_id.user_id.id),
                  ('date_start', '>=', payslip.date_from), ('date_end', '<=', payslip.date_to),
                  ('request_status', '=', 'approved')])
