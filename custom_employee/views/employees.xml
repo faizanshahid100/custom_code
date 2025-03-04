@@ -85,6 +85,7 @@
                                 <field name="pl_code"/>
                                 <field name="department"/>
                                 <field name="manager"/>
+                                <field name="manager_email"/>
                                 <field name="dept_hod"/>
                                 <field name="serving_region"/>
                                 <field name="shift_time"/>

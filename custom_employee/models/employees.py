@@ -49,6 +49,7 @@ class HREmployeeInherit(models.Model):
     pl_code = fields.Char(string="PL Code")
     department = fields.Char(string="Dept")
     manager = fields.Char(string="Manager (Contractor)")
+    manager_email = fields.Char(string="Manager Email")
     dept_hod = fields.Char(string="Dept HOD")
     serving_region = fields.Char(string="Serving Region")
     shift_time = fields.Char(string="Shift Time")
