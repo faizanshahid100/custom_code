@@ -120,13 +120,13 @@ class HrPayslip(models.Model):
                 # Accumulate overtime hours
                 overtime_hours += hours
             att_end = self.env['hr.work.entry.type'].search([('code', '=', 'OVERTIME')], limit=1)
-            data.append((0, 0, {
-                'payslip_id': payslip.id,
-                'work_entry_type_id': att_end.id,
-                'name': att_end.name,
-                'number_of_hours': overtime_hours,
-                'amount': 0,
-            }))
+            # data.append((0, 0, {
+            #     'payslip_id': payslip.id,
+            #     'work_entry_type_id': att_end.id,
+            #     'name': att_end.name,
+            #     'number_of_hours': overtime_hours,
+            #     'amount': 0,
+            # }))
             payslip.worked_days_line_ids.unlink()
             payslip.worked_days_line_ids=data
 
