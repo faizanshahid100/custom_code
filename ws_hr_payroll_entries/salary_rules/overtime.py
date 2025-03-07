@@ -45,4 +45,3 @@ if overtime_requests:
     result = total_overtime_pay  # Final calculated overtime pay
 else:
     result = 0  # No overtime, no extra pay
-#################################################
