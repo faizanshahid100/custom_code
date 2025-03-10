@@ -9,7 +9,7 @@
                 <xpath expr="//group[@name='request_main']" position="inside">
                     <field name="category_sequence_code" invisible="1"/>
                     <field name="hours" readonly="1"/>
-                    <field name="overtime_type" attrs="{'invisible': [('category_sequence_code', '!=', 'OVERTIME')]}"/>
+                    <field name="overtime_type" attrs="{'invisible': [('category_sequence_code', '!=', 'OVERTIME')], 'readonly': [('request_status', 'in', ['approved','refused','cancel'])]}"/>
                 </xpath>
             </field>
         </record>
