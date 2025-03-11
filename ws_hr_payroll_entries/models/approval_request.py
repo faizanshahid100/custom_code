@@ -3,14 +3,11 @@
 from odoo import models, fields, api, _
 
 
-class ApprovalRequest(models.Model):
+class ApprovalRequestExt(models.Model):
     _inherit = 'approval.request'
 
     hours = fields.Float(string="Total Hours", compute="_compute_hours", store=True)
-    overtime_type = fields.Selection([
-        ('working_day', 'Working Day'),
-        ('holiday', 'Holiday/Public Holiday')
-    ], string="Overtime on", required=True, default='working_day')
+    approval_date = fields.Datetime('Approval Date')
     category_sequence_code = fields.Char(related='category_id.sequence_code', store=True,
                                          string="Category Sequence Code")
 
@@ -22,3 +19,9 @@ class ApprovalRequest(models.Model):
                 record.hours = delta.total_seconds() / 3600.0  # Convert seconds to hours
             else:
                 record.hours = 0.0
+
+    def action_approve(self, approver=None):
+        # To pass the datetime when approvals approved
+        res = super(ApprovalRequestExt, self).action_approve(approver)
+        self.approval_date = fields.Datetime.now()
+        return res
