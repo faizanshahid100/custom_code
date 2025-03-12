@@ -7,6 +7,7 @@
 		<field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
 		<field name="arch" type="xml">
 			<xpath expr="//field[@name='wage_type']" position="after">
+				<field name="payslip_currency_id" invisible="0"/>
 				<field name="travel_allowances" invisible="0"/>
 				<field name="fuel_allowances" invisible="0"/>
 				<field name="relocation_allowances" invisible="0"/>

@@ -28,6 +28,7 @@ class HrPayslipEmployees(models.TransientModel):
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
+    currency_id = fields.Many2one(related='contract_id.payslip_currency_id')
 
     def compute_sheet(self):
         for payslip in self:

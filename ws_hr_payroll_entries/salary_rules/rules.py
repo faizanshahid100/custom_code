@@ -77,3 +77,29 @@ for att in overtime_requests:
     total_overtime_pay += hours * (per_hour_salary * 3)  # Always 3x pay rate for overtime
 
 result = total_overtime_pay  # Final calculated overtime pay
+
+#################### Absent Deduction #########################
+date_from = str(payslip.date_from)
+year = int(date_from[:4])  # Extract year
+month = int(date_from[-5:-3])  # Extract month
+
+# Determine the number of days in the month, including leap year handling for February
+# if month in {1, 3, 5, 7, 8, 10, 12}:
+#     days = 31
+# elif month == 2:
+#     days = 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28
+# else:
+#     days = 30
+days = 30
+# Calculate contract-based allowances
+contract_basic = contract.wage + contract.travel_allowances + contract.fuel_allowances + contract.relocation_allowances
+per_day = contract_basic / days  # Daily rate calculation
+
+absent_days = 0
+
+# Loop through worked days and check for both "Out of Contract" and "Unpaid Time Off"
+for rec in payslip.worked_days_line_ids:
+    if rec.work_entry_type_id.name in ["Out of Contract", "Unpaid Time Off"]:
+        absent_days += rec.number_of_days  # Add days for both types
+
+result = per_day * absent_days
