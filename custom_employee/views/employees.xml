@@ -87,6 +87,7 @@
                                 <field name="manager"/>
                                 <field name="manager_email"/>
                                 <field name="dept_hod"/>
+                                <field name="dept_hod_email"/>
                                 <field name="serving_region"/>
                                 <field name="shift_time"/>
                             </group>
