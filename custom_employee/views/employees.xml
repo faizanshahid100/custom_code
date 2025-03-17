@@ -99,6 +99,7 @@
                                 <field name="pss_group"/>
                                 <field name="emp_contract_type"/>
                                 <field name="contract_start"/>
+                                <field name="client_joining_date"/>
                                 <field name="contract_end"/>
                                 <field name="work_mode"/>
                             </group>

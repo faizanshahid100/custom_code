@@ -64,6 +64,7 @@ class HREmployeeInherit(models.Model):
     ], string='PSS Group')
     emp_contract_type = fields.Char(string="Rotation Based")
     contract_start = fields.Date(string="Contract Start")
+    client_joining_date = fields.Date(string="Client Joining Date")
     contract_end = fields.Date(string="Contract End")
     work_mode = fields.Selection([
         ('onsite', 'Onsite'),
