@@ -87,6 +87,7 @@
                                 <field name="manager"/>
                                 <field name="manager_email"/>
                                 <field name="dept_hod"/>
+                                <field name="dept_hod_email"/>
                                 <field name="serving_region"/>
                                 <field name="shift_time"/>
                             </group>
@@ -98,6 +99,7 @@
                                 <field name="pss_group"/>
                                 <field name="emp_contract_type"/>
                                 <field name="contract_start"/>
+                                <field name="client_joining_date"/>
                                 <field name="contract_end"/>
                                 <field name="work_mode"/>
                             </group>

@@ -201,7 +201,7 @@ class EmployeeDailyProgress(models.TransientModel):
         progress_records = self.env['daily.progress'].search([('resource_user_id', 'in', users.ids), ('date_of_project', '>=', self.date_from), ('date_of_project', '<=', self.date_to)])
         progress_records_group = progress_records.read_group([('resource_user_id', 'in', users.ids), ('date_of_project', '>=', self.date_from), ('date_of_project', '<=', self.date_to)], ['resource_user_id'], ['resource_user_id'])
 
-        if progress_records:
+        if users:
             row = 5
             sr_no = 1
             for group in progress_records_group:
@@ -223,10 +223,11 @@ class EmployeeDailyProgress(models.TransientModel):
                 for date in date_range:
                     # Fetch progress record for the specific date and user
                     daily_record = progress.filtered(lambda p: p.date_of_project == date)
+                    attendance = self.env['hr.attendance'].search([('employee_id', '=', progress[0].resource_user_id.employee_id.id), ('check_in', '>=', date), ('check_in', '<=', date)], limit=1)
                     off_day = self.calculate_employee_off_days(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
                     leaves_day = self.get_employee_leave_dates(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
 
-                    if daily_record:
+                    if daily_record or attendance:
                         worksheet.write(row, col_index, daily_record.avg_resolved_ticket or 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 1, daily_record.billable_hours or 0, columns_center_bold_style)
                         worksheet.write(row, col_index + 2, daily_record.no_calls_duration or 0, columns_center_bold_style)

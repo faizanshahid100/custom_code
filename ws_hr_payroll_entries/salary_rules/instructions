@@ -1,0 +1,7 @@
+Create Work entry types Payroll -> Configuration -> Work Entries -> Work Entry Types
+Below are Work Entries Types:
+Paid Time Off :
+in Paid Time Off set code "LEAVE120" and enter all paid leaves in field "Time Off Type"
+
+Unpaid Time Off :
+in Paid Time Off set code "LEAVE90" and enter all unpaid leaves in field "Time Off Type"

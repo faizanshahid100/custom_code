@@ -51,6 +51,7 @@ class HREmployeeInherit(models.Model):
     manager = fields.Char(string="Manager (Contractor)")
     manager_email = fields.Char(string="Manager Email")
     dept_hod = fields.Char(string="Dept HOD")
+    dept_hod_email = fields.Char(string="Dept HOD Email")
     serving_region = fields.Char(string="Serving Region")
     shift_time = fields.Char(string="Shift Time")
     job_title = fields.Char(string="Job Time")
@@ -63,6 +64,7 @@ class HREmployeeInherit(models.Model):
     ], string='PSS Group')
     emp_contract_type = fields.Char(string="Rotation Based")
     contract_start = fields.Date(string="Contract Start")
+    client_joining_date = fields.Date(string="Joining Date Client")
     contract_end = fields.Date(string="Contract End")
     work_mode = fields.Selection([
         ('onsite', 'Onsite'),

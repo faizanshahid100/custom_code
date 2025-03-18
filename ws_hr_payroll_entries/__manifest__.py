@@ -27,6 +27,7 @@
         'views/hr_rest_day_views.xml',
         'views/hr_attendance.xml',
         'views/hr_contract.xml',
+        'views/approval_request.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
