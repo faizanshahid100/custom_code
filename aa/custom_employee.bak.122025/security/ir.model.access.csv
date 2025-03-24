@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-
-access_employee_performance,employee_performance,model_employee_performance,,1,1,1,1
-access_employee_contractor_info,employee_contractor_info,model_employee_contractor_info,,1,1,1,1
-access_employee_professional_info,employee_professional_info,model_employee_professional_info,,1,1,1,1
-access_health_insurance_info,health_insurance_info,model_health_insurance_info,,1,1,1,1

@@ -28,3 +28,50 @@ class HrEmployee(models.Model):
         ('5', 'Saturday'),
         ('6', 'Sunday')
     ], 'Day of Week', compute="_compute_working_days")
+
+    feedback_ids = fields.One2many('hr.employee.feedback', 'employee_id', string='Feedback')
+    # Computed fields for feedback counts
+    positive_feedback_count = fields.Integer(string="Positive Feedback", compute="_compute_feedback_counts")
+    negative_feedback_count = fields.Integer(string="Negative Feedback", compute="_compute_feedback_counts")
+    total_feedback_count = fields.Integer(string="Total Feedback", compute="_compute_feedback_counts")
+
+    @api.depends('feedback_ids.feedback_type')
+    def _compute_feedback_counts(self):
+        for employee in self:
+            employee.positive_feedback_count = sum(
+                1 for feedback in employee.feedback_ids if feedback.feedback_type == 'positive')
+            employee.negative_feedback_count = sum(
+                1 for feedback in employee.feedback_ids if feedback.feedback_type == 'negative')
+
+            employee.total_feedback_count = employee.positive_feedback_count + employee.negative_feedback_count
+
+
+    # Action to open feedback records
+    def action_view_positive_feedback(self):
+        return {
+            'name': 'Employee Feedback',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'hr.employee.feedback',
+            'domain': [('employee_id', '=', self.id), ('feedback_type', '=', 'positive')],  # Filter only positive feedback
+            'context': {'default_employee_id': self.id},
+        }
+    def action_view_negative_feedback(self):
+        return {
+            'name': 'Employee Feedback',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'hr.employee.feedback',
+            'domain': [('employee_id', '=', self.id), ('feedback_type', '=', 'negative')],  # Filter only negative feedback
+            'context': {'default_employee_id': self.id},
+        }
+    def action_view_feedback(self):
+        return {
+            'name': 'Employee Feedback',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'hr.employee.feedback',
+            'domain': [('employee_id', '=', self.id)],
+            # Filter all feedback
+            'context': {'default_employee_id': self.id},
+        }

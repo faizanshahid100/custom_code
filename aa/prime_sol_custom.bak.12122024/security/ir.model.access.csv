@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_daily_progress,daily.progress,model_daily_progress,,1,1,1,1
-access_weekly_progress,weekly.progress,model_weekly_progress,,1,1,1,1
-

@@ -19,6 +19,7 @@
         'views/weekly_report.xml',
         'views/hr_employee.xml',
         'views/hr_attendance_ext.xml',
+        'views/employee_feedback.xml',
         'data/mail_template_data.xml',
     ],
     'assets': {
