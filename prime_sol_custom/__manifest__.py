@@ -20,6 +20,7 @@
         'views/hr_employee.xml',
         'views/hr_attendance_ext.xml',
         'views/employee_feedback.xml',
+        'views/dynamic_progress.xml',
         'data/mail_template_data.xml',
     ],
     'assets': {

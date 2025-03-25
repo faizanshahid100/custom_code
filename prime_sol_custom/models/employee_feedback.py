@@ -15,3 +15,12 @@ class EmployeeFeedback(models.Model):
     ], string='Feedback Type', required=True)
     outcome_suggested = fields.Text(string='Outcome Suggested', required=True)
     next_followup_date = fields.Date(string='Next Follow-up')
+
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        """ Set client_id to the contractor of the selected employee """
+        if self.employee_id and self.employee_id.contractor:
+            self.client_id = self.employee_id.contractor
+        else:
+            self.client_id = False  # Clear the field if no contractor is found
