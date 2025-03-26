@@ -9,7 +9,7 @@
     'website': "https://www.yourcompany.com",
     'category': 'Uncategorized',
     'version': '0.3',
-    'depends': ['base', 'mail', 'project','web'],
+    'depends': ['base', 'mail', 'project','web', 'hr'],
     'data': [
         'data/ir_cron_data.xml',
         'security/ir.model.access.csv',
@@ -21,6 +21,7 @@
         'views/hr_attendance_ext.xml',
         'views/employee_feedback.xml',
         'views/dynamic_progress.xml',
+        'views/meeting_tracker.xml',
         'data/mail_template_data.xml',
     ],
     'assets': {

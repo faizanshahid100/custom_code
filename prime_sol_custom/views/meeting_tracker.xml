@@ -1,0 +1,79 @@
+<odoo>
+    <!-- Meeting Tracker Form View -->
+    <record id="view_meeting_tracker_tree" model="ir.ui.view">
+        <field name="name">meeting.tracker.tree</field>
+        <field name="model">meeting.tracker</field>
+        <field name="arch" type="xml">
+            <tree string="Meeting Tracker">
+                <field name="date"/>
+                <field name="record_person"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Meeting Tracker Form View -->
+    <record id="view_meeting_tracker_form" model="ir.ui.view">
+        <field name="name">meeting.tracker.form</field>
+        <field name="model">meeting.tracker</field>
+        <field name="arch" type="xml">
+            <form string="Meeting Tracker">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary" attrs="{'invisible': [('state', '=', 'confirmed')]}"/>
+                    <button name="action_draft" string="Set to Draft" type="object" class="btn-secondary" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="record_person"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="attendance" string="Tracking Attendance">
+                            <field name="meeting_details">
+                                <tree editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="client_id"/>
+                                    <field name="project"/>
+                                    <field name="meeting_start_date"/>
+                                    <field name="meeting_end_date"/>
+                                    <field name="meeting_duration"/>
+                                    <field name="is_present" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Meeting Details Tree View -->
+    <record id="view_meeting_details_tree" model="ir.ui.view">
+        <field name="name">meeting.details.tree</field>
+        <field name="model">meeting.details</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="client_id"/>
+                <field name="meeting_start_date"/>
+                <field name="meeting_end_date"/>
+                <field name="is_present" widget="radio"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Meeting Tracker Action -->
+    <record id="action_meeting_tracker" model="ir.actions.act_window">
+        <field name="name">Meeting Tracker</field>
+        <field name="res_model">meeting.tracker</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Meeting Tracker Menu -->
+    <menuitem id="menu_meeting_tracker" name="Meeting Tracker" parent="hr.menu_hr_root" sequence="20"
+              action="action_meeting_tracker"/>
+
+</odoo>
