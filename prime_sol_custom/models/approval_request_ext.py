@@ -29,7 +29,6 @@ class DailyProgressExt(models.Model):
             if time_diff > 9:
                 raise ValidationError(_("The time difference between Start Time and End Time cannot exceed 9 hours."))
             # Call the attendance entry method
-            self._create_attendance_entry()
 
         return res  # Return the original result if needed
 
