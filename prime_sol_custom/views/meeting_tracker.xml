@@ -8,13 +8,14 @@
                 <field name="date"/>
                 <field name="client_id"/>
                 <field name="record_person"/>
-                <group expand="0" string="Group By">
-                    <field name="client_id"/>
+                <group string="Group By">
+                    <filter name="client_id" string="Client" domain="[]" context="{'group_by': 'client_id'}"/>
+                    <filter name="client_id" string="Recorded Person" domain="[]" context="{'group_by': 'record_person'}"/>
                 </group>
             </search>
         </field>
     </record>
-    <!-- Meeting Tracker Form View -->
+    <!-- Meeting Tracker Tree View -->
     <record id="view_meeting_tracker_tree" model="ir.ui.view">
         <field name="name">meeting.tracker.tree</field>
         <field name="model">meeting.tracker</field>
@@ -70,26 +71,25 @@
     </record>
 
     <!-- Meeting Details Tree View -->
-    <record id="view_meeting_details_tree" model="ir.ui.view">
-        <field name="name">meeting.details.tree</field>
-        <field name="model">meeting.details</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="employee_id"/>
-                <field name="client_id"/>
-                <field name="meeting_start_date"/>
-                <field name="meeting_end_date"/>
-                <field name="is_present" widget="radio"/>
-            </tree>
-        </field>
-    </record>
+<!--    <record id="view_meeting_details_tree" model="ir.ui.view">-->
+<!--        <field name="name">meeting.details.tree</field>-->
+<!--        <field name="model">meeting.details</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <tree>-->
+<!--                <field name="employee_id"/>-->
+<!--                <field name="client_id"/>-->
+<!--                <field name="meeting_start_date"/>-->
+<!--                <field name="meeting_end_date"/>-->
+<!--                <field name="is_present" widget="radio"/>-->
+<!--            </tree>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <!-- Meeting Tracker Action -->
     <record id="action_meeting_tracker" model="ir.actions.act_window">
         <field name="name">Meeting Tracker</field>
         <field name="res_model">meeting.tracker</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{"group_by": "client_id"}</field>
+        <field name="view_mode">search,tree,form</field>
     </record>
 
     <!-- Meeting Tracker Menu -->

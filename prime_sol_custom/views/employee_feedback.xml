@@ -11,7 +11,6 @@
                 <field name="feedback_type"/>
                 <field name="date_feedback"/>
                 <field name="next_followup_date"/>
-
                 <group expand="0" string="Group By">
                     <filter name="group_feedback_type" string="Feedback Type" domain="[]" context="{'group_by': 'feedback_type'}"/>
                     <filter name="group_client" string="Client" domain="[]" context="{'group_by': 'client_id'}"/>
