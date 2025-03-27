@@ -5,13 +5,22 @@ from odoo.exceptions import ValidationError
 
 class MeetingTracker(models.Model):
     _name = "meeting.tracker"
-    _rec_name = "date"
+    _rec_name = "client_id"
     _description = "Meeting Tracker"
 
     date = fields.Date(string="Date", required=True, default=fields.Date.today)
     record_person = fields.Many2one('hr.employee', string="Record Person", default=lambda self: self.env.user.employee_id, readonly=True)
+    client_id = fields.Many2one('res.partner', required=True, string="Client", domain=[('is_company','=', True)])
     state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed')], string="Status", default="draft")
     meeting_details = fields.One2many('meeting.details', 'meeting_id', string="Meeting Details")
+
+    def name_get(self):
+        """ Returns a custom name combining Client and Date """
+        result = []
+        for record in self:
+            name = f"{record.client_id.name} ({record.date})" if record.client_id and record.date else record.client_id.name or "Meeting"
+            result.append((record.id, name))
+        return result
 
     def action_confirm(self):
         """ Confirms the meeting tracker, preventing further edits """
@@ -25,23 +34,43 @@ class MeetingTracker(models.Model):
     def create(self, vals):
         """ Automatically create meeting details for all active employees when a Meeting Tracker record is created. """
         meeting = super(MeetingTracker, self).create(vals)
-        employees = self.env['hr.employee'].search([('active', '=', True)])  # Fetch only active employees
-
-        meeting_details = []
-        for employee in employees:
-            meeting_details.append({
-                'meeting_id': meeting.id,
-                'employee_id': employee.id,
-                'client_id': employee.contractor.id if employee.contractor else False,
-                'meeting_start_date': fields.Datetime.now(),
-                'meeting_end_date': fields.Datetime.now(),
-                'is_present': True,  # Default to Present
-            })
-
-        if meeting_details:
-            self.env['meeting.details'].create(meeting_details)
-
+        meeting._auto_create_meeting_details(vals.get('client_id'))
         return meeting
+
+    def write(self, vals):
+        """ Also trigger meeting details creation when client_id is updated. """
+        res = super(MeetingTracker, self).write(vals)
+        if 'client_id' in vals:
+            # 🔴 Delete existing meeting details before adding new ones
+            self.meeting_details.unlink()
+            self._auto_create_meeting_details(vals.get('client_id'))
+        return res
+
+    def _auto_create_meeting_details(self, client_id):
+        """ Helper function to create meeting details for active employees of the selected client. """
+        if not client_id:
+            return
+
+        for meeting in self:
+            employees = self.env['hr.employee'].search([
+                ('active', '=', True),
+                ('contractor', '!=', False),
+                ('contractor', '=', client_id)
+            ])
+
+            meeting_details = []
+            for employee in employees:
+                meeting_details.append({
+                    'meeting_id': meeting.id,
+                    'employee_id': employee.id,
+                    'client_id': employee.contractor.id if employee.contractor else False,
+                    'meeting_start_date': fields.Datetime.now(),
+                    'meeting_end_date': fields.Datetime.now(),
+                    'is_present': True,  # Default to Present
+                })
+
+            if meeting_details:
+                self.env['meeting.details'].create(meeting_details)
 
 
 class MeetingDetails(models.Model):
