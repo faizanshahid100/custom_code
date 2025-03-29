@@ -9,11 +9,13 @@
                 <field name="employee_id"/>
                 <field name="client_id"/>
                 <field name="feedback_type"/>
+                <field name="feedback_status"/>
                 <field name="date_feedback"/>
                 <field name="next_followup_date"/>
                 <group expand="0" string="Group By">
                     <filter name="group_feedback_type" string="Feedback Type" domain="[]" context="{'group_by': 'feedback_type'}"/>
                     <filter name="group_client" string="Client" domain="[]" context="{'group_by': 'client_id'}"/>
+                    <filter name="group_feedback_status" string="Feedback Status" domain="[]" context="{'group_by': 'feedback_status'}"/>
                 </group>
             </search>
         </field>
@@ -29,6 +31,7 @@
                 <field name="client_id"/>
                 <field name="feedback_type"/>
                 <field name="next_followup_date"/>
+                <field name="feedback_status"/>
             </tree>
         </field>
     </record>
@@ -51,6 +54,7 @@
                             <field name="date_feedback"/>
                             <field name="outcome_suggested" widget="text"/>
                             <field name="next_followup_date"/>
+                            <field name="feedback_status"/>
                         </group>
                     </group>
                 </sheet>

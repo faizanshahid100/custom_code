@@ -11,6 +11,10 @@ class MeetingTracker(models.Model):
     date = fields.Date(string="Date", required=True, default=fields.Date.today)
     record_person = fields.Many2one('hr.employee', string="Record Person", default=lambda self: self.env.user.employee_id, readonly=True)
     client_id = fields.Many2one('res.partner', required=True, string="Client", domain=[('is_company','=', True)])
+    meeting_type = fields.Selection([
+        ('internal', 'Internal Online'),
+        ('onsite', 'Onsite Engagement Events'),
+    ], string="Meeting Type", default='internal')
     state = fields.Selection([('draft', 'Draft'), ('confirmed', 'Confirmed')], string="Status", default="draft")
     meeting_details = fields.One2many('meeting.details', 'meeting_id', string="Meeting Details")
 

@@ -15,6 +15,11 @@ class EmployeeFeedback(models.Model):
     ], string='Feedback Type', required=True)
     outcome_suggested = fields.Text(string='Outcome Suggested', required=True)
     next_followup_date = fields.Date(string='Next Follow-up')
+    feedback_status = fields.Selection([
+        ('casual', 'Casual'),
+        ('inprogress', 'Inprogress'),
+        ('resolved', 'Resolved'),
+    ], string="Feedback Status", default='casual', required=True)
 
 
     @api.onchange('employee_id')

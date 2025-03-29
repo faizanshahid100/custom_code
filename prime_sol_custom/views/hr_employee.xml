@@ -59,6 +59,7 @@
                                 <field name="feedback_type"/>
                                 <field name="outcome_suggested"/>
                                 <field name="next_followup_date"/>
+                                <field name="feedback_status"/>
                             </tree>
                         </field>
                     </page>

@@ -93,11 +93,6 @@
     <menuitem id="menu_project_daily_progress"
               name="Daily Progress"
               parent="project.menu_main_pm"
-              sequence="22"/>
-    <menuitem id="menu_project_daily_progres"
-              name="Daily KPI Progress"
-              parent="prime_sol_custom.menu_project_daily_progress"
               action="action_project_daily_progress"
-              sequence="5"/>
-
+              sequence="22"/>
 </odoo>
