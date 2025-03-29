@@ -42,7 +42,7 @@ class HREmployeeInherit(models.Model):
     notice_period_date = fields.Date(string="Notice Period End Date")
 
     # Contract
-    contractor = fields.Char(string="Contractor")
+    contractor = fields.Many2one('res.partner', string="Contractor", domain=[('is_company','=', True)])
     contractor_email = fields.Char('Contractor Email')
     contractor_id = fields.Char(string="ID")
     business_unit = fields.Char(string="Business Unit")
@@ -118,7 +118,7 @@ class HREmployeeInherit(models.Model):
                 c.name AS country_name,  
                 e.working_location,
                 e.gender,
-                e.contractor,
+                rp.name AS contractor,
                 e.serving_region,
                 e.manager,
                 d.name AS department_name,  
@@ -134,7 +134,9 @@ class HREmployeeInherit(models.Model):
             LEFT JOIN
                 hr_department d ON e.department_id = d.id
             LEFT JOIN
-                hr_job j ON e.job_id = j.id;
+                hr_job j ON e.job_id = j.id
+            LEFT JOIN
+            res_partner rp ON e.contractor = rp.id;
             """
         try:
             self.env.cr.execute(query)

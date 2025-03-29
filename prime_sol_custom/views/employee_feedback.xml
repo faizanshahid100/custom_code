@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Search View -->
+    <record id="view_hr_employee_feedback_search" model="ir.ui.view">
+        <field name="name">hr.employee.feedback.search</field>
+        <field name="model">hr.employee.feedback</field>
+        <field name="arch" type="xml">
+            <search string="Employee Feedback Search">
+                <field name="employee_id"/>
+                <field name="client_id"/>
+                <field name="feedback_type"/>
+                <field name="feedback_status"/>
+                <field name="date_feedback"/>
+                <field name="next_followup_date"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_feedback_type" string="Feedback Type" domain="[]" context="{'group_by': 'feedback_type'}"/>
+                    <filter name="group_client" string="Client" domain="[]" context="{'group_by': 'client_id'}"/>
+                    <filter name="group_feedback_status" string="Feedback Status" domain="[]" context="{'group_by': 'feedback_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!-- Tree View -->
+    <record id="view_hr_employee_feedback_tree" model="ir.ui.view">
+        <field name="name">hr.employee.feedback.tree</field>
+        <field name="model">hr.employee.feedback</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="date_feedback"/>
+                <field name="client_id"/>
+                <field name="feedback_type"/>
+                <field name="next_followup_date"/>
+                <field name="feedback_status"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hr_employee_feedback_form" model="ir.ui.view">
+        <field name="name">hr.employee.feedback.form</field>
+        <field name="model">hr.employee.feedback</field>
+        <field name="arch" type="xml">
+            <form string="Employee Feedback">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="client_id"/>
+                            <field name="client_feedback" widget="text"/>
+                            <field name="feedback_type"/>
+                        </group>
+                        <group>
+                            <field name="date_feedback"/>
+                            <field name="outcome_suggested" widget="text"/>
+                            <field name="next_followup_date"/>
+                            <field name="feedback_status"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_employee_feedback" model="ir.actions.act_window">
+        <field name="name">Employee Feedback</field>
+        <field name="res_model">hr.employee.feedback</field>
+        <field name="view_mode">search,tree,form,pivot</field>
+        <field name="search_view_id" ref="view_hr_employee_feedback_search"/>
+        <field name="help" type="html">
+            <p>
+                Manage employee feedback from clients and track follow-up actions.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_hr_employee_feedback" name="Emp Feedback"
+              groups="prime_sol_custom.group_employee_feedback_manager"
+              action="action_hr_employee_feedback" web_icon="prime_sol_custom,static/description/feedback.png"/>
+</odoo>

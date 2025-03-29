@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-employee_attendance_register,employee.attendance.register,model_employee_attendance_register,,1,1,1,1
-monthly_progress_report,monthly.progress.report,model_monthly_progress_report,,1,1,1,1
-daily_progress_report,daily.progress.report,model_daily_progress_report,,1,1,1,1
