@@ -12,6 +12,7 @@
     'depends': ['base', 'mail', 'project','web', 'hr'],
     'data': [
         'data/ir_cron_data.xml',
+        'data/mail_channel.xml',
         'security/ir.model.access.csv',
         'security/groups.xml',
         'views/res_users.xml',
