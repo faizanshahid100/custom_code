@@ -18,7 +18,7 @@
                     <field name="chronic_diseases"/>
                     <field name="meds_in_use"/>
                     <field name="signed"/>
-                    <field name="joining_date"/>
+                    <field name="joining_date" required="1"/>
                     <field name="confirmation_date"/>
                     <field name="leaving_date"/>
                     <field name="joining_salary"/>

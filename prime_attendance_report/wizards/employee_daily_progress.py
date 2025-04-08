@@ -82,13 +82,21 @@ class EmployeeDailyProgress(models.TransientModel):
 
     def calculate_total_leaves_from_attendance(self, employee):
         year_start = date(date.today().year, 1, 1)
+
+        # Check if the employee joined this year and update the start date accordingly
+        if employee.joining_date and employee.joining_date.year == date.today().year:
+            year_start = employee.joining_date
+
         year_end = date.today()
+
         if not employee or not employee.resource_calendar_id:
             return 0
 
         # Step 1: Get working days
         calendar = employee.resource_calendar_id
         working_days = set(int(a.dayofweek) for a in calendar.attendance_ids)
+
+        # Calculate total days in the period
         total_days = (year_end - year_start).days + 1
         date_range = [year_start + timedelta(days=i) for i in range(total_days)]
 
@@ -107,6 +115,7 @@ class EmployeeDailyProgress(models.TransientModel):
         leave_days = [d for d in working_dates if d not in attended_dates]
 
         return len(leave_days)
+
     def action_generate_report(self):
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('Daily Progress Report', cell_overwrite_ok=True)
@@ -239,7 +248,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, 1, _(progress[0].resource_user_id.employee_id.name), columns_left_bold_style)
                 worksheet.write(row, 2, _(progress[0].resource_user_id.employee_id.department_id.name), columns_left_bold_style)
                 worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.job_id.name), columns_left_bold_style)
-                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor or ''), columns_left_bold_style)
+                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor.name if progress[0].resource_user_id.employee_id.contractor else ''), columns_left_bold_style)
                 worksheet.write(row, 5, _(str(progress[0].resource_user_id.employee_id.gender).title() if progress[0].resource_user_id.employee_id.gender != False else ''), columns_left_bold_style)
                 # worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(getattr(progress[0].resource_user_id.employee_id, 'gender', ''), '')), columns_left_bold_style)
                 worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.level or ''), columns_left_bold_style)

@@ -13,6 +13,7 @@
                 </field>
                 <xpath expr="//notebook/page[last()]" position="after">
                     <page string="Daily Target" name="daily_target">
+                        <group><field name="kpi_measurement"/></group>
                         <group>
                             <group>
                                 <field name="d_ticket_resolved"/>
