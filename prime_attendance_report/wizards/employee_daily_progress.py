@@ -80,33 +80,26 @@ class EmployeeDailyProgress(models.TransientModel):
     my_xl_file = fields.Binary('Excel Report')
     file_name = fields.Char('File Name')
 
-    def calculate_total_leaves_from_attendance(self, employee):
-        year_start = date(date.today().year, 1, 1)
-        year_end = date.today()
-        if not employee or not employee.resource_calendar_id:
+    def calculate_total_leaves_from_time_off(self, employee):
+        # Get the current year
+        current_year = date.today().year
+
+        # Get all validated leave records for the employee within the current year
+        leaves = self.env['hr.leave'].search([
+            ('employee_id', '=', employee.id),
+            ('state', '=', 'validate'),
+            ('request_date_from', '>=', f'{current_year}-01-01'),
+            ('request_date_from', '<', f'{current_year + 1}-01-01')
+        ])
+
+        # Check if there are any validated leave records; if not, return 0
+        if not leaves:
             return 0
 
-        # Step 1: Get working days
-        calendar = employee.resource_calendar_id
-        working_days = set(int(a.dayofweek) for a in calendar.attendance_ids)
-        total_days = (year_end - year_start).days + 1
-        date_range = [year_start + timedelta(days=i) for i in range(total_days)]
+        # Sum the number_of_days_display field for all validated leave records within the current year
+        total_leave = sum(leave.number_of_days_display for leave in leaves)
+        return total_leave
 
-        # Step 2: Filter dates that are working days
-        working_dates = [d for d in date_range if d.weekday() in working_days]
-
-        # Step 3: Get attendance days
-        attendances = self.env['hr.attendance'].search([
-            ('employee_id', '=', employee.id),
-            ('check_in', '>=', year_start),
-            ('check_in', '<=', year_end),
-        ])
-        attended_dates = set(att.check_in.date() for att in attendances)
-
-        # Step 4: Count missing days
-        leave_days = [d for d in working_dates if d not in attended_dates]
-
-        return len(leave_days)
     def action_generate_report(self):
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('Daily Progress Report', cell_overwrite_ok=True)
@@ -175,7 +168,7 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.row(4).height = 500
         worksheet.col(5).width = 5000  # Gender
         worksheet.col(6).width = 6000  # Level
-        worksheet.col(7).width = 6000
+        worksheet.col(7).width = 6000  # KPI Metric
         worksheet.col(8).width = 6000
 
         # Generate date range
@@ -185,8 +178,8 @@ class EmployeeDailyProgress(models.TransientModel):
             date_range.append(current_date)
             current_date += timedelta(days=1)
 
-        # Set initial column index after Gender (col 6)
-        col_index = 7
+        # Set initial column index after KPI Metric (col 7)
+        col_index = 8
 
         # Write headers for each date dynamically
         for date in date_range:
@@ -209,7 +202,7 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.write_merge(2, 2, 0, 0, _('Till Date'), top_center_bold_style)
         worksheet.write_merge(2, 2, 1, 1, _(self.date_to.strftime('%d-%m-%Y')), top_center_bold_style)
 
-        worksheet.write_merge(3, 3, 0, 6, 'Daily Progress Report', table_heading_style)
+        worksheet.write_merge(3, 3, 0, 7, 'Daily Progress Report', table_heading_style)
         worksheet.write(4, 0, 'Sr No.', table_heading_style)
         worksheet.write(4, 1, 'Employee Name', table_heading_style)
         worksheet.write(4, 2, 'Department', table_heading_style)
@@ -217,6 +210,7 @@ class EmployeeDailyProgress(models.TransientModel):
         worksheet.write(4, 4, 'Contractor', table_heading_style)
         worksheet.write(4, 5, 'Gender', table_heading_style)
         worksheet.write(4, 6, 'Level', table_heading_style)
+        worksheet.write(4, 7, 'KPI Metric', table_heading_style)
 
 
         if not self.department_id and not self.user_ids:
@@ -239,13 +233,14 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, 1, _(progress[0].resource_user_id.employee_id.name), columns_left_bold_style)
                 worksheet.write(row, 2, _(progress[0].resource_user_id.employee_id.department_id.name), columns_left_bold_style)
                 worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.job_id.name), columns_left_bold_style)
-                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor or ''), columns_left_bold_style)
+                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor.name if progress[0].resource_user_id.employee_id.contractor else ''), columns_left_bold_style)
                 worksheet.write(row, 5, _(str(progress[0].resource_user_id.employee_id.gender).title() if progress[0].resource_user_id.employee_id.gender != False else ''), columns_left_bold_style)
                 # worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(getattr(progress[0].resource_user_id.employee_id, 'gender', ''), '')), columns_left_bold_style)
                 worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.level or ''), columns_left_bold_style)
+                worksheet.write(row, 7, _(str(progress[0].resource_user_id.employee_id.kpi_measurement).title() or ''), columns_left_bold_style)
 
-                # Start filling the dynamic columns after Gender (Column 6)
-                col_index = 7
+                # Start filling the dynamic columns after KPI Metric (Column 7)
+                col_index = 8
 
                 for date in date_range:
                     # Fetch progress record for the specific date and user
@@ -280,7 +275,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(4, col_index + 3, 'Total Presents', yellow_table_heading_style)
                 worksheet.write(4, col_index + 4, 'Total Leaves', yellow_table_heading_style)
                 # Set dynamic column widths (including MTD columns)
-                for i in range(7, col_index + 5):  # +4 to include MTD columns
+                for i in range(8, col_index + 5):  # +4 to include MTD columns
                     worksheet.col(i).width = 5000
 
                 # Calculate and write MTD totals for the employee
@@ -293,7 +288,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, col_index + 1, total_billable, columns_center_bold_style)
                 worksheet.write(row, col_index + 2, total_calls, columns_center_bold_style)
                 worksheet.write(row, col_index + 3, total_presents, columns_center_bold_style) # yellow_table_heading_style
-                worksheet.write(row, col_index + 4, self.calculate_total_leaves_from_attendance(progress[0].resource_user_id.employee_id), columns_center_bold_style)
+                worksheet.write(row, col_index + 4, self.calculate_total_leaves_from_time_off(progress[0].resource_user_id.employee_id), columns_center_bold_style)
 
 
                 sr_no+=1
