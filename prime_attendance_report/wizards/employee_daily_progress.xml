@@ -32,8 +32,8 @@
     </record>
 
     <menuitem parent="hr.hr_menu_hr_reports"
-                  name="Employee Daily Progress New"
-                  action="action_employee_daily_progress_wizard"
-                  id="menu_employee_daily_progress"
-                  sequence="520"/>
+              name="Employee Daily Progress New"
+              action="action_employee_daily_progress_wizard"
+              id="menu_employee_daily_progress"
+              sequence="520"/>
 </odoo>

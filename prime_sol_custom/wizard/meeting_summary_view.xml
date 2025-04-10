@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_meeting_summary_form" model="ir.ui.view">
+        <field name="name">meeting.summary.form</field>
+        <field name="model">meeting.summary</field>
+        <field name="arch" type="xml">
+            <form string="Meeting Summary">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="partner_id"/>
+                    </group>
+                    <group>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_meeting_summary_wizard" model="ir.actions.act_window">
+        <field name="name">Meeting Summary</field>
+        <field name="res_model">meeting.summary</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+            id="meeting_tracker_summary_wizard"
+            parent="hr.hr_menu_hr_reports"
+            name="Meeting Tracker Summary"
+            action="action_meeting_summary_wizard"
+            sequence="530"/>
+</odoo>

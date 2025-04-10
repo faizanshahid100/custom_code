@@ -4,3 +4,6 @@ access_weekly_progress,weekly.progress,model_weekly_progress,,1,1,1,1
 access_employee_feedback_manager,Employee Feedback Manager,model_hr_employee_feedback,,1,1,1,1
 access_meeting_tracker_manager,access.meeting.tracker.manager,model_meeting_tracker,,1,1,1,1
 access_meeting_details_manager,access.meeting.details.manager,model_meeting_details,,1,1,1,1
+access_meeting_attendance_summary,access.meeting.attendance.summary,model_meeting_attendance_summary,,1,1,1,1
+
+access_meeting_summary_wizard,access.meeting.summary,model_meeting_summary,,1,1,1,1
