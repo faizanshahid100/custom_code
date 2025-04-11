@@ -19,7 +19,7 @@ class MeetingSummaryWizard(models.TransientModel):
 
         res.update({
             'date_from': first_day_current_year or False,
-            'date_to': yesterday or False
+            'date_to': today or False
         })
         return res
 
