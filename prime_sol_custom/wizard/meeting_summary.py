@@ -25,7 +25,7 @@ class MeetingSummaryWizard(models.TransientModel):
 
     date_from = fields.Date(string="Start Date", required=True)
     date_to = fields.Date(string="End Date", required=True)
-    partner_id = fields.Many2one('res.partner', string="Partner", required=True, domain=[('is_company','=', True)])
+    partner_id = fields.Many2one('res.partner', string="Company", required=True, domain=[('is_company','=', True)])
 
     def action_confirm(self):
         # Optional: Clear existing summaries
