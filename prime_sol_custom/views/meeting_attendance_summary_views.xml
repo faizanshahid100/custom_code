@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_meeting_attendance_summary_tree" model="ir.ui.view">
+        <field name="name">meeting.attendance.summary.tree</field>
+        <field name="model">meeting.attendance.summary</field>
+        <field name="arch" type="xml">
+            <tree string="Meeting Attendance Summary">
+                <field name="employee_id"/>
+                <field name="partner_id"/>
+                <field name="level"/>
+                <field name="kpi_measurement"/>
+                <field name="job_id"/>
+                <field name="total_meetings"/>
+                <field name="attended_meetings"/>
+                <field name="summary_meeting" widget="percentage"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -21,10 +21,11 @@ class DailyProgress(models.Model):
     avg_resolution_time = fields.Integer(string='Avg. Resolution Time (min.)')
     csat_new = fields.Float(string='CSAT %')
     billable_hours = fields.Float(string='Billable Hours %')
+    non_billable_hours = fields.Float(string='Non-Billable Hours %')
     no_calls_duration = fields.Integer(string='Number of Calls Attended')
     # Daily Target
     daily_target_tickets_resolved = fields.Integer(related="resource_user_id.employee_id.d_ticket_resolved", string="Daily Target Tickets Resolved")
-    daily_target_billable_hours = fields.Integer(related="resource_user_id.employee_id.d_billable_hours", string="Daily Target Billable Hours")
+    daily_target_billable_hours = fields.Integer(related="resource_user_id.employee_id.d_billable_hours", string="Daily Target Billable Hours %")
     daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended", string="Daily Target Call Attended")
 
     # for required fields or not
@@ -56,7 +57,13 @@ class DailyProgress(models.Model):
             if not employee:
                 return record
 
-            # Define fields to check, excluding fields if their respective "is_required" flag is checked
+            # Only validate if the employee has a defined billable hours target
+            if employee.d_billable_hours:
+                total_hours = (record.billable_hours or 0) + (record.non_billable_hours or 0)
+                if total_hours != 100:
+                    raise ValidationError("The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
+
+            # Fields to check if their respective "is_required" flags are not set
             fields_to_check = {
                 'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
                 'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
@@ -64,15 +71,12 @@ class DailyProgress(models.Model):
             }
 
             field_metadata = self.fields_get()
-
-            # Identify missing fields
             missing_fields = [
                 field_metadata[field_name]['string']
                 for field_name, value in fields_to_check.items()
                 if value and not record[field_name]
             ]
 
-            # Raise error if any required fields are missing
             if missing_fields:
                 raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
 
@@ -85,7 +89,17 @@ class DailyProgress(models.Model):
             if user_id:
                 employee = user_id.employee_id
                 if employee:
-                    # Define fields to check, excluding fields if their respective "is_required" flag is checked
+
+                    # Recalculate billable + non-billable hours for validation
+                    billable = vals.get('billable_hours', record.billable_hours)
+                    non_billable = vals.get('non_billable_hours', record.non_billable_hours)
+
+                    if employee.d_billable_hours:
+                        total_hours = (billable or 0) + (non_billable or 0)
+                        if total_hours != 100:
+                            raise ValidationError(
+                                "The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
+
                     fields_to_check = {
                         'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
                         'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
@@ -93,15 +107,12 @@ class DailyProgress(models.Model):
                     }
 
                     field_metadata = self.fields_get()
-
-                    # Identify missing fields
                     missing_fields = [
                         field_metadata[field_name]['string']
                         for field_name, value in fields_to_check.items()
                         if value and not record[field_name]
                     ]
 
-                    # Raise error if any required fields are missing
                     if missing_fields:
                         raise ValidationError(
                             "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))

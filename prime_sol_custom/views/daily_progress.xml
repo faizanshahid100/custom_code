@@ -49,6 +49,7 @@
 <!--                            <field name="avg_resolution_time"/>-->
 <!--                            <field name="csat_new"/>-->
                             <field name="billable_hours"/>
+                            <field name="non_billable_hours"/>
                             <field name="no_calls_duration"/>
                         </group>
                         <group>
