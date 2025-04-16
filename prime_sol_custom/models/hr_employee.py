@@ -9,7 +9,7 @@ class HrEmployee(models.Model):
     hour_start_from = fields.Float('Hour Start From', default=0.0)
     total_working_hour = fields.Float('Total Working Hour', default=5.0)
 
-    kpi_measurement = fields.Selection([('billable', 'Billable'), ('kpi', 'KPI')], default='billable', required=1)
+    kpi_measurement = fields.Selection([('na', 'N/A' ), ('billable', 'Billable'), ('kpi', 'KPI')], default='na', required=1)
     d_ticket_resolved = fields.Integer('Ticket Resolved')
     d_avg_resolution_time = fields.Integer('Avg.Resolution Time')
     d_CAST = fields.Integer('CAST %')
