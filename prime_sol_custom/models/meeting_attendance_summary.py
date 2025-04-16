@@ -7,7 +7,7 @@ class MeetingAttendanceSummary(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Employee")
     partner_id = fields.Many2one('res.partner', string="Company", domain="[('is_company','=', True)]")
     level = fields.Char(string="Level")
-    kpi_measurement = fields.Selection([('billable', 'Billable'), ('kpi', 'KPI')], string="KPI Measurement")
+    kpi_measurement = fields.Selection([('na', 'N/A' ), ('billable', 'Billable'), ('kpi', 'KPI')], string="KPI Measurement")
     job_id = fields.Many2one('hr.job', string="Designation")
     total_meetings = fields.Integer()
     attended_meetings = fields.Integer()  # Corrected spelling: 'attended_meetings'
