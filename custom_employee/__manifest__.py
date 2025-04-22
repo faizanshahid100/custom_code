@@ -12,7 +12,7 @@
     'website': 'http://www.abc.com',
     'category': 'All',
     'version': '16.0.0.1',
-    'depends': ['base', 'hr'],
+    'depends': ['base', 'hr', 'hr_holidays'],
     'data': [
         'data/scheduled_action.xml',
         'views/employees.xml',

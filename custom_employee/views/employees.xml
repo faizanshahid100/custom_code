@@ -9,6 +9,7 @@
                 <xpath expr="//page[@name='hr_settings']/group/group[@name='active_group']/field[@name='user_id']" position="after">
                     <field name="working_country_id"/>
                     <field name="job_type"/>
+                    <field name="is_probation"/>
                     <field name="notice_period"/>
                     <field name="notice_period_date" attrs="{'invisible': [('notice_period', '=', False)]}"/>
                 </xpath>
