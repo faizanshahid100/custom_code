@@ -3,7 +3,6 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from datetime import date
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -21,12 +20,15 @@ class DailyProgress(models.Model):
     avg_resolution_time = fields.Integer(string='Avg. Resolution Time (min.)')
     csat_new = fields.Float(string='CSAT %')
     billable_hours = fields.Float(string='Billable Hours %')
-    non_billable_hours = fields.Float(string='Non-Billable Hours %')
+    non_billable_hours = fields.Float(string='Non-Billable Hours %', compute='_compute_non_billable_hours', store=True)
     no_calls_duration = fields.Integer(string='Number of Calls Attended')
     # Daily Target
-    daily_target_tickets_resolved = fields.Integer(related="resource_user_id.employee_id.d_ticket_resolved", string="Daily Target Tickets Resolved")
-    daily_target_billable_hours = fields.Integer(related="resource_user_id.employee_id.d_billable_hours", string="Daily Target Billable Hours %")
-    daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended", string="Daily Target Call Attended")
+    daily_target_tickets_resolved = fields.Integer(related="resource_user_id.employee_id.d_ticket_resolved",
+                                                   string="Daily Target Tickets Resolved")
+    daily_target_billable_hours = fields.Integer(related="resource_user_id.employee_id.d_billable_hours",
+                                                 string="Daily Target Billable Hours %")
+    daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended",
+                                                string="Daily Target Call Attended")
 
     # for required fields or not
     # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
@@ -168,3 +170,11 @@ class DailyProgress(models.Model):
                     raise ValidationError(
                         "The following fields are mandatory when a user is assigned: %s" % ", ".join(missing_fields)
                     )
+
+    @api.depends('billable_hours')
+    def _compute_non_billable_hours(self):
+        for record in self:
+            if 0 <= record.billable_hours <= 100:
+                record.non_billable_hours = 100 - record.billable_hours
+            else:
+                record.non_billable_hours = 0  # You can handle invalid input as you wish

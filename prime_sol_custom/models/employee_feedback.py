@@ -20,6 +20,7 @@ class EmployeeFeedback(models.Model):
         ('inprogress', 'Inprogress'),
         ('resolved', 'Resolved'),
     ], string="Feedback Status", default='casual', required=True)
+    comment = fields.Text()
 
 
     @api.onchange('employee_id')
