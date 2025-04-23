@@ -55,6 +55,7 @@
                             <field name="outcome_suggested" widget="text"/>
                             <field name="next_followup_date"/>
                             <field name="feedback_status"/>
+                            <field name="comment"/>
                         </group>
                     </group>
                 </sheet>
