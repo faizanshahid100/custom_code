@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <record id="group_attendance_geo_maintainer" model="res.groups">
+            <field name="name">Attendance Geo Location Maintainer</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+        </record>
+    </data>
+</odoo>
