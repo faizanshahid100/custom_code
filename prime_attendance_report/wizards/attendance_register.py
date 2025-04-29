@@ -46,19 +46,23 @@ class EmployeeAttendanceRegister(models.TransientModel):
         data = []
         report = self.env['hr.attendance'].search(
             [('employee_id', 'in', self.employee_ids.ids), ('check_in', '>=', self.start_date),
-             ('check_in', '<=', self.end_date)])
+             ('check_in', '<=', self.end_date + timedelta(days=1))])  # Slight buffer for timezone shift
+
         for rec in report:
-            val = rec.check_in.date()
-            if rec.check_in and rec.check_out:
-                work_hours = round(rec.worked_hours,1)
+            check_in = rec.check_in + timedelta(hours=5) if rec.check_in else None
+            check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
+
+            if check_in and check_out:
+                work_hours = round(rec.worked_hours, 1)
                 data.append({
-                    'date': val.day,
-                    'state': work_hours,  # Store work hours
+                    'date': check_in.date().day,
+                    'state': work_hours,
                     'employee': rec.employee_id.id,
                     'department': rec.employee_id.department_id.id,
                 })
-        res_list = [i for n, i in enumerate(data)
-                    if i not in data[n + 1:]]
+
+        # Remove duplicates if any
+        res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
         return res_list
 
     def calculate_employee_off_days(self, emp, start_date, end_date):
