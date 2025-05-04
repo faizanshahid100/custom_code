@@ -1,0 +1,23 @@
+<odoo>
+    <record id="view_employee_leave_dashboard_line_pivot" model="ir.ui.view">
+        <field name="name">employee.leave.dashboard.line.pivot</field>
+        <field name="model">employee.leave.dashboard.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Employee Leave Dashboard">
+                <field name="employee_id" type="row"/>
+                <field name="leave_type_id" type="col"/>
+                <field name="total_assigned" type="measure"/>
+                <field name="leaves_taken" type="measure"/>
+                <field name="leaves_remaining" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_employee_leave_dashboard_line" model="ir.actions.act_window">
+        <field name="name">Employee Leave Dashboard</field>
+        <field name="res_model">employee.leave.dashboard.line</field>
+        <field name="view_mode">pivot</field>
+    </record>
+
+   <menuitem id="menu_employee_time_off" name="Employee Time Off" parent="menu_employee_dashboard" action="action_employee_leave_dashboard_line" sequence="15"/>
+</odoo>
