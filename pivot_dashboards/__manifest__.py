@@ -14,7 +14,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/employee_hiring.xml",
-        "views/employee_leaves.xml",
+        # "views/employee_leaves.xml",
     ],
     "installable": True,
     "application": True,
