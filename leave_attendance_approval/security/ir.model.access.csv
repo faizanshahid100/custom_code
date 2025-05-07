@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_leave_attendance_sdm,access.leave.attendance,model_leave_attendance,leave_attendance_approval.group_services_delivery_manager,1,1,1,1
-access_leave_attendance_hr,access.leave.attendance,model_leave_attendance,leave_attendance_approval.group_hr,1,1,1,1
-access_leave_attendance_user,access.leave.attendance,model_leave_attendance,,1,0,1,0

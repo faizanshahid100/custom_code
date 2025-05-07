@@ -17,6 +17,7 @@
         'data/scheduled_action.xml',
         'views/employees.xml',
         'views/res_partner_bank.xml',
+        'views/hr_employee_pivot.xml',
     ],
 
 }
