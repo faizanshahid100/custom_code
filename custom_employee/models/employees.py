@@ -38,7 +38,7 @@ class HREmployeeInherit(models.Model):
     credit_check = fields.Char(string="Credit Check")
     working_country_id = fields.Many2one('res.country')
     job_type = fields.Selection([('full_time', 'Full-Time'), ('half_time', 'Half-Time')], string="Job Type", default='full_time', required=True)
-    is_probation = fields.Boolean('Is probation Period')
+    is_probation = fields.Boolean('Is probation Period', default=True)
     notice_period = fields.Boolean(string="Under Notice Period", default=False)
     notice_period_date = fields.Date(string="Notice Period End Date")
 

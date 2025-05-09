@@ -1,10 +1,11 @@
-from odoo import api, fields, models, registry, _
-from dateutil.relativedelta import relativedelta
+import base64
 import datetime
 import io
-import base64
-from datetime import timedelta
+from datetime import datetime, timedelta, date
 import xlsxwriter
+from dateutil.relativedelta import relativedelta
+
+from odoo import api, fields, models
 
 
 class EmployeeAttendanceRegister(models.TransientModel):
@@ -14,20 +15,50 @@ class EmployeeAttendanceRegister(models.TransientModel):
     @api.model
     def default_get(self, default_fields):
         res = super(EmployeeAttendanceRegister, self).default_get(default_fields)
-        today = datetime.date.today()
 
-        first_day_current_month = today.replace(day=1)  # 1st day of the current month
-        yesterday = today - datetime.timedelta(days=1)  # Yesterday (today - 1 day)
+        # Get user's linked employee
+        user = self.env.user
+        employee = self.env['hr.employee'].search([('user_id', '=', user.id)], limit=1)
+
+        # Default timezone offset
+        utc_offset = 0
+
+        # Determine offset based on employee's country
+        if employee and employee.country_id:
+            country = employee.country_id.name
+            if country == 'Pakistan':
+                utc_offset = 5
+            elif country == 'Philippines':
+                utc_offset = 8
+
+        today = date.today()
+
+        # First day of current month at 00:00
+        first_day_current_month = datetime(
+            year=today.year,
+            month=today.month,
+            day=1,
+            hour=0,
+            minute=0
+        ) - timedelta(hours=utc_offset)
+
+        end_date = datetime(
+            year=today.year,
+            month=today.month,
+            day=today.day,
+            hour=23,
+            minute=59
+        ) - timedelta(hours=utc_offset)
 
         res.update({
-            'start_date': first_day_current_month or False,
-            'end_date': yesterday or False
+            'start_date': first_day_current_month,
+            'end_date': end_date,
         })
         return res
 
     employee_ids = fields.Many2many('hr.employee', 'employee_rel', 'category_id', string='Employee Wise', required=True)
-    start_date = fields.Date('Start Date', required=True)
-    end_date = fields.Date('End Date', required=True)
+    start_date = fields.Datetime('Start Date', required=True)
+    end_date = fields.Datetime('End Date', required=True)
     absent = fields.Char('Absent', default='A')
 
     def get_data(self):
@@ -138,7 +169,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             'bg_color': '#FF5B61',
             'font_color': 'white',
             'align': 'center',
-            'border' : 1,
+            'border': 1,
         })
         format_leave = workbook.add_format({
             'bg_color': '#fff766',
@@ -174,7 +205,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             day = date_dict['date_list']
             month = self.start_date.month
             year = self.start_date.year
-            full_date = datetime.datetime(year, month, day)
+            full_date = datetime(year, month, day)
             day_of_week = full_date.strftime("%d %b")
             days_list.append(day_of_week)
 
@@ -183,8 +214,9 @@ class EmployeeAttendanceRegister(models.TransientModel):
         for col, header in enumerate(headers_days):
             worksheet.write(7, col, header, table_format)
 
-        headers = ['S.No', 'Name of Employee', 'Department', 'Designation', 'Gender'] + [f'{d["date_list"]}' for d in date_range] + [
-            'Total Hours', 'No of days']
+        headers = ['S.No', 'Name of Employee', 'Department', 'Designation', 'Gender'] + [f'{d["date_list"]}' for d in
+                                                                                         date_range] + [
+                      'Total Hours', 'No of days']
         for col, header in enumerate(headers):
             worksheet.write(8, col, header, table_format)
 
