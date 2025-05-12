@@ -7,3 +7,4 @@ access_meeting_details_manager,access.meeting.details.manager,model_meeting_deta
 access_meeting_attendance_summary,access.meeting.attendance.summary,model_meeting_attendance_summary,,1,1,1,1
 
 access_meeting_summary_wizard,access.meeting.summary,model_meeting_summary,,1,1,1,1
+access_scorecard_wizard,access.scorecard.wizard,model_scorecard_wizard,,1,1,1,1

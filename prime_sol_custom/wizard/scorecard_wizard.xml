@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_scorecard_wizard_form" model="ir.ui.view">
+        <field name="name">scorecard.wizard.form</field>
+        <field name="model">scorecard.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Score Card">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="partner_id"/>
+                    </group>
+                    <group>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_scorecard_wizard" model="ir.actions.act_window">
+        <field name="name">Score Card</field>
+        <field name="res_model">scorecard.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+            id="scorecard_wizard_wizard"
+            parent="hr.hr_menu_hr_reports"
+            name="Score Card"
+            action="action_scorecard_wizard"
+            sequence="550"/>
+</odoo>

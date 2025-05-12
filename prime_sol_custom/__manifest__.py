@@ -25,6 +25,7 @@
         'views/meeting_attendance_summary_views.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
+        'wizard/scorecard_wizard.xml',
     ],
     'assets': {
         'web.assets_backend': [
