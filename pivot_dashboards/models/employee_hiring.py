@@ -1,5 +1,6 @@
 from odoo import models, fields, api
-from datetime import date, timedelta
+from datetime import datetime, timedelta
+from pytz import timezone
 
 
 class EmployeeDashboardLine(models.Model):
@@ -12,11 +13,14 @@ class EmployeeDashboardLine(models.Model):
     last_week_count = fields.Integer(string='1 Week Ago')
     two_weeks_count = fields.Integer(string='2 Weeks Ago')
     snapshot_date = fields.Date(string="Snapshot Date", default=fields.Date.today)
+    show_in_view = fields.Boolean(compute='_compute_show_in_view', store=True)
 
     @api.model
     def _update_snapshots(self):
         """Ensure every department has a dashboard record, and update counts."""
-        today = date.today()
+        # Get current date in Pakistan timezone
+        pakistan_tz = timezone('Asia/Karachi')
+        today = datetime.now(pakistan_tz).date()
         one_week_ago = today - timedelta(weeks=1)
         two_weeks_ago = today - timedelta(weeks=2)
 
@@ -60,6 +64,15 @@ class EmployeeDashboardLine(models.Model):
         removed_lines = self.search([('department_id', 'not in', all_depts.ids)])
         removed_lines.unlink()
 
+    @api.depends('current_count', 'last_week_count', 'two_weeks_count', 'department_id')
+    def _compute_show_in_view(self):
+        for rec in self:
+            # Show only if at least one of the counts is non-zero
+            rec.show_in_view = not (
+                    rec.current_count == 0 and
+                    rec.last_week_count == 0 and
+                    rec.two_weeks_count == 0
+            )
 
 class HrDepartment(models.Model):
     _inherit = 'hr.department'
