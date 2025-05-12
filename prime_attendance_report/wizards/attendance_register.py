@@ -129,12 +129,18 @@ class EmployeeAttendanceRegister(models.TransientModel):
     def get_before_contract(self, emp, start_date, end_date):
         flag = False
         day_numbers = []
+
         if emp.joining_date:
-            if start_date <= emp.joining_date <= end_date:
+            # Convert datetime to date for comparison
+            start_date_date = start_date.date()
+            end_date_date = end_date.date()
+
+            if start_date_date <= emp.joining_date <= end_date_date:
                 flag = True
                 day_numbers = list(range(1, emp.joining_date.day + 1))
             else:
                 flag = False
+
         return flag, day_numbers
 
     def export_to_excel(self):
