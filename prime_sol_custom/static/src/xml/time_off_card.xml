@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <div t-inherit="hr_holidays.TimeOffCard" t-inherit-mode="extension">
-        <xpath expr="//t[@t-esc='duration']" position="replace">
-            <t t-esc="duration.split('.')[0]"/>
-        </xpath>
-    </div>
+<!--    <div t-inherit="hr_holidays.TimeOffCard" t-inherit-mode="extension">-->
+<!--        <xpath expr="//t[@t-esc='duration']" position="replace">-->
+<!--            <t t-esc="duration.split('.')[0]"/>-->
+<!--        </xpath>-->
+<!--    </div>-->
 </templates>
