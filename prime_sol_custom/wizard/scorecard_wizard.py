@@ -64,12 +64,7 @@ class ScorecardWizard(models.TransientModel):
 
         employees = self.env['hr.employee'].search([]).filtered(lambda l: l.contractor.id == self.partner_id.id)
         for employee in employees:
-            survey = 0.00
-            kpi = 0.00
-            weekly_meeting = 0.00
-            daily_attendance = 0.00
-            office_coming = 0.00
-
+            ####### Feedback ########
             if employee.feedback_ids:
                 relevant_feedback = employee.feedback_ids.filtered(
                     lambda l: self.date_from <= l.date_feedback <= self.date_to
@@ -77,21 +72,24 @@ class ScorecardWizard(models.TransientModel):
                 total = len(relevant_feedback)
 
                 if total > 0:
-                    positive_or_neutral = len(relevant_feedback.filtered(lambda l: l.feedback_status != 'negative'))
-                    survey = positive_or_neutral / total
+                    positive_feedback = len(relevant_feedback.filtered(lambda l: l.feedback_type != 'negative'))
+                    feedback = positive_feedback / total
                 else:
-                    survey = 0.0
+                    feedback = 1
 
-
+            ####### Attendance ########
             # Employee Present Days
-            employee_attendance = self.env['hr.attendance'].search([('employee_id', '=', employee.id), ('check_in', '>=', self.date_from), ('check_in', '<=', self.date_to)])
-            attendance_dates = employee_attendance.mapped('check_in')
-            attendance_days = [dt.isoweekday() for dt in attendance_dates]
+            employee_attendance = self.env['hr.attendance'].search(
+                [('employee_id', '=', employee.id), ('check_in', '>=', self.date_from),
+                 ('check_in', '<=', self.date_to)])
+            # Leave Days
+            leave_days = self.get_employee_leave_dates(employee, self.date_from, self.date_to)
 
             # Total Working Days
             work_days = []
             if not employee.resource_calendar_id:
-                raise ValueError("Employee has no working schedule assigned.")
+                raise ValueError(f"Employee {employee.name} has no working schedule assigned.")
+
             working_hours = employee.resource_calendar_id
             working_days = set(attendance.dayofweek for attendance in working_hours.attendance_ids)
             date_range = [
@@ -102,74 +100,52 @@ class ScorecardWizard(models.TransientModel):
                 if str(date.weekday()) in working_days:
                     work_days.append(date.day)
 
-            # Leave Days
-            leave_days = self.get_employee_leave_dates(employee, self.date_from, self.date_to)
-
             # This value to pass in field
-            daily_attendance =  (len(attendance_days)+len(leave_days))/len(work_days)
+            daily_attendance = (len(employee_attendance) + len(leave_days)) / len(work_days)
 
-        # # Build search domain if filtering is needed
-        # domain = []
-        # if self.partner_id:
-        #     # Add conditions for partner_id and date range
-        #     domain.append(('meeting_id.client_id', '=', self.partner_id.id))
-        #     domain.append(('meeting_id.date', '>=', self.date_from))
-        #     domain.append(('meeting_id.date', '<=', self.date_to))
-        #
-        # details = self.env['meeting.details'].search(domain)
-        #
-        # # Initialize dictionaries to track meeting counts
-        # employee_meeting_count = {}
-        # employee_attended_count = {}
-        #
-        # # Iterate over the details to count total and attended meetings for each employee
-        # for detail in details:
-        #     employee_id = detail.employee_id.id
-        #
-        #     # Count total meetings
-        #     if employee_id not in employee_meeting_count:
-        #         employee_meeting_count[employee_id] = 0
-        #     employee_meeting_count[employee_id] += 1
-        #
-        #     # Count attended meetings (where is_present is True)
-        #     if detail.is_present:
-        #         if employee_id not in employee_attended_count:
-        #             employee_attended_count[employee_id] = 0
-        #         employee_attended_count[employee_id] += 1
-        #
-        # # Initialize a set to track processed employee_ids
-        # processed_employee_ids = set()
-        #
-        # for detail in details:
-        #     employee_id = detail.employee_id.id
-        #
-        #     # Skip if the employee_id has already been processed
-        #     if employee_id in processed_employee_ids:
-        #         continue
-        #
-        #     # Add the employee_id to the set to avoid duplicates
-        #     processed_employee_ids.add(employee_id)
-        #
-        #     # Get the total meetings and attended meetings counts for the employee
-        #     total_meetings = employee_meeting_count.get(employee_id, 0)
-        #     attended_meetings = employee_attended_count.get(employee_id, 0)
-        #
-        #     # Create a new summary entry with total and attended meetings count
-        #     self.env['meeting.attendance.summary'].create({
-        #         'employee_id': employee_id,
-        #         'partner_id': detail.employee_id.contractor.id if detail.employee_id.contractor else '',
-        #         'level': detail.employee_id.level if detail.employee_id.level else '',
-        #         'kpi_measurement': detail.employee_id.kpi_measurement,
-        #         'job_id': detail.employee_id.job_id.id if detail.employee_id.job_id else '',
-        #         'total_meetings': total_meetings,  # Total meetings count
-        #         'attended_meetings': attended_meetings,  # Attended meetings count
-        #     })
-        #
-        # return {
-        #     'name': 'Meeting Attendance Summary',
-        #     'type': 'ir.actions.act_window',
-        #     'res_model': 'meeting.attendance.summary',
-        #     'view_mode': 'tree',
-        #     'target': 'current',  # This makes it full-screen, not a popup
-        #     'domain': [],  # Optional: you can pass specific domain if needed
-        # }
+            ####### KPI ########
+            applied_kpi = self.env['daily.progress'].search([
+                ('resource_user_id.employee_id', '=', employee.id),
+                ('date_of_project', '>=', self.date_from),
+                ('date_of_project', '<=', self.date_to)
+            ])
+
+            if work_days:
+                kpi = len(applied_kpi) / len(work_days)
+            else:
+                kpi = 0
+
+            ####### Weekly Meetings ########
+            meetings = self.env['meeting.tracker'].search([
+                ('client_id', '=', self.partner_id.id),
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to)
+            ])
+
+            attended_meetings = meetings.meeting_details.filtered(lambda l: l.employee_id.id == employee.id)
+
+            # Handle ZeroDivisionError
+            if meetings:
+                weekly_meetings = len(attended_meetings) / len(meetings)
+            else:
+                weekly_meetings = 1
+
+            # Create the Records
+            self.env['score.card'].create({
+                'employee_id': employee.id,
+                'partner_id': self.partner_id.id,
+                'feedback': feedback,
+                'kpi': kpi,
+                'weekly_meeting': weekly_meetings,
+                'daily_attendance': daily_attendance,
+                'office_coming': daily_attendance,
+            })
+
+        return {
+            'name': 'Score Card',
+            'type': 'ir.actions.act_window',
+            'res_model': 'score.card',
+            'view_mode': 'tree',
+            'target': 'current',
+            'domain': [],
+        }

@@ -4,8 +4,9 @@
         <field name="model">score.card</field>
         <field name="arch" type="xml">
             <tree string="Score Card">
-                <field name="employee_id" widget="percentage"/>
-                <field name="partner_id" widget="percentage"/>
+                <field name="employee_id"/>
+                <field name="partner_id"/>
+                <field name="feedback" widget="percentage"/>
                 <field name="survey" widget="percentage"/>
                 <field name="kpi" widget="percentage"/>
                 <field name="weekly_meeting" widget="percentage"/>
