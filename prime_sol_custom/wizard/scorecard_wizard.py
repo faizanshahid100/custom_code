@@ -126,8 +126,15 @@ class ScorecardWizard(models.TransientModel):
 
             ####### Office On-Site ########
             # Some Values get from attendance above code chunk
-            office_coming = min((len(employee_attendance.filtered(lambda l:l.is_onsite_in)) + len(leave_days)) / len(work_days), 1) if work_days else 1
+            if work_days:
+                onsite_count = len(employee_attendance.filtered(lambda l: l.is_onsite_in))
+                total_days = len(work_days)
 
+                if onsite_count == 0:
+                    leave_days = []
+                office_coming = min((onsite_count + len(leave_days)) / total_days, 1)
+            else:
+                office_coming = 1
             # Create the Records
             self.env['score.card'].create({
                 'employee_id': employee.id,
