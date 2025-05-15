@@ -22,3 +22,5 @@ class HrAttendances(models.Model):
                                    help="Check in location link of the User")
     checkout_location = fields.Char(string='Check Out Location Link', store=True,
                                     help="Check out location link of the User")
+    is_onsite_in = fields.Boolean('On-Site In')
+    is_onsite_out = fields.Boolean('On-Site Out')

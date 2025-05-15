@@ -1,11 +1,26 @@
 # -*- coding: utf-8 -*-
 from geopy.geocoders import Nominatim
 from odoo import exceptions, fields, models, _
+from math import radians, cos, sin, asin, sqrt
 
 
 class HrEmployee(models.AbstractModel):
     """Inherits HR Employee model"""
     _inherit = 'hr.employee'
+
+    def is_within_radius(self, lat2, lon2, center_lat=31.473664, center_lon=74.3440384, radius_meters=360):
+        # Convert degrees to radians
+        lat1, lon1, lat2, lon2 = map(radians, [center_lat, center_lon, lat2, lon2])
+
+        # Haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        c = 2 * asin(sqrt(a))
+        r = 6371000  # Radius of Earth in meters
+
+        distance = r * c
+        return distance <= radius_meters
 
     def attendance_manual(self, next_action, entered_pin=None):
         """Override this method to add latitude and longitude"""
@@ -83,6 +98,7 @@ class HrEmployee(models.AbstractModel):
                 'checkin_address': location.address,
                 'checkin_latitude': latitudes,
                 'checkin_longitude': longitudes,
+                'is_onsite_in': self.is_within_radius(latitudes,longitudes),
                 'checkin_location': "https://www.google.com/maps/search/?api=1&query=%s,%s" % (
             latitudes, longitudes),
             }
@@ -94,6 +110,7 @@ class HrEmployee(models.AbstractModel):
                 'checkout_address': location.address,
                 'checkout_latitude': latitudes,
                 'checkout_longitude': longitudes,
+                'is_onsite_out': self.is_within_radius(latitudes, longitudes),
                 'checkout_location': "https://www.google.com/maps/search/?api=1&query=%s,%s" % (
             latitudes, longitudes),
             })

@@ -12,8 +12,10 @@
                     <field name="checkout_location" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
                     <field name="checkin_latitude" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
                     <field name="checkout_latitude" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
+                    <field name="is_onsite_in" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
                     <field name="checkin_longitude" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
                     <field name="checkout_longitude" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
+                    <field name="is_onsite_out" groups="odoo_attendance_user_location.group_attendance_geo_maintainer"/>
                 </field>
             </field>
         </record>
@@ -28,12 +30,14 @@
                             <field name="checkin_address" class=""/>
                             <field name="checkin_latitude" class="oe_inline"/>
                             <field name="checkin_longitude" class="oe_inline"/>
+                            <field name="is_onsite_in"/>
                             <field name="checkin_location" widget="url" class=""/>
                         </group>
                         <group name="checkout" string="Check Out">
                             <field name="checkout_address" class=""/>
                             <field name="checkout_latitude" class="oe_inline"/>
                             <field name="checkout_longitude" class="oe_inline"/>
+                            <field name="is_onsite_out"/>
                             <field name="checkout_location" widget="url" class=""/>
                         </group>
                 </xpath>

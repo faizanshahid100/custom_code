@@ -12,14 +12,11 @@ class ScorecardWizard(models.TransientModel):
         res = super(ScorecardWizard, self).default_get(default_fields)
         today = date.today()
 
-        # ✅ First day of the current month
-        first_day_current_month = today.replace(day=1)
-
-        # ✅ Yesterday (optional, not used here but you had it before)
-        yesterday = today - timedelta(days=1)
+        # ✅ First day of the current year
+        first_day_current_year = date(today.year, 1, 1)
 
         res.update({
-            'date_from': first_day_current_month or False,
+            'date_from': first_day_current_year or False,
             'date_to': today or False
         })
         return res
@@ -62,20 +59,24 @@ class ScorecardWizard(models.TransientModel):
         # Optional: Clear existing summaries
         self.env['score.card'].search([]).unlink()
 
+        month_diff = (self.date_to.year - self.date_from.year) * 12 + (self.date_to.month - self.date_from.month + 1)
+        total_bonus_points = month_diff * 5
+
         employees = self.env['hr.employee'].search([]).filtered(lambda l: l.contractor.id == self.partner_id.id)
         for employee in employees:
             ####### Feedback ########
-            if employee.feedback_ids:
-                relevant_feedback = employee.feedback_ids.filtered(
-                    lambda l: self.date_from <= l.date_feedback <= self.date_to
-                )
-                total = len(relevant_feedback)
+            feedback = 1
 
-                if total > 0:
-                    positive_feedback = len(relevant_feedback.filtered(lambda l: l.feedback_type != 'negative'))
-                    feedback = positive_feedback / total
-                else:
-                    feedback = 1
+            feedbacks = employee.feedback_ids.filtered(
+                lambda fb: self.date_from <= fb.date_feedback <= self.date_to
+            )
+
+            if feedbacks:
+                negative_count = sum(1 for fb in feedbacks if fb.feedback_type == 'negative')
+                total_negative_points = negative_count * 5
+                points_of_tenure = total_bonus_points - total_negative_points
+
+                feedback = min(points_of_tenure / total_bonus_points, 1) if total_bonus_points else 0
 
             ####### Attendance ########
             # Employee Present Days
@@ -101,7 +102,7 @@ class ScorecardWizard(models.TransientModel):
                     work_days.append(date.day)
 
             # This value to pass in field
-            daily_attendance = (len(employee_attendance) + len(leave_days)) / len(work_days)
+            daily_attendance = min((len(employee_attendance) + len(leave_days)) / len(work_days), 1) if work_days else 1
 
             ####### KPI ########
             applied_kpi = self.env['daily.progress'].search([
@@ -110,10 +111,7 @@ class ScorecardWizard(models.TransientModel):
                 ('date_of_project', '<=', self.date_to)
             ])
 
-            if work_days:
-                kpi = len(applied_kpi) / len(work_days)
-            else:
-                kpi = 0
+            kpi = min((len(applied_kpi) + len(leave_days)) / len(work_days), 1) if work_days else 0
 
             ####### Weekly Meetings ########
             meetings = self.env['meeting.tracker'].search([
@@ -124,11 +122,11 @@ class ScorecardWizard(models.TransientModel):
 
             attended_meetings = meetings.meeting_details.filtered(lambda l: l.employee_id.id == employee.id)
 
-            # Handle ZeroDivisionError
-            if meetings:
-                weekly_meetings = len(attended_meetings) / len(meetings)
-            else:
-                weekly_meetings = 1
+            weekly_meetings = min(len(attended_meetings) / len(meetings), 1) if meetings else 1
+
+            ####### Office On-Site ########
+            # Some Values get from attendance above code chunk
+            office_coming = min((len(employee_attendance.filtered(lambda l:l.is_onsite_in)) + len(leave_days)) / len(work_days), 1) if work_days else 1
 
             # Create the Records
             self.env['score.card'].create({
@@ -138,7 +136,7 @@ class ScorecardWizard(models.TransientModel):
                 'kpi': kpi,
                 'weekly_meeting': weekly_meetings,
                 'daily_attendance': daily_attendance,
-                'office_coming': daily_attendance,
+                'office_coming': office_coming,
             })
 
         return {
