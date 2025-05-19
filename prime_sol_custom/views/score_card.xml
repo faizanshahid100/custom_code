@@ -3,15 +3,16 @@
         <field name="name">score.card.tree</field>
         <field name="model">score.card</field>
         <field name="arch" type="xml">
-            <tree string="Score Card">
+            <tree string="Score Card" decoration-danger="cumulative_score &lt; 0.6">
                 <field name="employee_id"/>
                 <field name="partner_id"/>
-                <field name="feedback" widget="percentage"/>
-                <field name="survey" widget="percentage"/>
-                <field name="kpi" widget="percentage"/>
-                <field name="weekly_meeting" widget="percentage"/>
-                <field name="daily_attendance" widget="percentage"/>
-                <field name="office_coming" widget="percentage"/>
+                <field name="feedback" widget="percentage" optional="hide"/>
+                <field name="survey" widget="percentage" optional="hide"/>
+                <field name="kpi" widget="percentage" optional="hide"/>
+                <field name="weekly_meeting" widget="percentage" optional="hide"/>
+                <field name="daily_attendance" widget="percentage" optional="hide"/>
+                <field name="office_coming" widget="percentage" optional="hide"/>
+                <field name="cumulative_score" widget="percentage"/>
             </tree>
         </field>
     </record>

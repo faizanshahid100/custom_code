@@ -105,13 +105,21 @@ class ScorecardWizard(models.TransientModel):
             daily_attendance = min((len(employee_attendance) + len(leave_days)) / len(work_days), 1) if work_days else 1
 
             ####### KPI ########
-            applied_kpi = self.env['daily.progress'].search([
+            progress_records = self.env['daily.progress'].search([
                 ('resource_user_id.employee_id', '=', employee.id),
                 ('date_of_project', '>=', self.date_from),
                 ('date_of_project', '<=', self.date_to)
             ])
-
-            kpi = min((len(applied_kpi) + len(leave_days)) / len(work_days), 1) if work_days else 0
+            if employee.kpi_measurement == 'kpi':
+                total_kpi = len(work_days) * employee.d_ticket_resolved
+                applied_kpi = sum(progress_records.mapped('avg_resolved_ticket'))
+                kpi = min((applied_kpi+len(leave_days) * employee.d_ticket_resolved) / total_kpi, 1) if total_kpi else 0
+            elif employee.kpi_measurement == 'billable':
+                total_billable = len(work_days) * employee.d_billable_hours
+                applied_billable = sum(progress_records.mapped('billable_hours'))
+                kpi = min((applied_billable + len(leave_days) * employee.d_billable_hours) / total_billable, 1) if total_billable else 0
+            else:
+                kpi = 0
 
             ####### Weekly Meetings ########
             meetings = self.env['meeting.tracker'].search([

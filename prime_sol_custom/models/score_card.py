@@ -12,4 +12,19 @@ class ScoreCard(models.Model):
     weekly_meeting = fields.Float(string="Weekly Meeting (%)")
     daily_attendance = fields.Float(string="Daily Attendance (%)")
     office_coming = fields.Float(string="Office Coming (%)")
+    cumulative_score = fields.Float('Cumulative Score', compute='_compute_cumulative_score', store=True)
+
+    @api.depends('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
+    def _compute_cumulative_score(self):
+        active_weightage = self.env['score.weightage'].search([('is_active', '=', True)], limit=1)
+        if active_weightage:
+            for record in self:
+                record.cumulative_score = (
+                        (record.feedback * active_weightage.feedback / 100) +
+                        (record.survey * active_weightage.survey / 100) +
+                        (record.kpi * active_weightage.kpi / 100) +
+                        (record.weekly_meeting * active_weightage.weekly_meeting / 100) +
+                        (record.daily_attendance * active_weightage.daily_attendance / 100) +
+                        (record.office_coming * active_weightage.office_coming / 100)
+                )
 

@@ -7,5 +7,6 @@ from . import approval_request_ext
 from . import employee_feedback
 from . import meeting_tracker
 from . import meeting_attendance_summary
+from . import score_weightage
 from . import score_card
 # from . import hr_leave_ext    # to create attendance entry in attendance but no need now
