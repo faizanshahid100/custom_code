@@ -9,7 +9,7 @@
     'website': "https://www.yourcompany.com",
     'category': 'Uncategorized',
     'version': '0.3',
-    'depends': ['base', 'mail', 'project','web', 'hr'],
+    'depends': ['base', 'mail', 'project','web', 'hr', 'survey'],
     'data': [
         'data/ir_cron_data.xml',
         'data/mail_channel.xml',
@@ -23,6 +23,7 @@
         'views/employee_feedback.xml',
         'views/meeting_tracker.xml',
         'views/meeting_attendance_summary_views.xml',
+        'views/survey_survey_ext.xml',
         'views/score_weightage.xml',
         'views/score_card.xml',
         'data/mail_template_data.xml',

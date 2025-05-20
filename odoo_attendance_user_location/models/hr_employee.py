@@ -8,7 +8,7 @@ class HrEmployee(models.AbstractModel):
     """Inherits HR Employee model"""
     _inherit = 'hr.employee'
 
-    def is_within_radius(self, lat2, lon2, center_lat=31.473664, center_lon=74.3440384, radius_meters=400):
+    def is_within_radius(self, lat2, lon2, center_lat=31.4628463, center_lon=74.3294085, radius_meters=400):
         # Convert degrees to radians
         lat1, lon1, lat2, lon2 = map(radians, [center_lat, center_lon, lat2, lon2])
 

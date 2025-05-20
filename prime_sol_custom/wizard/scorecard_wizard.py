@@ -29,31 +29,33 @@ class ScorecardWizard(models.TransientModel):
         leave_records = self.env['hr.leave'].search([
             ('employee_id', '=', employee.id),
             ('state', '=', 'validate'),
-            ('request_date_from', '>=', start_date),
-            ('request_date_to', '<=', end_date),
+            ('request_date_from', '<=', end_date),
+            ('request_date_to', '>=', start_date),
         ])
         leave_dates = []
+
+        # Get the set of weekend weekdays (e.g., [5, 6] for Saturday, Sunday)
+        weekend_days = self.get_weekend_days(employee)
+
         for leave in leave_records:
             current_day = leave.request_date_from
             while current_day <= leave.request_date_to:
-                leave_dates.append(current_day.day)
+                if current_day.weekday() not in weekend_days:
+                    leave_dates.append(current_day.day)
                 current_day += timedelta(days=1)
         return leave_dates
 
-    def get_employee_leave_dates(self, employee, start_date, end_date):
-        leave_records = self.env['hr.leave'].search([
-            ('employee_id', '=', employee.id),
-            ('state', '=', 'validate'),
-            ('request_date_from', '>=', start_date),
-            ('request_date_to', '<=', end_date),
-        ])
-        leave_dates = []
-        for leave in leave_records:
-            current_day = leave.request_date_from
-            while current_day <= leave.request_date_to:
-                leave_dates.append(current_day.day)
-                current_day += timedelta(days=1)
-        return leave_dates
+    def get_weekend_days(self, employee):
+        """Returns a list of weekday numbers (0=Monday, 6=Sunday) that are weekends for the employee."""
+        calendar = employee.resource_calendar_id
+        if not calendar:
+            # Default to Saturday and Sunday
+            return [5, 6]
+
+        work_days = set()
+        for attendance in calendar.attendance_ids:
+            work_days.add(int(attendance.dayofweek))
+        return [i for i in range(7) if i not in work_days]
 
     def action_confirm(self):
         # Optional: Clear existing summaries
@@ -78,6 +80,25 @@ class ScorecardWizard(models.TransientModel):
 
                 feedback = min(points_of_tenure / total_bonus_points, 1) if total_bonus_points else 0
 
+            ####### Survey (Inprogress)########
+            start = fields.Datetime.to_datetime(self.date_from)
+            end = fields.Datetime.to_datetime(self.date_to) + timedelta(days=1, seconds=-1)
+
+            survey_results = self.env['survey.user_input'].search([
+                ('state', '=', 'done'),
+                ('survey_id.is_client_feedback', '=', True),
+                ('create_date', '>=', start),
+                ('create_date', '<=', end),
+            ])
+            for result in survey_results:
+                suggested_values = result.user_input_line_ids.filtered(
+                    lambda l: l.answer_type == 'suggestion'
+                ).suggested_answer_id.mapped('value')
+
+                # Extract numeric values only and calculate average
+                numeric_values = [int(v) for v in suggested_values if str(v).isdigit()]
+                average = sum(numeric_values) / len(numeric_values) if numeric_values else 0
+                survey = average / 5
             ####### Attendance ########
             # Employee Present Days
             employee_attendance = self.env['hr.attendance'].search(
@@ -102,7 +123,11 @@ class ScorecardWizard(models.TransientModel):
                     work_days.append(date.day)
 
             # This value to pass in field
-            daily_attendance = min((len(employee_attendance) + len(leave_days)) / len(work_days), 1) if work_days else 1
+            if len(employee_attendance) == 0:
+                daily_attendance = 0
+            else:
+                daily_attendance = min((len(employee_attendance) + len(leave_days)) / len(work_days),
+                                       1) if work_days else 1
 
             ####### KPI ########
             progress_records = self.env['daily.progress'].search([
@@ -113,13 +138,21 @@ class ScorecardWizard(models.TransientModel):
             if employee.kpi_measurement == 'kpi':
                 total_kpi = len(work_days) * employee.d_ticket_resolved
                 applied_kpi = sum(progress_records.mapped('avg_resolved_ticket'))
-                kpi = min((applied_kpi+len(leave_days) * employee.d_ticket_resolved) / total_kpi, 1) if total_kpi else 0
+                if applied_kpi == 0:
+                    kpi = 0
+                else:
+                    kpi = min((applied_kpi + (len(leave_days) * employee.d_ticket_resolved)) / total_kpi,
+                              1) if total_kpi else 0
             elif employee.kpi_measurement == 'billable':
                 total_billable = len(work_days) * employee.d_billable_hours
                 applied_billable = sum(progress_records.mapped('billable_hours'))
-                kpi = min((applied_billable + len(leave_days) * employee.d_billable_hours) / total_billable, 1) if total_billable else 0
+                if applied_billable == 0:
+                    kpi = 0
+                else:
+                    kpi = min((applied_billable + (len(leave_days) * employee.d_billable_hours)) / total_billable,
+                              1) if total_billable else 0
             else:
-                kpi = 0
+                kpi = 1
 
             ####### Weekly Meetings ########
             meetings = self.env['meeting.tracker'].search([
@@ -128,7 +161,8 @@ class ScorecardWizard(models.TransientModel):
                 ('date', '<=', self.date_to)
             ])
 
-            attended_meetings = meetings.meeting_details.filtered(lambda l: l.employee_id.id == employee.id)
+            attended_meetings = meetings.meeting_details.filtered(
+                lambda l: l.employee_id.id == employee.id and l.is_present)
 
             weekly_meetings = min(len(attended_meetings) / len(meetings), 1) if meetings else 1
 
@@ -139,8 +173,9 @@ class ScorecardWizard(models.TransientModel):
                 total_days = len(work_days)
 
                 if onsite_count == 0:
-                    leave_days = []
-                office_coming = min((onsite_count + len(leave_days)) / total_days, 1)
+                    office_coming = 0
+                else:
+                    office_coming = min((onsite_count + len(leave_days)) / total_days, 1)
             else:
                 office_coming = 1
             # Create the Records
