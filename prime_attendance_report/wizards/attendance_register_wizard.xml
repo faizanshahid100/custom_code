@@ -37,6 +37,7 @@
         <menuitem parent="hr.hr_menu_hr_reports"
                   name="Employee Attendance Register"
                   action="wizard_action_attendance_register" id="menu_attendance_register"
-                  sequence="500"/>
+                  sequence="500"
+        groups="hr.group_hr_manager"/>
     </data>
 </odoo>

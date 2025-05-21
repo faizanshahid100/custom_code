@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_survey_user_input_form_inherit_employee" model="ir.ui.view">
+        <field name="name">survey.user_input.form.inherit.employee</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+        <field name="arch" type="xml">
+            <field name="survey_id" position="after">
+                <field name="employee_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>

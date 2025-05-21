@@ -1,11 +1,61 @@
 # -*- coding: utf-8 -*-
 from geopy.geocoders import Nominatim
-from odoo import exceptions, fields, models, _
+import requests
+import logging
+_logger = logging.getLogger(__name__)
+from math import radians, cos, sin, asin, sqrt
+from odoo import exceptions, api, fields, models, _
+from math import radians, cos, sin, asin, sqrt
 
 
 class HrEmployee(models.AbstractModel):
     """Inherits HR Employee model"""
     _inherit = 'hr.employee'
+
+    @api.model
+    def get_coordinates_from_address(self, address):
+        try:
+            url = 'https://nominatim.openstreetmap.org/search'
+            params = {
+                'q': address,
+                'format': 'json',
+                'limit': 1
+            }
+            headers = {
+                'User-Agent': 'Odoo App'
+            }
+
+            response = requests.get(url, params=params, headers=headers)
+            if response.ok and response.json():
+                data = response.json()[0]
+                lat = float(data['lat'])
+                lon = float(data['lon'])
+                return lat, lon
+        except Exception as e:
+            _logger.error(f"Error fetching coordinates: {e}")
+        return None, None
+
+    @api.model
+    def is_within_radius(self, lat2, lon2, radius_meters=600):
+        # Get Arfa Tower location
+        center_lat, center_lon = self.get_coordinates_from_address("Arfa Software Technology Park, Lahore")
+
+        if not center_lat or not center_lon:
+            _logger.warning("Could not fetch coordinates for Arfa Tower.")
+            return False
+
+        # Convert degrees to radians
+        lat1, lon1, lat2, lon2 = map(radians, [center_lat, center_lon, lat2, lon2])
+
+        # Haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        c = 2 * asin(sqrt(a))
+        r = 6371000  # Earth radius in meters
+
+        distance = r * c
+        return -600 <= distance <= radius_meters
 
     def attendance_manual(self, next_action, entered_pin=None):
         """Override this method to add latitude and longitude"""
@@ -83,6 +133,7 @@ class HrEmployee(models.AbstractModel):
                 'checkin_address': location.address,
                 'checkin_latitude': latitudes,
                 'checkin_longitude': longitudes,
+                'is_onsite_in': self.is_within_radius(latitudes,longitudes),
                 'checkin_location': "https://www.google.com/maps/search/?api=1&query=%s,%s" % (
             latitudes, longitudes),
             }
@@ -94,6 +145,7 @@ class HrEmployee(models.AbstractModel):
                 'checkout_address': location.address,
                 'checkout_latitude': latitudes,
                 'checkout_longitude': longitudes,
+                'is_onsite_out': self.is_within_radius(latitudes, longitudes),
                 'checkout_location': "https://www.google.com/maps/search/?api=1&query=%s,%s" % (
             latitudes, longitudes),
             })
