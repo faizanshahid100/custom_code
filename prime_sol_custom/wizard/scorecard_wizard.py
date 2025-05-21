@@ -86,10 +86,13 @@ class ScorecardWizard(models.TransientModel):
 
             survey_results = self.env['survey.user_input'].search([
                 ('state', '=', 'done'),
+                ('test_entry', '=', False),
+                ('employee_id', '=', employee.id),
                 ('survey_id.is_client_feedback', '=', True),
                 ('create_date', '>=', start),
                 ('create_date', '<=', end),
             ])
+            survey_avg = []
             for result in survey_results:
                 suggested_values = result.user_input_line_ids.filtered(
                     lambda l: l.answer_type == 'suggestion'
@@ -97,8 +100,12 @@ class ScorecardWizard(models.TransientModel):
 
                 # Extract numeric values only and calculate average
                 numeric_values = [int(v) for v in suggested_values if str(v).isdigit()]
-                average = sum(numeric_values) / len(numeric_values) if numeric_values else 0
-                survey = average / 5
+                average = sum(numeric_values) / (len(numeric_values)*5) if numeric_values else 0
+                survey_avg.append(average)
+            if len(survey_avg):
+                survey = sum(survey_avg)/len(survey_avg)
+            else:
+                survey = 1
             ####### Attendance ########
             # Employee Present Days
             employee_attendance = self.env['hr.attendance'].search(
@@ -183,6 +190,7 @@ class ScorecardWizard(models.TransientModel):
                 'employee_id': employee.id,
                 'partner_id': self.partner_id.id,
                 'feedback': feedback,
+                'survey': survey,
                 'kpi': kpi,
                 'weekly_meeting': weekly_meetings,
                 'daily_attendance': daily_attendance,

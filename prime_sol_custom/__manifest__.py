@@ -24,6 +24,7 @@
         'views/meeting_tracker.xml',
         'views/meeting_attendance_summary_views.xml',
         'views/survey_survey_ext.xml',
+        'views/survey_user_input_ext.xml',
         'views/score_weightage.xml',
         'views/score_card.xml',
         'data/mail_template_data.xml',
