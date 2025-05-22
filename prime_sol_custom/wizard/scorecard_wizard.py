@@ -201,7 +201,7 @@ class ScorecardWizard(models.TransientModel):
             'name': 'Score Card',
             'type': 'ir.actions.act_window',
             'res_model': 'score.card',
-            'view_mode': 'tree',
+            'view_mode': 'tree,pivot',
             'target': 'current',
             'domain': [],
         }

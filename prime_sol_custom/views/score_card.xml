@@ -16,4 +16,21 @@
             </tree>
         </field>
     </record>
+    <record id="view_score_card_pivot" model="ir.ui.view">
+        <field name="name">score.card.pivot</field>
+        <field name="model">score.card</field>
+        <field name="arch" type="xml">
+            <pivot string="Score Card Analysis">
+                <field name="employee_id" type="row"/>
+
+                <field name="feedback_pivot" type="measure"/>
+                <field name="survey_pivot" type="measure"/>
+                <field name="kpi_pivot" type="measure"/>
+                <field name="weekly_meeting_pivot" type="measure"/>
+                <field name="daily_attendance_pivot" type="measure"/>
+                <field name="office_coming_pivot" type="measure"/>
+                <field name="cumulative_score_pivot" type="measure" string="➤ Cumulative Score"/>
+            </pivot>
+        </field>
+    </record>
 </odoo>
