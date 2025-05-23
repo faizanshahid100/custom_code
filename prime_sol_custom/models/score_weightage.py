@@ -7,6 +7,7 @@ class ScoreWeightage(models.Model):
     _description = 'Score Weightage'
 
     name = fields.Char()
+    department_id = fields.Many2one('hr.department', strint='Department')
     is_active = fields.Boolean(string='Is Active')
     feedback = fields.Float(string='Feedback')
     survey = fields.Float(string='Survey')
@@ -15,10 +16,17 @@ class ScoreWeightage(models.Model):
     daily_attendance = fields.Float(string='Daily Attendance')
     office_coming = fields.Float(string='Office Coming')
 
-    @api.constrains('is_active')
+    @api.constrains('is_active', 'department_id')
     def _check_unique_active(self):
-        if self.is_active and self.search_count([('is_active', '=', True)]) > 1:
-            raise ValidationError('Only one record can be active at a time.')
+        for record in self:
+            if record.is_active:
+                count = self.search_count([
+                    ('is_active', '=', True),
+                    ('department_id', '=', record.department_id.id),
+                    ('id', '!=', record.id)  # Exclude the current record
+                ])
+                if count > 0:
+                    raise ValidationError('Only one active record is allowed per department.')
 
     @api.constrains('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _check_total_percentage(self):

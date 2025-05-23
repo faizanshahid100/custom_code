@@ -162,6 +162,7 @@ class ScorecardWizard(models.TransientModel):
                 kpi = 1
 
             ####### Weekly Meetings ########
+            # TODO : Check department wise data and need to add department so employees not added in every company meeting
             meetings = self.env['meeting.tracker'].search([
                 ('client_id', '=', self.partner_id.id),
                 ('date', '>=', self.date_from),

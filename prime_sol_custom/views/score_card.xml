@@ -1,4 +1,13 @@
 <odoo>
+    <record id="view_score_card_search" model="ir.ui.view">
+        <field name="name">score.card.search</field>
+        <field name="model">score.card</field>
+        <field name="arch" type="xml">
+            <search string="Score Card">
+                <field name="employee_id"/>
+            </search>
+        </field>
+    </record>
     <record id="view_score_card_tree" model="ir.ui.view">
         <field name="name">score.card.tree</field>
         <field name="model">score.card</field>
