@@ -7,6 +7,7 @@ class ScoreWeightage(models.Model):
     _description = 'Score Weightage'
 
     name = fields.Char()
+    partner_id = fields.Many2one('res.partner', string="Company", domain="[('is_company','=', True)]")
     department_id = fields.Many2one('hr.department', strint='Department')
     is_active = fields.Boolean(string='Is Active')
     feedback = fields.Float(string='Feedback')

@@ -15,6 +15,7 @@
             <tree string="Score Card" decoration-danger="cumulative_score &lt; 0.6">
                 <field name="employee_id"/>
                 <field name="partner_id"/>
+                <field name="department_id"/>
                 <field name="feedback" widget="percentage" optional="hide"/>
                 <field name="survey" widget="percentage" optional="hide"/>
                 <field name="kpi" widget="percentage" optional="hide"/>

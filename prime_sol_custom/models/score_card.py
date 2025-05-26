@@ -1,4 +1,6 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
 
 class ScoreCard(models.Model):
     _name = "score.card"
@@ -6,6 +8,7 @@ class ScoreCard(models.Model):
 
     employee_id = fields.Many2one('hr.employee', string="Employee")
     partner_id = fields.Many2one('res.partner', string="Company", domain="[('is_company','=', True)]")
+    department_id = fields.Many2one('hr.department', string='Department')
     feedback = fields.Float(string="Feedback (%)")
     survey = fields.Float(string="Survey (%)")
     kpi = fields.Float(string="KPI (%)")
@@ -41,7 +44,12 @@ class ScoreCard(models.Model):
 
     @api.depends('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _compute_cumulative_score(self):
-        active_weightage = self.env['score.weightage'].search([('is_active', '=', True)], limit=1)
+        if self.partner_id and self.department_id:
+            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', self.department_id.id)])
+        elif self.partner_id:
+            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id)])
+        if not active_weightage:
+            raise ValidationError('No Weightage Available regarding the parameter')
         if active_weightage:
             for record in self:
                 record.cumulative_score = (
