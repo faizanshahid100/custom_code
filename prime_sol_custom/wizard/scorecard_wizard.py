@@ -25,7 +25,7 @@ class ScorecardWizard(models.TransientModel):
     date_from = fields.Date(string="Start Date", required=True)
     date_to = fields.Date(string="End Date", required=True)
     partner_id = fields.Many2one('res.partner', string="Company", required=True, domain=[('is_company', '=', True)])
-    department_id = fields.Many2one('hr.department', string='Department')
+    department_id = fields.Many2one('hr.department', string='Department', required=True)
 
     def get_employee_leave_dates(self, employee, start_date, end_date):
         leave_records = self.env['hr.leave'].search([
@@ -66,16 +66,10 @@ class ScorecardWizard(models.TransientModel):
         month_diff = (self.date_to.year - self.date_from.year) * 12 + (self.date_to.month - self.date_from.month + 1)
         total_bonus_points = month_diff * 5
 
-        if self.department_id:
-            employees = self.env['hr.employee'].search([]).filtered(
-                lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
-            if not employees:
-                raise ValidationError('No employee record exist.')
-        else:
-            employees = self.env['hr.employee'].search([]).filtered(
-                lambda l: l.contractor.id == self.partner_id.id)
-            if not employees:
-                raise ValidationError('No employee record exist.')
+        employees = self.env['hr.employee'].search([]).filtered(
+            lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
+        if not employees:
+            raise ValidationError('No employee record exist.')
         for employee in employees:
             ####### Feedback ########
             feedback = 1
@@ -173,19 +167,12 @@ class ScorecardWizard(models.TransientModel):
                 kpi = 1
 
             ####### Weekly Meetings ########
-            if self.department_id:
-                meetings = self.env['meeting.tracker'].search([
-                    ('client_id', '=', self.partner_id.id),
-                    ('department_id', '=', self.department_id.id),
-                    ('date', '>=', self.date_from),
-                    ('date', '<=', self.date_to)
-                ])
-            else:
-                meetings = self.env['meeting.tracker'].search([
-                    ('client_id', '=', self.partner_id.id),
-                    ('date', '>=', self.date_from),
-                    ('date', '<=', self.date_to)
-                ])
+            meetings = self.env['meeting.tracker'].search([
+                ('client_id', '=', self.partner_id.id),
+                ('department_id', '=', self.department_id.id),
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to)
+            ])
 
             attended_meetings = meetings.meeting_details.filtered(
                 lambda l: l.employee_id.id == employee.id and l.is_present)

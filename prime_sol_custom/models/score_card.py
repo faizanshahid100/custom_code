@@ -44,20 +44,16 @@ class ScoreCard(models.Model):
 
     @api.depends('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _compute_cumulative_score(self):
-        if self.partner_id and self.department_id:
-            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', self.department_id.id)])
-        elif self.partner_id:
-            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id)])
+        active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', self.department_id.id)])
         if not active_weightage:
             raise ValidationError('No Weightage Available regarding the parameter')
-        if active_weightage:
-            for record in self:
-                record.cumulative_score = (
-                        (record.feedback * active_weightage.feedback / 100) +
-                        (record.survey * active_weightage.survey / 100) +
-                        (record.kpi * active_weightage.kpi / 100) +
-                        (record.weekly_meeting * active_weightage.weekly_meeting / 100) +
-                        (record.daily_attendance * active_weightage.daily_attendance / 100) +
-                        (record.office_coming * active_weightage.office_coming / 100)
-                )
+        for record in self:
+            record.cumulative_score = (
+                    (record.feedback * active_weightage.feedback / 100) +
+                    (record.survey * active_weightage.survey / 100) +
+                    (record.kpi * active_weightage.kpi / 100) +
+                    (record.weekly_meeting * active_weightage.weekly_meeting / 100) +
+                    (record.daily_attendance * active_weightage.daily_attendance / 100) +
+                    (record.office_coming * active_weightage.office_coming / 100)
+            )
 
