@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 import logging
+from datetime import date, datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class HREmployeeInherit(models.Model):
     is_probation = fields.Boolean('Is probation Period', default=True)
     notice_period = fields.Boolean(string="Under Notice Period", default=False)
     notice_period_date = fields.Date(string="Notice Period End Date")
+    calendar_tracking_ids = fields.One2many('calendar.tracking', 'employee_id', string="Calendar Tracking")
 
     # Contract
     contractor = fields.Many2one('res.partner', string="Contractor", domain=[('is_company','=', True)])
@@ -101,6 +103,34 @@ class HREmployeeInherit(models.Model):
     child_dob = fields.Date(string="Child DOB")
 
     @api.model
+    def create(self, vals):
+        employee = super().create(vals)
+        if vals.get('resource_calendar_id'):
+            self.env['calendar.tracking'].create({
+                'employee_id': employee.id,
+                'resource_calendar_id': vals['resource_calendar_id'],
+                'user_id': self.env.uid,
+            })
+        return employee
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'resource_calendar_id' in vals:
+            for employee in self:
+                # Close previous tracking (if any)
+                last_tracking = employee.calendar_tracking_ids.sorted(lambda r: r.start_date)[-1:]  # get last record
+                if last_tracking and not last_tracking.end_date:
+                    last_tracking.end_date = date.today()
+
+                # Create new tracking
+                self.env['calendar.tracking'].create({
+                    'employee_id': employee.id,
+                    'resource_calendar_id': vals['resource_calendar_id'],
+                    'user_id': self.env.uid,
+                })
+        return res
+
+    @api.model
     def update_dashboard_employee_view(self):
         """
         Drops and recreates the dashboard_employee_view in PostgreSQL.
@@ -144,3 +174,15 @@ class HREmployeeInherit(models.Model):
             _logger.info("Successfully updated dashboard_employee_view.")
         except Exception as e:
             _logger.error("Error updating dashboard_employee_view: %s", str(e))
+
+
+class CalendarTracking(models.Model):
+    _name = "calendar.tracking"
+    _rec_name = "resource_calendar_id"
+    _description = "Calendar Tracking"
+
+    resource_calendar_id = fields.Many2one('resource.calendar', string="Working Schedule", required=True)
+    user_id = fields.Many2one('res.users', string="User", required=True)
+    start_date = fields.Date(string="Start Date", default=fields.Date.today(), required=True)
+    end_date = fields.Date(string="End Date")
+    employee_id = fields.Many2one('hr.employee', string="Employee", ondelete='cascade')
