@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 import logging
-from datetime import date, datetime
+from datetime import date, timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ class HREmployeeInherit(models.Model):
                 # Close previous tracking (if any)
                 last_tracking = employee.calendar_tracking_ids.sorted(lambda r: r.start_date)[-1:]  # get last record
                 if last_tracking and not last_tracking.end_date:
-                    last_tracking.end_date = date.today()
+                    last_tracking.end_date = date.today() - timedelta(days=1)
 
                 # Create new tracking
                 self.env['calendar.tracking'].create({

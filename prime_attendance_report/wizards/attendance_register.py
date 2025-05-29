@@ -65,7 +65,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
         res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
         return res_list
 
-    def calculate_employee_off_days(self, emp, start_date, end_date):
+    def calculate_employee_fix_off_days(self, emp, start_date, end_date):
         if not emp.resource_calendar_id:
             raise ValueError("Employee has no working schedule assigned.")
         off_days = []
@@ -78,6 +78,37 @@ class EmployeeAttendanceRegister(models.TransientModel):
         for date in date_range:
             if str(date.weekday()) not in working_days:
                 off_days.append(date.day)
+        return off_days
+
+    def calculate_employee_off_days(self, emp, start_date, end_date):
+        if not emp.calendar_tracking_ids:
+            self.calculate_employee_fix_off_days(emp, start_date, end_date)
+
+        off_days = []
+        date_range = [
+            (start_date + timedelta(days=i))
+            for i in range((end_date - start_date).days + 1)
+        ]
+
+        for date in date_range:
+            # Find the tracking record for the current date
+            tracking = emp.calendar_tracking_ids.filtered(
+                lambda t: t.start_date <= date <= (t.end_date or date)
+            )
+
+            if not tracking:
+                # No calendar tracking defined for this date, treat it as an off-day
+                off_days.append(date.day)
+                continue
+
+            # Assume only one matching tracking record (latest or first)
+            tracking = tracking.sorted(key=lambda t: t.start_date, reverse=True)[0]
+
+            working_days = set(attendance.dayofweek for attendance in tracking.resource_calendar_id.attendance_ids)
+
+            if str(date.weekday()) not in working_days:
+                off_days.append(date.day)
+
         return off_days
 
     def get_employee_leave_dates(self, emp, start_date, end_date):
