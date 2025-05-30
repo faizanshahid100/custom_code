@@ -102,6 +102,6 @@
 
     <!-- Meeting Tracker Menu -->
     <menuitem id="menu_meeting_tracker" name="Meeting Tracker" parent="hr.menu_hr_root" sequence="20"
-              action="action_meeting_tracker"/>
+              action="action_meeting_tracker" groups="hr.group_hr_user"/>
 
 </odoo>

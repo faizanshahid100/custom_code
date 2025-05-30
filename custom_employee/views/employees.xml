@@ -128,7 +128,7 @@
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='resource_calendar_id']" position="after">
-                    <field name="calendar_tracking_ids" readonly="0">
+                    <field name="calendar_tracking_ids" groups="hr.group_hr_user" readonly="0">
                         <tree editable="bottom">
                             <field name="resource_calendar_id"/>
                             <field name="user_id"/>
