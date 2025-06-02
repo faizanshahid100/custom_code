@@ -37,7 +37,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_employee_dashboard_root" name="Pivot Dashboards" web_icon="pivot_dashboards,static/description/icon.png" sequence="10"/>
+    <menuitem id="menu_employee_dashboard_root" name="Pivot Dashboards" groups="hr.group_hr_user" web_icon="pivot_dashboards,static/description/icon.png" sequence="10"/>
     <menuitem id="menu_employee_dashboard" name="Pivot Dashboards" parent="menu_employee_dashboard_root" sequence="10"/>
     <menuitem id="menu_employee_hired_department" name="Employee Hiring" parent="menu_employee_dashboard" action="action_employee_dashboard_line" sequence="10"/>
 
