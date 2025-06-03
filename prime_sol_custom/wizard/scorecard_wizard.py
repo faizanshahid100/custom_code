@@ -63,19 +63,20 @@ class ScorecardWizard(models.TransientModel):
         # Optional: Clear existing summaries
         self.env['score.card'].search([]).unlink()
 
-        month_diff = (self.date_to.year - self.date_from.year) * 12 + (self.date_to.month - self.date_from.month + 1)
-        total_bonus_points = month_diff * 5
-
         employees = self.env['hr.employee'].search([]).filtered(
             lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
         if not employees:
             raise ValidationError('No employee record exist.')
         for employee in employees:
+            effective_start_date = max(self.date_from, fields.Date.from_string(employee.joining_date))
+            month_diff = (self.date_to.year - effective_start_date.year) * 12 + (self.date_to.month - effective_start_date.month + 1)
+            total_bonus_points = month_diff * 5
+
             ####### Feedback ########
             feedback = 1
 
             feedbacks = employee.feedback_ids.filtered(
-                lambda fb: self.date_from <= fb.date_feedback <= self.date_to
+                lambda fb: effective_start_date <= fb.date_feedback <= self.date_to
             )
 
             if feedbacks:
@@ -86,7 +87,7 @@ class ScorecardWizard(models.TransientModel):
                 feedback = min(points_of_tenure / total_bonus_points, 1) if total_bonus_points else 0
 
             ####### Survey (Inprogress)########
-            start = fields.Datetime.to_datetime(self.date_from)
+            start = fields.Datetime.to_datetime(effective_start_date)
             end = fields.Datetime.to_datetime(self.date_to) + timedelta(days=1, seconds=-1)
 
             survey_results = self.env['survey.user_input'].search([
@@ -114,10 +115,10 @@ class ScorecardWizard(models.TransientModel):
             ####### Attendance ########
             # Employee Present Days
             employee_attendance = self.env['hr.attendance'].search(
-                [('employee_id', '=', employee.id), ('check_in', '>=', self.date_from),
+                [('employee_id', '=', employee.id), ('check_in', '>=', effective_start_date),
                  ('check_in', '<=', self.date_to)])
             # Leave Days
-            leave_days = self.get_employee_leave_dates(employee, self.date_from, self.date_to)
+            leave_days = self.get_employee_leave_dates(employee, effective_start_date, self.date_to)
 
             # Total Working Days
             work_days = []
@@ -127,8 +128,8 @@ class ScorecardWizard(models.TransientModel):
             working_hours = employee.resource_calendar_id
             working_days = set(attendance.dayofweek for attendance in working_hours.attendance_ids)
             date_range = [
-                (self.date_from + timedelta(days=i))
-                for i in range((self.date_to - self.date_from).days + 1)
+                (effective_start_date + timedelta(days=i))
+                for i in range((self.date_to - effective_start_date).days + 1)
             ]
             for date in date_range:
                 if str(date.weekday()) in working_days:
@@ -144,7 +145,7 @@ class ScorecardWizard(models.TransientModel):
             ####### KPI ########
             progress_records = self.env['daily.progress'].search([
                 ('resource_user_id.employee_id', '=', employee.id),
-                ('date_of_project', '>=', self.date_from),
+                ('date_of_project', '>=', effective_start_date),
                 ('date_of_project', '<=', self.date_to)
             ])
             if employee.kpi_measurement == 'kpi':
@@ -170,7 +171,7 @@ class ScorecardWizard(models.TransientModel):
             meetings = self.env['meeting.tracker'].search([
                 ('client_id', '=', self.partner_id.id),
                 ('department_id', '=', self.department_id.id),
-                ('date', '>=', self.date_from),
+                ('date', '>=', effective_start_date),
                 ('date', '<=', self.date_to)
             ])
 
