@@ -81,35 +81,35 @@ class EmployeeAttendanceRegister(models.TransientModel):
         return off_days
 
     def calculate_employee_off_days(self, emp, start_date, end_date):
-        if not emp.calendar_tracking_ids:
-            self.calculate_employee_fix_off_days(emp, start_date, end_date)
+        if not emp.calendar_tracking_ids or len(emp.calendar_tracking_ids)==1:
+            return self.calculate_employee_fix_off_days(emp, start_date, end_date)
+        else:
+            off_days = []
+            date_range = [
+                (start_date + timedelta(days=i))
+                for i in range((end_date - start_date).days + 1)
+            ]
 
-        off_days = []
-        date_range = [
-            (start_date + timedelta(days=i))
-            for i in range((end_date - start_date).days + 1)
-        ]
+            for date in date_range:
+                # Find the tracking record for the current date
+                tracking = emp.calendar_tracking_ids.filtered(
+                    lambda t: t.start_date <= date <= (t.end_date or date)
+                )
 
-        for date in date_range:
-            # Find the tracking record for the current date
-            tracking = emp.calendar_tracking_ids.filtered(
-                lambda t: t.start_date <= date <= (t.end_date or date)
-            )
+                if not tracking:
+                    # No calendar tracking defined for this date, treat it as an off-day
+                    off_days.append(date.day)
+                    continue
 
-            if not tracking:
-                # No calendar tracking defined for this date, treat it as an off-day
-                off_days.append(date.day)
-                continue
+                # Assume only one matching tracking record (latest or first)
+                tracking = tracking.sorted(key=lambda t: t.start_date, reverse=True)[0]
 
-            # Assume only one matching tracking record (latest or first)
-            tracking = tracking.sorted(key=lambda t: t.start_date, reverse=True)[0]
+                working_days = set(attendance.dayofweek for attendance in tracking.resource_calendar_id.attendance_ids)
 
-            working_days = set(attendance.dayofweek for attendance in tracking.resource_calendar_id.attendance_ids)
+                if str(date.weekday()) not in working_days:
+                    off_days.append(date.day)
 
-            if str(date.weekday()) not in working_days:
-                off_days.append(date.day)
-
-        return off_days
+            return off_days
 
     def get_employee_leave_dates(self, emp, start_date, end_date):
         leave_records = self.env['hr.leave'].search([
@@ -245,11 +245,9 @@ class EmployeeAttendanceRegister(models.TransientModel):
                     worksheet.write(row, col, state if state != self.absent else self.absent, format_present)
                     present_days += 1
                 if state == "A":
-                    if before_contract_flag:
-                        if date['date_list'] in before_contract_date:
-                            worksheet.write(row, col, "-", format_off_day)
-                        else:
-                            worksheet.write(row, col, state if state != self.absent else self.absent, format_absent)
+                    # if before_contract_flag:
+                    if date['date_list'] in before_contract_date:
+                        worksheet.write(row, col, "-", format_off_day)
                     elif date['date_list'] in leaves_day:
                         worksheet.write(row, col, "Leave", format_leave)
                     elif date['date_list'] in off_day:
