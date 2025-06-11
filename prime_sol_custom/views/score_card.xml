@@ -1,17 +1,46 @@
 <odoo>
+    <record id="view_score_card_search" model="ir.ui.view">
+        <field name="name">score.card.search</field>
+        <field name="model">score.card</field>
+        <field name="arch" type="xml">
+            <search string="Score Card">
+                <field name="employee_id"/>
+            </search>
+        </field>
+    </record>
     <record id="view_score_card_tree" model="ir.ui.view">
         <field name="name">score.card.tree</field>
         <field name="model">score.card</field>
         <field name="arch" type="xml">
-            <tree string="Score Card">
-                <field name="employee_id" widget="percentage"/>
-                <field name="partner_id" widget="percentage"/>
-                <field name="survey" widget="percentage"/>
-                <field name="kpi" widget="percentage"/>
-                <field name="weekly_meeting" widget="percentage"/>
-                <field name="daily_attendance" widget="percentage"/>
-                <field name="office_coming" widget="percentage"/>
+            <tree string="Score Card" decoration-danger="cumulative_score &lt; 0.6">
+                <field name="employee_id"/>
+                <field name="partner_id"/>
+                <field name="department_id"/>
+                <field name="feedback" widget="percentage" optional="hide"/>
+                <field name="survey" widget="percentage" optional="hide"/>
+                <field name="kpi" widget="percentage" optional="hide"/>
+                <field name="weekly_meeting" widget="percentage" optional="hide"/>
+                <field name="daily_attendance" widget="percentage" optional="hide"/>
+                <field name="office_coming" widget="percentage" optional="hide"/>
+                <field name="cumulative_score" widget="percentage"/>
             </tree>
+        </field>
+    </record>
+    <record id="view_score_card_pivot" model="ir.ui.view">
+        <field name="name">score.card.pivot</field>
+        <field name="model">score.card</field>
+        <field name="arch" type="xml">
+            <pivot string="Score Card Analysis">
+                <field name="employee_id" type="row"/>
+
+                <field name="feedback_pivot" type="measure"/>
+                <field name="survey_pivot" type="measure"/>
+                <field name="kpi_pivot" type="measure"/>
+                <field name="weekly_meeting_pivot" type="measure"/>
+                <field name="daily_attendance_pivot" type="measure"/>
+                <field name="office_coming_pivot" type="measure"/>
+                <field name="cumulative_score_pivot" type="measure" string="➤ Cumulative Score"/>
+            </pivot>
         </field>
     </record>
 </odoo>

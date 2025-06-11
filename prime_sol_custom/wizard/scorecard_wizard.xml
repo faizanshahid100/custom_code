@@ -11,6 +11,7 @@
                     </group>
                     <group>
                         <field name="date_to"/>
+                        <field name="department_id"/>
                     </group>
                 </group>
                 <footer>
@@ -28,10 +29,17 @@
         <field name="target">new</field>
     </record>
 
-<!--    <menuitem-->
-<!--            id="scorecard_wizard_wizard"-->
-<!--            parent="hr.hr_menu_hr_reports"-->
-<!--            name="Score Card"-->
-<!--            action="action_scorecard_wizard"-->
-<!--            sequence="550"/>-->
+    <!--    Menu in Employee -> Reporting -> Score Card-->
+    <menuitem
+            id="scorecard_wizard_wizard"
+            parent="hr.hr_menu_hr_reports"
+            name="Score Card"
+            action="action_scorecard_wizard"
+            sequence="550"/>
+    <!--    Menu in Main Screen-->
+    <menuitem
+            id="scorecard_main_menu"
+            name="Score Card"
+            action="action_scorecard_wizard"
+            web_icon="prime_sol_custom,static/description/score_card.png"/>
 </odoo>

@@ -1,0 +1,58 @@
+<odoo>
+    <!--    Tree View-->
+    <record id='view_score_weightage_tree' model='ir.ui.view'>
+        <field name='name'>score.weightage.tree</field>
+        <field name='model'>score.weightage</field>
+        <field name='arch' type='xml'>
+            <tree string='Score Weightage'>
+                <field name='is_active'/>
+                <field name='name'/>
+                <field name='partner_id'/>
+                <field name='department_id'/>
+                <field name='feedback'/>
+                <field name='survey'/>
+                <field name='kpi'/>
+                <field name='weekly_meeting'/>
+                <field name='daily_attendance'/>
+                <field name='office_coming'/>
+            </tree>
+        </field>
+    </record>
+    <!--    Form View-->
+    <record id='view_score_weightage_form' model='ir.ui.view'>
+        <field name='name'>score.weightage.form</field>
+        <field name='model'>score.weightage</field>
+        <field name='arch' type='xml'>
+            <form string='Score Weightage'>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name='is_active'/>
+                            <field name='name' required="1"/>
+                            <field name='partner_id' required="1"/>
+                            <field name='department_id' required="1"/>
+                            <field name='feedback'/>
+                            <field name='survey'/>
+                            <field name='kpi'/>
+                        </group>
+                        <group>
+                            <field name='weekly_meeting'/>
+                            <field name='daily_attendance'/>
+                            <field name='office_coming'/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Action and Menu -->
+    <record id='action_score_weightage' model='ir.actions.act_window'>
+        <field name='name'>Score Weightage</field>
+        <field name='res_model'>score.weightage</field>
+        <field name='view_mode'>tree,form</field>
+    </record>
+    <menuitem id='menu_score_management' name='Score-Card Management' parent='hr.menu_human_resources_configuration' groups="prime_sol_custom.group_score_card_admin"
+              sequence='5'/>
+    <menuitem id='menu_score_weightage' name='Score Weightage' parent='menu_score_management' sequence='10'
+              action="action_score_weightage"/>
+</odoo>
