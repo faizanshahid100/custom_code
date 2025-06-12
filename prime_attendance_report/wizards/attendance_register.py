@@ -38,6 +38,8 @@ class EmployeeAttendanceRegister(models.TransientModel):
         while start_date <= end_date:
             date_list.append({
                 "date_list": start_date.day,
+                "month_list": start_date.month,
+                "year_list": start_date.year,
             })
             start_date += delta
         return date_list
@@ -56,6 +58,8 @@ class EmployeeAttendanceRegister(models.TransientModel):
                 work_hours = round(rec.worked_hours, 1)
                 data.append({
                     'date': check_in.date().day,
+                    'month': check_in.date().month,
+                    'year': check_in.date().year,
                     'state': work_hours,
                     'employee': rec.employee_id.id,
                     'department': rec.employee_id.department_id.id,
@@ -77,11 +81,11 @@ class EmployeeAttendanceRegister(models.TransientModel):
         ]
         for date in date_range:
             if str(date.weekday()) not in working_days:
-                off_days.append(date.day)
+                off_days.append(f'{date.day}-{date.month}-{date.year}')
         return off_days
 
     def calculate_employee_off_days(self, emp, start_date, end_date):
-        if not emp.calendar_tracking_ids or len(emp.calendar_tracking_ids)==1:
+        if not emp.calendar_tracking_ids or len(emp.calendar_tracking_ids) == 1:
             return self.calculate_employee_fix_off_days(emp, start_date, end_date)
         else:
             off_days = []
@@ -98,7 +102,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
 
                 if not tracking:
                     # No calendar tracking defined for this date, treat it as an off-day
-                    off_days.append(date.day)
+                    off_days.append(f'{date.day}-{date.month}-{date.year}')
                     continue
 
                 # Assume only one matching tracking record (latest or first)
@@ -107,7 +111,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
                 working_days = set(attendance.dayofweek for attendance in tracking.resource_calendar_id.attendance_ids)
 
                 if str(date.weekday()) not in working_days:
-                    off_days.append(date.day)
+                    off_days.append(f'{date.day}-{date.month}-{date.year}')
 
             return off_days
 
@@ -122,7 +126,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
         for leave in leave_records:
             current_day = leave.request_date_from
             while current_day <= leave.request_date_to:
-                leave_dates.append(current_day.day)
+                leave_dates.append(f'{current_day.day}-{current_day.month}-{current_day.year}')
                 current_day += timedelta(days=1)
         return leave_dates
 
@@ -169,7 +173,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             'bg_color': '#FF5B61',
             'font_color': 'white',
             'align': 'center',
-            'border' : 1,
+            'border': 1,
         })
         format_leave = workbook.add_format({
             'bg_color': '#fff766',
@@ -203,8 +207,8 @@ class EmployeeAttendanceRegister(models.TransientModel):
         days_list = []
         for date_dict in date_range:
             day = date_dict['date_list']
-            month = self.start_date.month
-            year = self.start_date.year
+            month = date_dict['month_list']
+            year = date_dict['year_list']
             full_date = datetime.datetime(year, month, day)
             day_of_week = full_date.strftime("%d %b")
             days_list.append(day_of_week)
@@ -214,8 +218,9 @@ class EmployeeAttendanceRegister(models.TransientModel):
         for col, header in enumerate(headers_days):
             worksheet.write(7, col, header, table_format)
 
-        headers = ['S.No', 'Name of Employee', 'Department', 'Designation', 'Gender'] + [f'{d["date_list"]}' for d in date_range] + [
-            'Total Hours', 'No of days']
+        headers = ['S.No', 'Name of Employee', 'Department', 'Designation', 'Gender'] + [f'{d["date_list"]}' for d in
+                                                                                         date_range] + [
+                      'Total Hours', 'No of days']
         for col, header in enumerate(headers):
             worksheet.write(8, col, header, table_format)
 
@@ -231,13 +236,16 @@ class EmployeeAttendanceRegister(models.TransientModel):
 
             total_hours = 0.0  # Variable to keep track of total hours worked for each employee
 
-            attn_dates = {att['date']: att['state'] for att in data if att['employee'] == employee.id}
+            attn_dates = {
+                f"{att['date']}-{att['month']}-{att['year']}": att['state']
+                for att in data if att['employee'] == employee.id
+            }
             off_day = self.calculate_employee_off_days(employee, self.start_date, self.end_date)
             leaves_day = self.get_employee_leave_dates(employee, self.start_date, self.end_date)
             before_contract_flag = self.get_before_contract(employee, self.start_date, self.end_date)[0]
             before_contract_date = self.get_before_contract(employee, self.start_date, self.end_date)[1]
             for col, date in enumerate(date_range, start=5):
-                date_val = date['date_list']
+                date_val = str(date['date_list']) + '-' + str(date['month_list']) + '-' + str(date['year_list'])
                 state = attn_dates.get(date_val, self.absent)
                 # cell_format = format_present if state != self.absent else format_absent
                 if state != self.absent:
@@ -248,9 +256,9 @@ class EmployeeAttendanceRegister(models.TransientModel):
                     # if before_contract_flag:
                     if date['date_list'] in before_contract_date:
                         worksheet.write(row, col, "-", format_off_day)
-                    elif date['date_list'] in leaves_day:
+                    elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in leaves_day:
                         worksheet.write(row, col, "Leave", format_leave)
-                    elif date['date_list'] in off_day:
+                    elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in off_day:
                         worksheet.write(row, col, "Rest", format_off_day)
                     else:
                         worksheet.write(row, col, state if state != self.absent else self.absent, format_absent)
