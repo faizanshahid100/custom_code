@@ -8,7 +8,7 @@ class ScoreCard(models.Model):
 
     employee_id = fields.Many2one('hr.employee', string="Employee")
     partner_id = fields.Many2one('res.partner', string="Company", domain="[('is_company','=', True)]")
-    department_id = fields.Many2one('hr.department', string='Department')
+    department_id = fields.Many2one('hr.department', string='🏢 Department')
     feedback = fields.Float(string="Feedback (%)")
     survey = fields.Float(string="Survey (%)")
     kpi = fields.Float(string="KPI (%)")
@@ -56,4 +56,5 @@ class ScoreCard(models.Model):
                     (record.daily_attendance * active_weightage.daily_attendance / 100) +
                     (record.office_coming * active_weightage.office_coming / 100)
             )
+            record.department_id = record.employee_id.department_id.id
 

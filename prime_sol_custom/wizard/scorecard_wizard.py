@@ -27,7 +27,7 @@ class ScorecardWizard(models.TransientModel):
     date_from = fields.Date(string="Start Date", required=True)
     date_to = fields.Date(string="End Date", required=True)
     partner_id = fields.Many2one('res.partner', string="Company", required=True, domain=[('is_company', '=', True)])
-    department_id = fields.Many2one('hr.department', string='Department', required=True)
+    department_id = fields.Many2one('hr.department', string='Department')
 
     def get_employee_leave_dates(self, employee, start_date, end_date):
         leave_records = self.env['hr.leave'].search([
@@ -65,8 +65,13 @@ class ScorecardWizard(models.TransientModel):
         # Optional: Clear existing summaries
         self.env['score.card'].search([]).unlink()
 
-        employees = self.env['hr.employee'].search([]).filtered(
-            lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
+        if self.department_id:
+            employees = self.env['hr.employee'].search([]).filtered(
+                lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
+        elif not self.department_id:
+            employees = self.env['hr.employee'].search([]).filtered(
+                lambda l: l.contractor.id == self.partner_id.id)
+
         if not employees:
             raise ValidationError('No employee record exist.')
         for employee in employees:
@@ -170,12 +175,12 @@ class ScorecardWizard(models.TransientModel):
                 kpi = 1
 
             ####### Weekly Meetings ########
-            meetings = self.env['meeting.tracker'].search([
+            meetings_set = self.env['meeting.tracker'].search([
                 ('client_id', '=', self.partner_id.id),
-                ('department_id', '=', self.department_id.id),
                 ('date', '>=', effective_start_date),
                 ('date', '<=', self.date_to)
             ])
+            meetings = meetings_set.filtered(lambda l: employee in l.meeting_details.mapped('employee_id'))
 
             attended_meetings = meetings.meeting_details.filtered(
                 lambda l: l.employee_id.id == employee.id and l.is_present)
@@ -210,7 +215,7 @@ class ScorecardWizard(models.TransientModel):
             'name': 'Score Card',
             'type': 'ir.actions.act_window',
             'res_model': 'score.card',
-            'view_mode': 'tree,pivot',
+            'view_mode': 'tree,pivot,graph',
             'target': 'current',
             'domain': [],
         }

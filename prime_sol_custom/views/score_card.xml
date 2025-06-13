@@ -5,6 +5,11 @@
         <field name="arch" type="xml">
             <search string="Score Card">
                 <field name="employee_id"/>
+                <field name="department_id"/>
+
+                <group expand="1" string="Group By">
+                    <filter name="group_by_department" string="Department" context="{'group_by': 'department_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -31,6 +36,7 @@
         <field name="model">score.card</field>
         <field name="arch" type="xml">
             <pivot string="Score Card Analysis">
+                <field name="department_id" type="row"/>
                 <field name="employee_id" type="row"/>
 
                 <field name="feedback_pivot" type="measure"/>
@@ -41,6 +47,24 @@
                 <field name="office_coming_pivot" type="measure"/>
                 <field name="cumulative_score_pivot" type="measure" string="➤ Cumulative Score"/>
             </pivot>
+        </field>
+    </record>
+    <record id="view_score_card_graph" model="ir.ui.view">
+        <field name="name">score.card.graph</field>
+        <field name="model">score.card</field>
+        <field name="arch" type="xml">
+            <graph string="Score Card Graph" type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="department_id" type="row"/>
+
+                <field name="feedback_pivot" type="measure"/>
+                <field name="survey_pivot" type="measure"/>
+                <field name="kpi_pivot" type="measure"/>
+                <field name="weekly_meeting_pivot" type="measure"/>
+                <field name="daily_attendance_pivot" type="measure"/>
+                <field name="office_coming_pivot" type="measure"/>
+                <field name="cumulative_score_pivot" type="measure" string="➤ Cumulative Score"/>
+            </graph>
         </field>
     </record>
 </odoo>
