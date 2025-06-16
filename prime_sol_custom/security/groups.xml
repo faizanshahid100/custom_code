@@ -17,6 +17,11 @@
             <field name="category_id" ref="base.module_category_human_resources"/>
             <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
         </record>
+        <record id="group_management_documents" model="res.groups">
+            <field name="name">Management Documents</field>
+            <field name="category_id" ref="base.module_category_productivity_documents"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
 
         <!--        Record Rules-->
         <record id="score_card_user_see_own" model="ir.rule">
