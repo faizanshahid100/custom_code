@@ -6,6 +6,8 @@ class ScoreCard(models.Model):
     _name = "score.card"
     _description = 'Score Card'
 
+    date_from = fields.Date('Date From')
+    date_to = fields.Date('Date To')
     employee_id = fields.Many2one('hr.employee', string="Employee")
     partner_id = fields.Many2one('res.partner', string="Company", domain="[('is_company','=', True)]")
     department_id = fields.Many2one('hr.department', string='🏢 Department')
@@ -28,6 +30,16 @@ class ScoreCard(models.Model):
     cumulative_score_pivot = fields.Float(string="Cumulative Score", compute='_compute_pivot_percentages',
                                           store=True)
 
+    def name_get(self):
+        result = []
+        for rec in self:
+            employee = rec.employee_id.name or ''
+            date_from = rec.date_from.strftime('%d-%b-%Y') if rec.date_from else 'N/A'
+            date_to = rec.date_to.strftime('%d-%b-%Y') if rec.date_to else 'N/A'
+            name = f"{employee} ({date_from} - {date_to})"
+            result.append((rec.id, name))
+        return result
+
     @api.depends(
         'feedback', 'survey', 'kpi', 'weekly_meeting',
         'daily_attendance', 'office_coming', 'cumulative_score'
@@ -44,10 +56,10 @@ class ScoreCard(models.Model):
 
     @api.depends('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _compute_cumulative_score(self):
-        active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', self.department_id.id)])
-        if not active_weightage:
-            raise ValidationError('No Weightage Available regarding the parameter')
         for record in self:
+            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', record.employee_id.department_id.id)])
+            if not active_weightage:
+                raise ValidationError(f'No Weightage Available for **{record.employee_id.department_id.name}** Department')
             record.cumulative_score = (
                     (record.feedback * active_weightage.feedback / 100) +
                     (record.survey * active_weightage.survey / 100) +
@@ -58,3 +70,59 @@ class ScoreCard(models.Model):
             )
             record.department_id = record.employee_id.department_id.id
 
+    def action_view_feedback(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Feedback Details',
+            'view_mode': 'tree',
+            'res_model': 'hr.employee.feedback',
+            'domain': [('employee_id', '=', self.employee_id.id), ('date_feedback', '>=', self.date_from), ('date_feedback', '<=', self.date_to)],
+            'target': 'current',
+        }
+    def action_view_survey(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Survey Details',
+            'view_mode': 'tree,form',
+            'res_model': 'survey.user_input',
+            'domain': [('employee_id', '=', self.employee_id.id), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False), ('create_date', '>=', self.date_from),
+                       ('create_date', '<=', self.date_to)],
+            'target': 'current',
+        }
+    def action_view_kpi(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'KPI Details',
+            'view_mode': 'tree,form',
+            'res_model': 'daily.progress',
+            'domain': [('resource_user_id.employee_id', '=', self.employee_id.id), ('date_of_project', '>=', self.date_from),
+                       ('date_of_project', '<=', self.date_to)],
+            'target': 'current',
+        }
+
+    def action_view_weekly_meeting(self):
+        tree_view_id = self.env.ref('prime_sol_custom.view_meeting_details_tree').id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Weekly Meeting Details',
+            'view_mode': 'tree',
+            'res_model': 'meeting.details',
+            'domain': [
+                ('employee_id', '=', self.employee_id.id),
+                ('meeting_id.date', '>=', self.date_from),
+                ('meeting_id.date', '<=', self.date_to)
+            ],
+            'views': [(tree_view_id, 'tree')],
+            'target': 'current',
+        }
+    def action_view_attendance(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Attendance Details',
+            'view_mode': 'tree',
+            'res_model': 'hr.attendance',
+            'domain': [('employee_id', '=', self.employee_id.id),
+                       ('check_in', '>=', self.date_from),
+                       ('check_in', '<=', self.date_to)],
+            'target': 'current',
+        }

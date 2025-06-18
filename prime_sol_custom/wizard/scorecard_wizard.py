@@ -118,7 +118,7 @@ class ScorecardWizard(models.TransientModel):
             if len(survey_avg):
                 survey = sum(survey_avg) / len(survey_avg)
             else:
-                survey = 1
+                survey = 0
             ####### Attendance ########
             # Employee Present Days
             employee_attendance = self.env['hr.attendance'].search(
@@ -186,7 +186,7 @@ class ScorecardWizard(models.TransientModel):
                 lambda l: l.employee_id.id == employee.id and l.is_present)
 
             weekly_meetings = min(len(attended_meetings) / len(meetings), 1) if meetings else 1
-            ####### Office On-Site ########
+            ####### Office On-Site (comment for now)########
             # Some Values get from attendance above code chunk
             if work_days:
                 onsite_count = len(employee_attendance.filtered(lambda l: l.is_onsite_in))
@@ -200,6 +200,8 @@ class ScorecardWizard(models.TransientModel):
                 office_coming = 1
             # Create the Records
             self.env['score.card'].create({
+                'date_from': effective_start_date,
+                'date_to': self.date_to,
                 'employee_id': employee.id,
                 'partner_id': self.partner_id.id,
                 'department_id': self.department_id.id,
@@ -215,7 +217,7 @@ class ScorecardWizard(models.TransientModel):
             'name': 'Score Card',
             'type': 'ir.actions.act_window',
             'res_model': 'score.card',
-            'view_mode': 'tree,pivot,graph',
+            'view_mode': 'tree,form,pivot,graph',
             'target': 'current',
             'domain': [],
         }

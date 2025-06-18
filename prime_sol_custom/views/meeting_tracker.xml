@@ -78,20 +78,19 @@
         </field>
     </record>
 
-    <!-- Meeting Details Tree View -->
-    <!--    <record id="view_meeting_details_tree" model="ir.ui.view">-->
-    <!--        <field name="name">meeting.details.tree</field>-->
-    <!--        <field name="model">meeting.details</field>-->
-    <!--        <field name="arch" type="xml">-->
-    <!--            <tree>-->
-    <!--                <field name="employee_id"/>-->
-    <!--                <field name="client_id"/>-->
-    <!--                <field name="meeting_start_date"/>-->
-    <!--                <field name="meeting_end_date"/>-->
-    <!--                <field name="is_present" widget="radio"/>-->
-    <!--            </tree>-->
-    <!--        </field>-->
-    <!--    </record>-->
+<!--     Meeting Details Tree View-->
+        <record id="view_meeting_details_tree" model="ir.ui.view">
+            <field name="name">meeting.details.tree</field>
+            <field name="model">meeting.details</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="client_id"/>
+                    <field name="meeting_start_date"/>
+                    <field name="is_present"/>
+                </tree>
+            </field>
+        </record>
 
     <!-- Meeting Tracker Action -->
     <record id="action_meeting_tracker" model="ir.actions.act_window">

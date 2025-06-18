@@ -7,11 +7,11 @@
                 <group>
                     <group>
                         <field name="date_from"/>
-                        <field name="partner_id"/>
+                        <field name="partner_id" groups="prime_sol_custom.group_score_card_admin"/>
                     </group>
                     <group>
                         <field name="date_to"/>
-                        <field name="department_id"/>
+                        <field name="department_id" groups="prime_sol_custom.group_score_card_admin"/>
                     </group>
                 </group>
                 <footer>
