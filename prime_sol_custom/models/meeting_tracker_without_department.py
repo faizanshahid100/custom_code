@@ -3,18 +3,16 @@ from email.policy import default
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
-
 class MeetingTracker(models.Model):
     _name = "meeting.tracker"
     _rec_name = "client_id"
     _description = "Meeting Tracker"
 
     date = fields.Date(string="Date", required=True, default=fields.Date.today)
-    record_person = fields.Many2one('hr.employee', string="Record Person",
-                                    default=lambda self: self.env.user.employee_id, readonly=True)
-    client_id = fields.Many2one('res.partner', required=True, string="Client", domain=[('is_company', '=', True)])
+    record_person = fields.Many2one('hr.employee', string="Record Person", default=lambda self: self.env.user.employee_id, readonly=True)
+    client_id = fields.Many2one('res.partner', required=True, string="Client", domain=[('is_company','=', True)])
     kpi_measurement = fields.Selection([('na', 'N/A'), ('billable', 'Billable'), ('kpi', 'KPI')], default='kpi')
-    department_id = fields.Many2one('hr.department', string='Department', required=True)
+    department_id = fields.Many2one('hr.department', string='Department')
     meeting_type = fields.Selection([
         ('internal', 'Internal Online'),
         ('onsite', 'Onsite Engagement Events'),
@@ -42,29 +40,21 @@ class MeetingTracker(models.Model):
     def create(self, vals):
         """ Automatically create meeting details for all active employees when a Meeting Tracker record is created. """
         meeting = super(MeetingTracker, self).create(vals)
-        meeting._auto_create_meeting_details(vals.get('client_id'), vals.get('department_id'))
+        meeting._auto_create_meeting_details(vals.get('client_id'))
         return meeting
 
     def write(self, vals):
         """ Also trigger meeting details creation when client_id is updated. """
         res = super(MeetingTracker, self).write(vals)
-        if 'client_id' in vals and not 'department_id' in vals:
+        if 'client_id' in vals:
             # 🔴 Delete existing meeting details before adding new ones
             self.meeting_details.unlink()
-            self._auto_create_meeting_details(vals.get('client_id'), self.department_id.id)
-        elif 'department_id' in vals and not 'client_id' in vals:
-            # 🔴 Delete existing meeting details before adding new onesAdd commentMore actions
-            self.meeting_details.unlink()
-            self._auto_create_meeting_details(self.client_id.id, vals.get('department_id'))
-        elif 'client_id' in vals and 'department_id' in vals:
-            # 🔴 Delete existing meeting details before adding new ones
-            self.meeting_details.unlink()
-            self._auto_create_meeting_details(vals.get('client_id'), vals.get('department_id'))
+            self._auto_create_meeting_details(vals.get('client_id'))
         return res
 
-    def _auto_create_meeting_details(self, client_id, department_id):
+    def _auto_create_meeting_details(self, client_id):
         """ Helper function to create meeting details for active employees of the selected client. """
-        if not client_id and not department_id:
+        if not client_id:
             return
 
         for meeting in self:
@@ -72,7 +62,6 @@ class MeetingTracker(models.Model):
                 ('active', '=', True),
                 ('contractor', '!=', False),
                 ('contractor', '=', client_id),
-                ('department_id', '=', department_id)
             ])
 
             meeting_details = []
@@ -97,7 +86,7 @@ class MeetingDetails(models.Model):
 
     meeting_id = fields.Many2one('meeting.tracker', string="Meeting Tracker", ondelete="cascade")
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-    client_id = fields.Many2one('res.partner', string="Client", domain=[('is_company', '=', True)])
+    client_id = fields.Many2one('res.partner', string="Client", domain=[('is_company','=', True)])
     project = fields.Char(string='Project')
     meeting_start_date = fields.Datetime(string="Meeting Start Date", required=True)
     meeting_end_date = fields.Datetime(string="Meeting End Date", required=True)
