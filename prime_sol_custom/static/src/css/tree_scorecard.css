@@ -1,0 +1,21 @@
+/* Add custom row above feedback column */
+.o_list_view thead::before {
+    content: '';
+    display: table-row;
+    height: 30px;
+}
+
+/* Fake header cell above feedback */
+.o_list_view th[data-name="feedback"]::before {
+    content: "Client Feedback";
+    position: absolute;
+    top: -24px;
+    left: 0;
+    width: 320px;
+    text-align: center;
+    font-weight: bold;
+    background: #dfefff;
+    border: 1px solid #ccc;
+    padding: 4px 0;
+    z-index: 1;
+}

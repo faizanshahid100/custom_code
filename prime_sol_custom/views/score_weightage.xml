@@ -30,7 +30,7 @@
                             <field name='is_active'/>
                             <field name='name' required="1"/>
                             <field name='partner_id' required="1"/>
-                            <field name='department_id'/>
+                            <field name='department_id' required="1"/>
                             <field name='feedback'/>
                             <field name='survey'/>
                             <field name='kpi'/>

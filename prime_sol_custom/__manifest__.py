@@ -35,6 +35,7 @@
         'web.assets_backend': [
             'prime_sol_custom/static/src/js/csat_validation.js',
             'prime_sol_custom/static/src/xml/*.xml',
+            'prime_sol_custom/static/src/css/tree_scorecard.css',
         ],
     },
     'installable': True,

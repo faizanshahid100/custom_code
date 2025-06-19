@@ -30,8 +30,11 @@
                 <field name="date_feedback"/>
                 <field name="client_id"/>
                 <field name="feedback_type"/>
+                <field name="client_feedback"/>
+                <field name="outcome_suggested"/>
                 <field name="next_followup_date"/>
                 <field name="feedback_status"/>
+                <field name="comment"/>
             </tree>
         </field>
     </record>
