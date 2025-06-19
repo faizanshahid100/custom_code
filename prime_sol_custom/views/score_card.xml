@@ -23,12 +23,12 @@
                 <field name="employee_id"/>
                 <field name="partner_id"/>
                 <field name="department_id"/>
-                <field name="feedback" widget="percentage" optional="hide"/>
-                <field name="survey" widget="percentage" optional="hide"/>
-                <field name="kpi" widget="percentage" optional="hide"/>
-                <field name="weekly_meeting" widget="percentage" optional="hide"/>
-                <field name="daily_attendance" widget="percentage" optional="hide"/>
-                <field name="office_coming" widget="percentage" invisible="1" optional="hide"/>
+                <field name="feedback" widget="percentage" optional="show"/>
+                <field name="survey" widget="percentage" optional="show"/>
+                <field name="kpi" widget="percentage" optional="show"/>
+                <field name="weekly_meeting" widget="percentage" optional="show"/>
+                <field name="daily_attendance" widget="percentage" optional="show"/>
+                <field name="office_coming" widget="percentage" invisible="1" optional="show"/>
                 <field name="cumulative_score" widget="percentage"/>
             </tree>
         </field>
@@ -46,7 +46,7 @@
                             </div>
                         </button>
 
-                        <button name="action_view_survey" type="object" class="oe_stat_button" icon="">
+                        <button name="action_view_survey" type="object" class="oe_stat_button" icon="fa-user">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Survey Details</span>
                             </div>
@@ -59,13 +59,13 @@
                         </button>
 
                         <button name="action_view_weekly_meeting" type="object" class="oe_stat_button"
-                                icon="fa-calendar-week">
+                                icon="fa-solid fa-tv">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Weekly Meeting Details</span>
                             </div>
                         </button>
 
-                        <button name="action_view_attendance" type="object" class="oe_stat_button" icon="fa-user-check">
+                        <button name="action_view_attendance" type="object" class="oe_stat_button">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Attendance Details</span>
                             </div>

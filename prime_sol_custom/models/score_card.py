@@ -78,6 +78,12 @@ class ScoreCard(models.Model):
             'res_model': 'hr.employee.feedback',
             'domain': [('employee_id', '=', self.employee_id.id), ('date_feedback', '>=', self.date_from), ('date_feedback', '<=', self.date_to)],
             'target': 'current',
+            'help': _(
+                '<p class="o_view_nocontent_smiling_face">'
+                '<b>No feedback received.</b><br/>'
+                'No news is good news — congratulations, you scored 100%!'
+                '</p>'
+            )
         }
     def action_view_survey(self):
         return {
@@ -88,6 +94,12 @@ class ScoreCard(models.Model):
             'domain': [('employee_id', '=', self.employee_id.id), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False), ('create_date', '>=', self.date_from),
                        ('create_date', '<=', self.date_to)],
             'target': 'current',
+            'help': _(
+                '<p class="o_view_nocontent_smiling_face">'
+                '<b>No survey records found.</b><br/>'
+                'Please reach out to your line manager for further details.'
+                '</p>'
+            )
         }
     def action_view_kpi(self):
         return {
