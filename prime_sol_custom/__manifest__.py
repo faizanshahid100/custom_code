@@ -27,6 +27,7 @@
         'views/survey_user_input_ext.xml',
         'views/score_weightage.xml',
         'views/score_card.xml',
+        'views/hr_leave_type_ext.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',
