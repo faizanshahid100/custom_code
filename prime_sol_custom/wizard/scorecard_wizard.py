@@ -220,7 +220,7 @@ class ScorecardWizard(models.TransientModel):
             })
 
         return {
-            'name': 'Score Card',
+            'name': f"Score Card ({self.date_from.strftime('%d-%b-%Y') } - {self.date_to.strftime('%d-%b-%Y')})",
             'type': 'ir.actions.act_window',
             'res_model': 'score.card',
             'view_mode': 'tree,form,pivot,graph',
