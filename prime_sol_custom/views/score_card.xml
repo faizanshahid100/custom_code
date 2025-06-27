@@ -9,6 +9,7 @@
 
                 <group expand="1" string="Group By">
                     <filter name="group_by_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_by_partner_id" string="Company" context="{'group_by': 'partner_id'}"/>
                 </group>
             </search>
         </field>

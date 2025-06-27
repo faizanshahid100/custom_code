@@ -57,7 +57,7 @@ class ScoreCard(models.Model):
     @api.depends('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _compute_cumulative_score(self):
         for record in self:
-            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', self.partner_id.id), ('department_id', '=', record.employee_id.department_id.id)])
+            active_weightage = self.env['score.weightage'].search([('is_active', '=', True), ('partner_id', '=', record.employee_id.contractor.id), ('department_id', '=', record.employee_id.department_id.id)])[0]
             if not active_weightage:
                 raise ValidationError(f'No Weightage Available for **{record.employee_id.department_id.name}** Department')
             record.cumulative_score = (

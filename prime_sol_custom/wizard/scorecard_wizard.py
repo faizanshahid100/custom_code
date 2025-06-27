@@ -26,7 +26,7 @@ class ScorecardWizard(models.TransientModel):
 
     date_from = fields.Date(string="Start Date", required=True)
     date_to = fields.Date(string="End Date", required=True)
-    partner_id = fields.Many2one('res.partner', string="Company", required=True, domain=[('is_company', '=', True)])
+    partner_id = fields.Many2one('res.partner', string="Company", domain=[('is_company', '=', True)])
     department_id = fields.Many2one('hr.department', string='Department')
 
     def get_employee_leave_dates(self, employee, start_date, end_date):
@@ -65,16 +65,23 @@ class ScorecardWizard(models.TransientModel):
         # Optional: Clear existing summaries
         self.env['score.card'].search([]).unlink()
 
-        if self.department_id:
+        if self.department_id and self.partner_id:
             employees = self.env['hr.employee'].search([]).filtered(
                 lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
-        elif not self.department_id:
+        elif not self.department_id and self.partner_id:
             employees = self.env['hr.employee'].search([]).filtered(
                 lambda l: l.contractor.id == self.partner_id.id)
+        elif self.department_id and not self.partner_id:
+            employees = self.env['hr.employee'].search([]).filtered(
+                lambda l: l.department_id.id == self.department_id.id)
+        elif not self.department_id and not self.partner_id:
+            employees = self.env['hr.employee'].search([])
 
         if not employees:
             raise ValidationError('No employee record exist.')
         for employee in employees:
+            if not employee.joining_date:
+                raise ValidationError(f"Joining date is missing for employee {employee.name}. Please update it in the employee profile.")
             effective_start_date = max(self.date_from, fields.Date.from_string(employee.joining_date))
             month_diff = (self.date_to.year - effective_start_date.year) * 12 + (self.date_to.month - effective_start_date.month + 1)
             total_bonus_points = month_diff * 5
@@ -176,7 +183,6 @@ class ScorecardWizard(models.TransientModel):
 
             ####### Weekly Meetings ########
             meetings_set = self.env['meeting.tracker'].search([
-                ('client_id', '=', self.partner_id.id),
                 ('date', '>=', effective_start_date),
                 ('date', '<=', self.date_to)
             ])
@@ -203,8 +209,8 @@ class ScorecardWizard(models.TransientModel):
                 'date_from': effective_start_date,
                 'date_to': self.date_to,
                 'employee_id': employee.id,
-                'partner_id': self.partner_id.id,
-                'department_id': self.department_id.id,
+                'partner_id': employee.contractor.id,
+                'department_id': employee.department_id.id,
                 'feedback': feedback,
                 'survey': survey,
                 'kpi': kpi,

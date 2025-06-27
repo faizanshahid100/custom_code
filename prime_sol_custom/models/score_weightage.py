@@ -17,17 +17,18 @@ class ScoreWeightage(models.Model):
     daily_attendance = fields.Float(string='Daily Attendance')
     office_coming = fields.Float(string='Office Coming')
 
-    @api.constrains('is_active', 'department_id')
+    @api.constrains('is_active', 'department_id', 'partner_id')
     def _check_unique_active(self):
         for record in self:
             if record.is_active:
                 count = self.search_count([
                     ('is_active', '=', True),
                     ('department_id', '=', record.department_id.id),
+                    ('partner_id', '=', record.partner_id.id),
                     ('id', '!=', record.id)  # Exclude the current record
                 ])
                 if count > 0:
-                    raise ValidationError('Only one active record is allowed per department.')
+                    raise ValidationError('Only one active record is allowed per Company/department.')
 
     @api.constrains('feedback', 'survey', 'kpi', 'weekly_meeting', 'daily_attendance', 'office_coming')
     def _check_total_percentage(self):
