@@ -91,23 +91,3 @@ class HrAttendance(models.Model):
             elapsed = now - att.check_in
             if elapsed >= time_limit:
                 att.check_out = att.check_in + time_limit
-
-    # def _auto_checkout_employees(self):
-    #     two_days_ago = date.today() - timedelta(days=2)
-    #     attendances = self.search([
-    #         ('check_out', '=', False),
-    #         ('check_in', '<=', two_days_ago)
-    #     ])
-    #     for attendance in attendances:
-    #         if attendance.employee_id.hour_start_from > 0:
-    #             check_in_time = attendance.check_in + timedelta(hours=5)
-    #             check_out_time = attendance.check_out
-    #             working_hours = timedelta(hours=attendance.employee_id.total_working_hour)
-    #             allowed_check_out_time = check_in_time.replace(hour=int(attendance.employee_id.hour_start_from), minute=0,
-    #                                                            second=0) + working_hours
-    #             if attendance.check_in and allowed_check_out_time < attendance.check_in:
-    #                 continue  # Skip this record if the official checkout time is earlier than check-in
-    #             if not attendance.check_out:
-    #                 attendance.write({'check_out': allowed_check_out_time})
-    #             if check_out_time and check_out_time > allowed_check_out_time:
-    #                 self.check_out = allowed_check_out_time
