@@ -98,7 +98,12 @@ class ScorecardWizard(models.TransientModel):
                 total_negative_points = negative_count * 5
                 points_of_tenure = total_bonus_points - total_negative_points
 
-                feedback = min(points_of_tenure / total_bonus_points, 1) if total_bonus_points else 0
+                if points_of_tenure < 0:
+                    feedback = 0
+                elif total_bonus_points:
+                    feedback = min(points_of_tenure / total_bonus_points, 1)
+                else:
+                    feedback = 0
 
             ####### Survey (Inprogress)########
             start = fields.Datetime.to_datetime(effective_start_date)
