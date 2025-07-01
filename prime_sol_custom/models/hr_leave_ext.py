@@ -119,8 +119,8 @@ class HolidaysRequestExt(models.Model):
                         raise ValidationError(
                             _("Employee must have completed 6 months of service for Maternity Leave."))
 
-            elif leave_type == 'casual leaves' and (leave.request_date_from - today).days < 2:
-                raise ValidationError(_("Casual Leave must be applied at least 48 hours in advance."))
+            # elif leave_type == 'casual leaves' and (leave.request_date_from - today).days < 2:
+            #     raise ValidationError(_("Casual Leave must be applied at least 48 hours in advance."))
 
             elif leave_type == 'annual leaves' and (leave.request_date_from - today).days < 14:
                 raise ValidationError(_("Annual Leave must be applied at least 2 weeks in advance."))
