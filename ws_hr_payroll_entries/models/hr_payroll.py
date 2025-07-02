@@ -4,6 +4,10 @@ from odoo import models, fields, api, _
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import ValidationError, UserError
+import io
+import base64
+from datetime import timedelta
+import xlsxwriter
 
 
 class HrPayslipEmployees(models.TransientModel):
@@ -17,12 +21,14 @@ class HrPayslipEmployees(models.TransientModel):
         active_employee_ids = self.env.context.get('active_employee_ids', False)
         if active_employee_ids:
             employees_slip = self.env['hr.employee'].browse(active_employee_ids)
-            employees_end = employees_slip.search([('stop_salary','=',False)])
-            return employees_end
+            return employees_slip
+            # employees_end = employees_slip.search([('stop_salary','=',False)])
+            # return employees_end
         # YTI check dates too
         final_emp_list = self.env['hr.employee'].search(self._get_available_contracts_domain())
-        final_emp = final_emp_list.search([('stop_salary','=',False)])
-        return final_emp
+        return final_emp_list
+        # final_emp = final_emp_list.search([('stop_salary','=',False)])
+        # return final_emp
 
 
 class HrPayslip(models.Model):
@@ -173,3 +179,90 @@ class HrPayslip(models.Model):
 
         res = super(HrPayslip, self).compute_sheet()
         return res
+
+    def action_payment_slips_details_report(self):
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet('Payslip Report')
+        header_format = workbook.add_format({
+            'bold': 1,
+            'border': 1,
+            'size': 16,
+            'align': 'center',
+            'valign': 'vcenter',
+            'fg_color': '#8EA9DB',
+        })
+        table_format = workbook.add_format({
+            'bold': 1,
+            'border': 1,
+            'size': 11,
+            'align': 'center',
+            'valign': 'vcenter',
+            'fg_color': '#8EA9DB',
+        })
+        worksheet.set_column('A:C', 10)
+        worksheet.set_column('D:D', 22)
+        worksheet.set_column('E:E', 25)
+        worksheet.set_column('F:F', 33)
+        worksheet.set_column('G:G', 22)
+        worksheet.set_column('H:J', 15)
+        worksheet.set_column('K:AC', 22)
+
+        # Title
+        worksheet.merge_range('B2:L3', 'Payroll Report', header_format)
+        # worksheet.write('B5', "Date From :")
+        # worksheet.write('C5', self.date_from, date_format)
+        # worksheet.write('B6', "Date To :")
+        # worksheet.write('C6', self.date_to, date_format)
+
+        headers = ['Sr. No.', 'Slip No.', 'Emp Code', 'Identification Number', 'Employee Name', 'Designation', 'Department', 'Country','Month Days', 'Payment Days' , 'Basic Salary (PKR)', 'Total Salary (PKR)', 'Bonus / Arrear(PKR)', 'Increment Arrear  (PKR)', 'Iftar Allowance (PKR)', 'Overtime  (PKR)', 'Reimbursments (PKR)', 'Loan & Advances  (PKR)', 'Others Deduction  (PKR)', '.25% WHT for UAE', '$10 Bank Charges', 'Net Payment  (PKR)', 'Net Payment  (USD)', 'Status', 'Joining Dates', 'Account Number', 'Account  Details', 'Bank Name', 'Home Address']
+        for col, header in enumerate(headers):
+            worksheet.write(4, col, header, table_format)
+
+        # Write payslip data
+        row = 5
+        for sr_no, payslip in enumerate(self):
+            worksheet.write(row, 0, sr_no + 1)
+            worksheet.write(row, 1, payslip.number)
+            worksheet.write(row, 2, payslip.employee_id.barcode)
+            worksheet.write(row, 3, payslip.employee_id.identification_id)
+            worksheet.write(row, 4, payslip.employee_id.name)
+            worksheet.write(row, 5, payslip.employee_id.job_id.name if payslip.employee_id.job_id else '')
+            worksheet.write(row, 6, payslip.employee_id.department_id.name if payslip.employee_id.department_id else '')
+            worksheet.write(row, 7, payslip.employee_id.country_id.name or '')
+            worksheet.write(row, 8, payslip.date_to.day or '')
+            worksheet.write(row, 9, '')
+            worksheet.write(row, 10, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Basic Salary') if line.total)}")
+            worksheet.write(row, 11, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Allowance").mapped("total")):,.2f}')
+            worksheet.write(row, 12, '')
+            worksheet.write(row, 13, '')
+            worksheet.write(row, 14, '')
+            worksheet.write(row, 15, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Overtime Pay') if line.total)}")
+            worksheet.write(row, 16, '')
+            worksheet.write(row, 17, '')
+            worksheet.write(row, 18, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Deduction").mapped("total")):,.2f}')
+            worksheet.write(row, 19, '')
+            worksheet.write(row, 20, '')
+            worksheet.write(row, 21, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Net Salary') if line.total)}")
+
+
+            row += 1
+
+        workbook.close()
+        output.seek(0)
+        file_data = output.read()
+        output.close()
+
+        attachment = self.env['ir.attachment'].create({
+            'name': 'payslip_report.xlsx',
+            'type': 'binary',
+            'datas': base64.b64encode(file_data),
+            'store_fname': 'payslip_report.xlsx',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'self',
+        }
