@@ -29,5 +29,6 @@
         'views/hr_attendance.xml',
         'views/hr_contract.xml',
         'views/approval_request.xml',
+        'reports/hr_payslip.xml',
     ],
 }

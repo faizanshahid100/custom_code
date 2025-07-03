@@ -244,6 +244,18 @@ class HrPayslip(models.Model):
             worksheet.write(row, 19, '')
             worksheet.write(row, 20, '')
             worksheet.write(row, 21, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Net Salary') if line.total)}")
+            worksheet.write(row, 24, payslip.employee_id.joining_date.strftime('%d %b %Y') or '')
+            worksheet.write(row, 25, payslip.employee_id.bank_account_id.acc_number or '')
+            worksheet.write(row, 26, '\n'.join(
+                part for part in [
+                    f"Title: {payslip.employee_id.bank_account_id.acc_holder_name}" if payslip.employee_id.bank_account_id.acc_holder_name else '',
+                    f"IBAN: {payslip.employee_id.bank_account_id.iban}" if payslip.employee_id.bank_account_id.iban else '',
+                    f"SWIFT: {payslip.employee_id.bank_account_id.swift}" if payslip.employee_id.bank_account_id.swift else '',
+                    f"Code: {payslip.employee_id.bank_account_id.code}" if payslip.employee_id.bank_account_id.code else ''
+                ] if part
+            ))
+            worksheet.write(row, 27, payslip.employee_id.bank_account_id.bank_id.name or '')
+            worksheet.write(row, 28, payslip.employee_id.address_home_id.name)
 
 
             row += 1
@@ -266,3 +278,6 @@ class HrPayslip(models.Model):
             'url': '/web/content/%s?download=true' % attachment.id,
             'target': 'self',
         }
+
+    def print_payslip_pdf(self):
+        return self.env.ref('ws_hr_payroll_entries.action_report_payslip_custom').report_action(self)

@@ -9,6 +9,11 @@
                 <xpath expr="//field[@name='acc_holder_name']" position="after">
                     <field name="iban"/>
                 </xpath>
+                <xpath expr="//field[@name='bank_id']" position="after">
+                    <field name="swift"/>
+                    <field name="code"/>
+                    <field name="bank_address"/>
+                </xpath>
             </field>
         </record>
 
