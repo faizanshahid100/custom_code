@@ -3,9 +3,9 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <div style="font-family: Arial, sans-serif; font-size: 14px; border: double; padding: 10px; width: 800px; margin: auto;">
+                    <div style="font-family: Arial, sans-serif; font-size: 13px; border: double; padding: 10px; width: 730px; margin: auto;">
                         <!-- Header -->
-                        <div style="text-align: center;">
+                        <div style="text-align:center;">
                             <!--                            <img t-if="docs.company_id.logo" style="width: 64px; height: 64px; object-fit: cover;" t-attf-src="data:image/png;base64,{{docs.company_id.logo}}" alt="Logo"/>-->
                             <h2 style="border: 1px solid black; margin-top: 15px; padding: 5px; text-transform: uppercase;">
                                 Prime System Solutions FZ - LLC
@@ -14,7 +14,7 @@
 
                         <!-- Payslip Info -->
                         <div style="margin-top: 20px;">
-                            <div style="float: left; width: 50%;">
+                            <div style="float: left; width: 100%;">
                                 <p>
                                     <strong>PAYMENT SLIP FOR THE MONTH OF:</strong>
                                     <u>
@@ -51,162 +51,258 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- Payment Table -->
-                        <div style="clear: both; margin-top: 20px; border: 1px solid black; padding: 10px;">
-                            <div class="row">
+                        <br/>
+                        <div style="clear: both; margin-top: 20px; border: 1px solid black;">
+                            <table style="width: 100%;">
+                                <t t-set="total_payment" t-value="0"/>
+                                <!-- Payment Table -->
+                                <div class="row" style="border-bottom:1px solid black;padding:5px;">
+                                    <div class="col-2" style="margin-left:10px;">
+                                        <strong>TOTAL PAYMENT</strong>
+                                    </div>
+                                    <div class="col-8"></div>
+                                    <div class="col-2" style="text-align: center;">
+                                        <strong>USD</strong>
+                                    </div>
+                                </div>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Basic Payment</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Basic Salary').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment"
+                                           t-value="total_payment+o.line_ids.filtered(lambda l: l.name == 'Basic Salary').total"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong style="text-align: left;">Allowance</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name in ('Travel Allowance', 'Fuel Allowance', 'Relocation Allowance')).mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment + (sum(o.line_ids.filtered(lambda l: l.name in ('Travel Allowance', 'Fuel Allowance', 'Relocation Allowance')).mapped('total')))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Bonus / Arrear</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Increment Arrear</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Iftar Allowance</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Expenses reimbursments</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Overtime</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Overtime').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Overtime').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>0.25% WHT</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="row">
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Bank Charges</strong>
+                                        </div>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(10)"/>
+                                            </strong>
+                                        </div>
+                                        <t t-set="total_payment" t-value="total_payment+10"/>
+                                    </div>
+                                </tr>
+                            </table>
+                            <br/>
+                            <div class="row" style="border-top:1px solid black;padding:5px;">
                                 <div class="col-2" style="margin-left:10px;">
                                     <strong>TOTAL PAYMENT</strong>
                                 </div>
                                 <div class="col-8"></div>
                                 <div class="col-2" style="text-align: center;">
-                                    <strong>USD</strong>
+                                    <strong>
+                                        <t t-esc="'{:,.2f}'.format((total_payment) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                    </strong>
                                 </div>
                             </div>
-                            <table style="width: 100%; border-collapse: collapse;">
+                        </div>
+                        <br/>
+                        <!--                        Deduction-->
+                        <div style="clear: both; margin-top: 20px; border: 1px solid black;">
+                            <table style="width: 100%;">
+                                <t t-set="total_deduction" t-value="0"/>
+                                <!-- Payment Table -->
+                                <div class="row" style="border-bottom:1px solid black;padding:5px;">
+                                    <div class="col-2" style="margin-left:10px;">
+                                        <strong>DEDUCTIONS</strong>
+                                    </div>
+                                    <div class="col-8"></div>
+                                    <div class="col-2" style="text-align: center;">
+                                        <strong>USD</strong>
+                                    </div>
+                                </div>
                                 <tr>
                                     <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Basic Payment</strong>
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Income Tax</strong>
                                         </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
-                                        </div>
-                                    </div>
-                                </tr>
-                                 <tr>
-                                    <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong style="text-align: left;">Medical Allowance</strong>
-                                        </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
-                                        </div>
-                                    </div>
-                                </tr>
-                                <tr>
-                                    <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Bonus / Arrear</strong>
-                                        </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
-                                        </div>
-                                    </div>
-                                </tr>
-                                <tr>
-                                    <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Increment Arrear</strong>
-                                        </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
                                         </div>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Iftar Allowance</strong>
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong style="text-align: left;">Loan and Advances</strong>
                                         </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
-                                        </div>
-                                    </div>
-                                </tr>
-                                <tr>
-                                    <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Expenses reimbursments</strong>
-                                        </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
                                         </div>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>0.25% WHT</strong>
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Others</strong>
                                         </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
-                                        </div>
-                                    </div>
-                                </tr>
-                                <tr>
-                                    <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Bank Charges</strong>
-                                        </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Deduction').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                            <t t-set="total_deduction"
+                                               t-value="total_deduction+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Deduction').mapped('total'))"/>
                                         </div>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
-                                        <div class="col-10" style="border:1px solid black;padding:5px;">
-                                            <strong>Overtime</strong>
+                                        <div class="col-10" style="margin:5px;">
+                                            <strong>Mobile Deduction</strong>
                                         </div>
-                                        <div class="col-2" style="border:1px solid black;padding:5px;text-align:center;">
-                                            <strong>USD</strong>
+                                        <div class="col-2"
+                                             style="padding:5px;text-align:center;">
+                                            <strong>
+                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                            </strong>
+                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
                                         </div>
                                     </div>
                                 </tr>
                             </table>
                             <br/>
-                            <div class="row">
-                                <div class="col-2" style="margin-left:10px;">
-                                    <strong>TOTAL PAYMENT</strong>
+                            <div class="row" style="border-top:1px solid black;padding:5px;">
+                                <div class="col-8" style="margin-left:10px;">
+                                    <strong>TOTAL DEDUCTIONS FOR THE MONTH</strong>
                                 </div>
-                                <div class="col-8"></div>
+                                <div class="col-2"></div>
                                 <div class="col-2" style="text-align: center;">
-                                    <strong>USD</strong>
+                                    <strong>
+                                        <t t-esc="'{:,.2f}'.format(total_deduction / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                    </strong>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Deductions Table -->
-                        <div style="margin-top: 20px; border: 1px solid black; padding: 10px;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="width: 70%; vertical-align: top;">
-                                        <strong>DEDUCTIONS</strong>
-                                        <br/>
-                                        Income Tax
-                                        <br/>
-                                        Loan and Advances
-                                        <br/>
-                                        Others
-                                        <br/>
-                                        Mobile Deduction
-                                        <br/>
-                                        -------------------------------
-                                        <br/>
-                                        <strong>TOTAL DEDUCTIONS FOR THE MONTH</strong>
-                                    </td>
-                                    <td style="width: 30%; text-align: right; vertical-align: top;">
-                                        <strong>USD</strong>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <br/>
-                                        <strong>____</strong>
-                                    </td>
-                                </tr>
-                            </table>
                         </div>
 
                         <!-- Net Payment -->
                         <p style="margin-top: 20px;">
                             <strong>NET PAYMENT TRANSFERRED FOR THE MONTH (USD):</strong>
-                            ____________________
+                            <strong>
+                                <t t-esc="'{:,.2f}'.format((total_payment-total_deduction) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                            </strong>
                         </p>
 
                         <!-- Note -->
-                        <div style="margin-top: 30px; font-size: 13px;">
+                        <div style="margin-top: 20px; font-size: 13px; border:1px solid black;padding:5px;">
                             <p>
                                 <strong>Note:</strong>
                             </p>
@@ -225,7 +321,21 @@
             </t>
         </t>
     </template>
-
+    <record id="payment_slip_paperformat" model="report.paperformat">
+        <field name="name">Payment Slip paperformat</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">380</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">30</field>
+        <field name="margin_bottom">23</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">20</field>
+        <field name="dpi">96</field>
+    </record>
     <record id="action_report_payslip_custom" model="ir.actions.report">
         <field name="name">Payslip PDF</field>
         <field name="model">hr.payslip</field>
@@ -234,5 +344,6 @@
         <field name="report_file">ws_hr_payroll_entries.report_payslip_document</field>
         <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="payment_slip_paperformat"/>
     </record>
 </odoo>

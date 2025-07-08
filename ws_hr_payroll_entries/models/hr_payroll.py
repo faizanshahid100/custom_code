@@ -205,8 +205,8 @@ class HrPayslip(models.Model):
         worksheet.set_column('E:E', 25)
         worksheet.set_column('F:F', 33)
         worksheet.set_column('G:G', 22)
-        worksheet.set_column('H:J', 15)
-        worksheet.set_column('K:AC', 22)
+        worksheet.set_column('H:M', 15)
+        worksheet.set_column('N:AJ', 22)
 
         # Title
         worksheet.merge_range('B2:L3', 'Payroll Report', header_format)
@@ -215,7 +215,7 @@ class HrPayslip(models.Model):
         # worksheet.write('B6', "Date To :")
         # worksheet.write('C6', self.date_to, date_format)
 
-        headers = ['Sr. No.', 'Slip No.', 'Emp Code', 'Identification Number', 'Employee Name', 'Designation', 'Department', 'Country','Month Days', 'Payment Days' , 'Basic Salary (PKR)', 'Total Salary (PKR)', 'Bonus / Arrear(PKR)', 'Increment Arrear  (PKR)', 'Iftar Allowance (PKR)', 'Overtime  (PKR)', 'Reimbursments (PKR)', 'Loan & Advances  (PKR)', 'Others Deduction  (PKR)', '.25% WHT for UAE', '$10 Bank Charges', 'Net Payment  (PKR)', 'Net Payment  (USD)', 'Status', 'Joining Dates', 'Account Number', 'Account  Details', 'Bank Name', 'Home Address']
+        headers = ['Sr. No.', 'Slip No.', 'Emp Code', 'Identification Number', 'Employee Name', 'Designation', 'Department', 'Country','Month Days', 'Payment Days' , 'Basic Salary', 'Travel Allowances', 'Fuel Allowances', 'Relocation Allowances', 'Total Salary', 'Referral Bonus', 'Performance Bonus', 'Wedding Bonus', 'Increment Arrear', 'Iftar Allowance', 'Overtime', 'Reimbursement Medical', 'Fuel', 'Mobile', 'Certifications', 'Conversion Rate', 'Travel', 'Subscription', 'Loan & Advances', 'Others Deduction', '0.25% WHT for UAE', '$10 Bank Charges', 'Net Payment', 'Net Payment (USD)', 'Status', 'Joining Dates', 'Account Number', 'Account Details', 'Bank Name', 'Home Address']
         for col, header in enumerate(headers):
             worksheet.write(4, col, header, table_format)
 
@@ -232,21 +232,34 @@ class HrPayslip(models.Model):
             worksheet.write(row, 7, payslip.employee_id.country_id.name or '')
             worksheet.write(row, 8, payslip.date_to.day or '')
             worksheet.write(row, 9, '')
-            worksheet.write(row, 10, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Basic Salary') if line.total)}")
-            worksheet.write(row, 11, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Allowance").mapped("total")):,.2f}')
-            worksheet.write(row, 12, '')
-            worksheet.write(row, 13, '')
-            worksheet.write(row, 14, '')
-            worksheet.write(row, 15, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Overtime Pay') if line.total)}")
-            worksheet.write(row, 16, '')
-            worksheet.write(row, 17, '')
-            worksheet.write(row, 18, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Deduction").mapped("total")):,.2f}')
-            worksheet.write(row, 19, '')
-            worksheet.write(row, 20, '')
-            worksheet.write(row, 21, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.name == 'Net Salary') if line.total)}")
-            worksheet.write(row, 24, payslip.employee_id.joining_date.strftime('%d %b %Y') or '')
-            worksheet.write(row, 25, payslip.employee_id.bank_account_id.acc_number or '')
-            worksheet.write(row, 26, '\n'.join(
+            worksheet.write(row, 10, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Basic Salary') if line.total)}")
+            worksheet.write(row, 11, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Travel Allowance') if line.total)}")
+            worksheet.write(row, 12, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Fuel Allowance') if line.total)}")
+            worksheet.write(row, 13, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Relocation Allowance') if line.total)}")
+            worksheet.write(row, 14, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name in ["Allowance", "Basic"]).mapped("total")):,.2f}')
+            worksheet.write(row, 15, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Bonus Referral') if line.total)}")
+            worksheet.write(row, 16, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Bonus Performance') if line.total)}")
+            worksheet.write(row, 17, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Bonus Wedding') if line.total)}")
+            worksheet.write(row, 18, '0')#TODO
+            worksheet.write(row, 19, '0')#TODO
+            worksheet.write(row, 20, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Overtime') if line.total)}")
+            worksheet.write(row, 21, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Medical') if line.total)}")
+            worksheet.write(row, 22, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Fuel') if line.total)}")
+            worksheet.write(row, 23, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Mobile') if line.total)}")
+            worksheet.write(row, 24, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Certifications') if line.total)}")
+            worksheet.write(row, 25, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Conversion Rate') if line.total)}")
+            worksheet.write(row, 26, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Travel') if line.total)}")
+            worksheet.write(row, 27, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Reimbursement Subscription') if line.total)}")
+            worksheet.write(row, 28, '0') #TODO
+            worksheet.write(row, 29, f'{sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Deduction").mapped("total")):,.2f}')
+            worksheet.write(row, 30, f'{((sum(payslip.line_ids.filtered(lambda l: l.category_id.name in ["Allowance", "Basic", "Bonus", "Overtime", "Reimbursement"]).mapped("total")) - sum(payslip.line_ids.filtered(lambda l: l.category_id.name == "Deduction").mapped("total"))) / 100) * 0.25:,.2f}')
+            worksheet.write(row, 31, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == '$10 Bank Charges') if line.total)}")
+            worksheet.write(row, 32, f"{', '.join(f'{line.total:,.2f}' for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Net Salary') if line.total)}")
+            worksheet.write(row, 33, f"{sum(line.total for line in payslip.line_ids.filtered(lambda l: l.salary_rule_id.name == 'Net Salary') if line.total) / (payslip.payslip_run_id.conversion_rate or 1.0):,.2f}")
+            worksheet.write(row, 34, "")
+            worksheet.write(row, 35, payslip.employee_id.joining_date.strftime('%d %b %Y') or '')
+            worksheet.write(row, 36, payslip.employee_id.bank_account_id.acc_number or '')
+            worksheet.write(row, 37, '\n'.join(
                 part for part in [
                     f"Title: {payslip.employee_id.bank_account_id.acc_holder_name}" if payslip.employee_id.bank_account_id.acc_holder_name else '',
                     f"IBAN: {payslip.employee_id.bank_account_id.iban}" if payslip.employee_id.bank_account_id.iban else '',
@@ -254,8 +267,8 @@ class HrPayslip(models.Model):
                     f"Code: {payslip.employee_id.bank_account_id.code}" if payslip.employee_id.bank_account_id.code else ''
                 ] if part
             ))
-            worksheet.write(row, 27, payslip.employee_id.bank_account_id.bank_id.name or '')
-            worksheet.write(row, 28, payslip.employee_id.address_home_id.name)
+            worksheet.write(row, 38, payslip.employee_id.bank_account_id.bank_id.name or '')
+            worksheet.write(row, 39, payslip.employee_id.address_home_id.name)
 
 
             row += 1
