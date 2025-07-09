@@ -73,39 +73,39 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Basic Salary').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Basic').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
                                         <t t-set="total_payment"
-                                           t-value="total_payment+o.line_ids.filtered(lambda l: l.name == 'Basic Salary').total"/>
+                                           t-value="total_payment+o.line_ids.filtered(lambda l: l.category_id.name == 'Basic').total"/>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong style="text-align: left;">Allowance</strong>
+                                            <strong style="text-align: left;">Allowances</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name in ('Travel Allowance', 'Fuel Allowance', 'Relocation Allowance')).mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment + (sum(o.line_ids.filtered(lambda l: l.name in ('Travel Allowance', 'Fuel Allowance', 'Relocation Allowance')).mapped('total')))"/>
+                                        <t t-set="total_payment" t-value="total_payment + (sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Allowance').mapped('total')))"/>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong>Bonus / Arrear</strong>
+                                            <strong>Bonuses / Arrear</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Bonus').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Bonus').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
@@ -116,10 +116,10 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Arrear').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Arrear').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
@@ -130,24 +130,24 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Iftar').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Iftar').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong>Expenses reimbursments</strong>
+                                            <strong>Expenses Reimbursements</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Reimbursement').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Reimbursement').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
@@ -158,10 +158,10 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Overtime').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Overtime').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Overtime').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Overtime').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
@@ -172,24 +172,24 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == '0.25% WHT').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == 'Fuel Allowance').mapped('total'))"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == '0.25% WHT').mapped('total'))"/>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong>Bank Charges</strong>
+                                            <strong>$10 Bank Charges</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(10)"/>
+                                                <t t-esc="'{:,.2f}'.format(sum(o.line_ids.filtered(lambda l: l.name == '$10 Bank Charges').mapped('total')) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
                                         </div>
-                                        <t t-set="total_payment" t-value="total_payment+10"/>
+                                        <t t-set="total_payment" t-value="total_payment+sum(o.line_ids.filtered(lambda l: l.name == '$10 Bank Charges').mapped('total'))"/>
                                     </div>
                                 </tr>
                             </table>
@@ -201,7 +201,7 @@
                                 <div class="col-8"></div>
                                 <div class="col-2" style="text-align: center;">
                                     <strong>
-                                        <t t-esc="'{:,.2f}'.format((total_payment) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        USD <t t-esc="'{:,.2f}'.format((total_payment) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                     </strong>
                                 </div>
                             </div>
@@ -229,9 +229,9 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(0 / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
-                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
+                                            <t t-set="total_deduction" t-value="total_deduction+0"/>
                                         </div>
                                     </div>
                                 </tr>
@@ -243,16 +243,16 @@
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(0 / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
-                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
+                                            <t t-set="total_deduction" t-value="total_deduction+0"/>
                                         </div>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong>Others</strong>
+                                            <strong>Others Deduction</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
@@ -267,14 +267,14 @@
                                 <tr>
                                     <div class="row">
                                         <div class="col-10" style="margin:5px;">
-                                            <strong>Mobile Deduction</strong>
+                                            <strong>-</strong>
                                         </div>
                                         <div class="col-2"
                                              style="padding:5px;text-align:center;">
                                             <strong>
-                                                <t t-esc="'{:,.2f}'.format(1200 / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                                <t t-esc="'{:,.2f}'.format(0 / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                             </strong>
-                                            <t t-set="total_deduction" t-value="total_deduction+1200"/>
+                                            <t t-set="total_deduction" t-value="total_deduction+0"/>
                                         </div>
                                     </div>
                                 </tr>
@@ -287,7 +287,7 @@
                                 <div class="col-2"></div>
                                 <div class="col-2" style="text-align: center;">
                                     <strong>
-                                        <t t-esc="'{:,.2f}'.format(total_deduction / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        USD <t t-esc="'{:,.2f}'.format(total_deduction / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                     </strong>
                                 </div>
                             </div>
@@ -297,7 +297,7 @@
                         <p style="margin-top: 20px;">
                             <strong>NET PAYMENT TRANSFERRED FOR THE MONTH (USD):</strong>
                             <strong>
-                                <t t-esc="'{:,.2f}'.format((total_payment-total_deduction) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                USD <t t-esc="'{:,.2f}'.format((total_payment-total_deduction) / (o.payslip_run_id.conversion_rate or 1.0))"/>
                             </strong>
                         </p>
 
