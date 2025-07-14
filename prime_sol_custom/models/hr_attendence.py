@@ -90,11 +90,10 @@ class HrAttendance(models.Model):
 
         for att in attendances:
             elapsed = now - att.check_in
-            if 8 <= att.employee_id.total_working_hour <= 10:
-                if elapsed >= time_limit_8_hr:
-                    att.check_out = att.check_in + time_limit_8_hr
-                    att.env.cr.commit()
-            elif 11 <= att.employee_id.total_working_hour <= 13:
-                if elapsed >= time_limit_12_hr:
-                    att.check_out = att.check_in + time_limit_12_hr
-                    att.env.cr.commit()
+            hours = att.employee_id.total_working_hour
+            if 8 <= hours <= 10 and elapsed >= time_limit_8_hr:
+                att.check_out = att.check_in + time_limit_8_hr
+                att.env.cr.commit()
+            elif 11 <= hours <= 14 and elapsed >= time_limit_12_hr:
+                att.check_out = att.check_in + time_limit_12_hr
+                att.env.cr.commit()
