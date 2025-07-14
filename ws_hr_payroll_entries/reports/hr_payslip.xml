@@ -1,0 +1,292 @@
+<odoo>
+    <template id="report_payslip_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div style="font-family: Arial, sans-serif; font-size: 13px; border: double; padding: 10px; width: 730px; margin: auto;">
+                        <!-- Header -->
+                        <div style="text-align:center;">
+                            <h2 style="border: 1px solid black; margin-top: 15px; padding: 5px; text-transform: uppercase;">
+                                Prime System Solutions FZ - LLC
+                            </h2>
+                        </div>
+
+                        <!-- Payslip Info -->
+                        <div style="margin-top: 20px;">
+                            <p>
+                                <strong>PAYMENT SLIP FOR THE MONTH OF:</strong>
+                                <u>
+                                    <t t-esc="o.date_from.strftime('%B %Y')"/>
+                                </u>
+                            </p>
+                            <p>
+                                <strong>CONTRACTOR NAME:</strong>
+                                <u>
+                                    <t t-esc="o.employee_id.name"/>
+                                </u>
+                            </p>
+                            <p>
+                                <strong>CNIC:</strong>
+                                <u>
+                                    <t t-esc="o.employee_id.identification_id"/>
+                                </u>
+                            </p>
+                            <p>
+                                <strong>DESIGNATION:</strong>
+                                <u>
+                                    <t t-esc="o.employee_id.job_id.name"/>
+                                </u>
+                            </p>
+                            <p>
+                                <strong>DAYS PAID FOR:</strong>
+                                ____________________________
+                            </p>
+                            <p>
+                                <strong>COUNTRY:</strong>
+                                <u>
+                                    <t t-esc="o.employee_id.country_id.name"/>
+                                </u>
+                            </p>
+                        </div>
+
+                        <!-- Payment Table -->
+                        <div style="margin-top: 20px; border: 1px solid black;">
+                            <t t-set="total_payment" t-value="0"/>
+                            <table style="border: 1px solid #000;width: 100%;font-weight: bold;font-family: Ubuntu;">
+                                <thead>
+                                    <tr>
+                                        <th style="border-bottom: 1px solid #000000;padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Payment Description
+                                        </th>
+                                        <th style="border-bottom: 1px solid #000000;padding: 10px;width: 20%;text-align: center !important;">
+                                            Amount (USD)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Basic Payment
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Basic').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Allowances
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Allowance').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Bonuses / Arrear
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Bonus').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Increment Arrear
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Arrear').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Iftar Allowance
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Iftar').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Expenses Reimbursements
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Reimbursement').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Overtime
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Overtime').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            0.25% WHT for UAE
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.name == '0.25% WHT for UAE').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            $10 Bank Charges
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.name == '$10 Bank Charges').mapped('total'))"/>
+                                            <t t-set="total_payment" t-value="total_payment + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th style="border-top: 1px solid #000000;padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            TOTAL PAYMENT
+                                        </th>
+                                        <th style="border-top: 1px solid #000000;padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-esc="'{:,.2f}'.format(total_payment / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Deduction Table -->
+                        <div style="margin-top: 20px; border: 1px solid black;">
+                            <t t-set="total_deduction" t-value="0"/>
+                            <table style="border: 1px solid #000;width: 100%;font-weight: bold;font-family: Ubuntu;">
+                                <thead>
+                                    <tr>
+                                        <th style="border-bottom: 1px solid #000000;padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Deduction Description
+                                        </th>
+                                        <th style="border-bottom: 1px solid #000000;padding: 10px;width: 20%;text-align: center !important;">
+                                            Amount (USD)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Income Tax
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val" t-value="0"/>
+                                            <t t-set="total_deduction" t-value="total_deduction + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Loan and Advances
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val" t-value="0"/>
+                                            <t t-set="total_deduction" t-value="total_deduction + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            Other Deductions
+                                        </td>
+                                        <td style="padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-set="val"
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.category_id.name == 'Deduction').mapped('total'))"/>
+                                            <t t-set="total_deduction" t-value="total_deduction + val"/>
+                                            <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th style="border-top: 1px solid #000000;padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
+                                            TOTAL DEDUCTIONS
+                                        </th>
+                                        <th style="border-top: 1px solid #000000;padding: 10px;width: 20%;text-align: center !important;">
+                                            <t t-esc="'{:,.2f}'.format(total_deduction / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Net Payment -->
+                        <p style="margin-top: 20px;">
+                            <strong>NET PAYMENT TRANSFERRED FOR THE MONTH (USD):</strong>
+                            <strong>
+                                <t t-esc="'{:,.2f}'.format((total_payment - total_deduction) / (o.payslip_run_id.conversion_rate or 1.0))"/>
+                            </strong>
+                        </p>
+
+                        <!-- Note -->
+                        <div style="margin-top: 20px; font-size: 13px; border:1px solid black;padding:5px;">
+                            <p>
+                                <strong>Note:</strong>
+                            </p>
+                            <p style="color: red;">
+                                Payment slip is a confidential document and is for your information and record. It is
+                                hereby advised that payment slip should not be presented to any authority without prior
+                                intimation.
+                            </p>
+                            <p>
+                                <em>This is a computer generated document and does not require signatures.</em>
+                            </p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <record id="payment_slip_paperformat" model="report.paperformat">
+        <field name="name">Payment Slip paperformat</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">380</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">96</field>
+    </record>
+    <record id="action_report_payslip_custom" model="ir.actions.report">
+        <field name="name">Payslip PDF</field>
+        <field name="model">hr.payslip</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ws_hr_payroll_entries.report_payslip_document</field>
+        <field name="report_file">ws_hr_payroll_entries.report_payslip_document</field>
+        <field name="binding_model_id" ref="hr_payroll.model_hr_payslip"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="payment_slip_paperformat"/>
+    </record>
+</odoo>
