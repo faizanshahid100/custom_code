@@ -79,15 +79,22 @@ class HrAttendance(models.Model):
 
     @api.model
     def _auto_checkout_employees(self):
-        time_limit = timedelta(hours=9, minutes=15)
+        time_limit_8_hr = timedelta(hours=9, minutes=15)
+        time_limit_12_hr = timedelta(hours=13, minutes=15)
         now = fields.Datetime.now()
 
         attendances = self.search([
             ('check_out', '=', False),
-            ('check_in', '!=', False)
+            ('check_in', '!=', False),
         ])
 
         for att in attendances:
             elapsed = now - att.check_in
-            if elapsed >= time_limit:
-                att.check_out = att.check_in + time_limit
+            if 8 <= att.employee_id.total_working_hour <= 10:
+                if elapsed >= time_limit_8_hr:
+                    att.check_out = att.check_in + time_limit_8_hr
+                    att.env.cr.commit()
+            elif 11 <= att.employee_id.total_working_hour <= 13:
+                if elapsed >= time_limit_12_hr:
+                    att.check_out = att.check_in + time_limit_12_hr
+                    att.env.cr.commit()

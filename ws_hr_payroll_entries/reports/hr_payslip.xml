@@ -143,11 +143,11 @@
                                     </tr>
                                     <tr>
                                         <td style="padding: 10px;width: 80%;text-align: left;border-right: 1px solid #000000;">
-                                            0.25% WHT
+                                            0.25% WHT for UAE
                                         </td>
                                         <td style="padding: 10px;width: 20%;text-align: center !important;">
                                             <t t-set="val"
-                                               t-value="sum(o.line_ids.filtered(lambda l: l.name == '0.25% WHT').mapped('total'))"/>
+                                               t-value="sum(o.line_ids.filtered(lambda l: l.name == '0.25% WHT for UAE').mapped('total'))"/>
                                             <t t-set="total_payment" t-value="total_payment + val"/>
                                             <t t-esc="'{:,.2f}'.format(val / (o.payslip_run_id.conversion_rate or 1.0))"/>
                                         </td>
