@@ -7,8 +7,8 @@
             <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='check_in']" position="before">
-                    <field name="att_date"  invisible="0"/>
-                    <field name="attend_date"  invisible="1"/>
+                    <field name="att_date"  invisible="0" groups="hr_attendance.group_hr_attendance_user"/>
+                    <field name="attend_date"  invisible="1" groups="hr_attendance.group_hr_attendance_user"/>
                 </xpath>
             </field>
         </record>

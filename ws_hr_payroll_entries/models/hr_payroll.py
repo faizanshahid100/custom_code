@@ -326,6 +326,13 @@ class HrPayslip(models.Model):
     @api.onchange('line_ids.total', 'line_ids.category_id', 'line_ids.salary_rule_id')
     def _compute_wht_uae(self):
         for slip in self:
+            salary_with_allowances = slip.contract_id.wage+slip.contract_id.travel_allowances+slip.contract_id.fuel_allowances+slip.contract_id.relocation_allowances
+            bonuses = 0
+            overtime = 0
+            reimbursement = 0
+            loan_adv = 0
+            other_deductions = 0
+
             categories = ['Allowance', 'Basic', 'Bonus', 'Overtime', 'Reimbursement']
             earnings = sum(
                 line.total for line in slip.line_ids
