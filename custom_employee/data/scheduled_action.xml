@@ -1,10 +1,10 @@
 <odoo>
     <data>
         <record id="ir_cron_update_dashboard_employee_view" model="ir.cron">
-            <field name="name">Update Dashboard Employee View</field>
+            <field name="name">Update Dashboard View for Power BI</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="state">code</field>
-            <field name="code">model.update_dashboard_employee_view()</field>
+            <field name="code">model.update_dashboard_views_for_power_bi()</field>
             <field name="interval_number">15</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
