@@ -326,23 +326,23 @@ class HrPayslip(models.Model):
     @api.onchange('line_ids.total', 'line_ids.category_id', 'line_ids.salary_rule_id')
     def _compute_wht_uae(self):
         for slip in self:
-            salary_with_allowances = slip.contract_id.wage+slip.contract_id.travel_allowances+slip.contract_id.fuel_allowances+slip.contract_id.relocation_allowances
-            bonuses = 0
-            overtime = 0
-            reimbursement = 0
-            loan_adv = 0
-            other_deductions = 0
+            salary_with_allowances = slip.contract_id.wage+slip.contract_id.travel_allowances+slip.contract_id.fuel_allowances+slip.contract_id.relocation_allowances-((slip.contract_id.wage+slip.contract_id.travel_allowances+slip.contract_id.fuel_allowances+slip.contract_id.relocation_allowances)/30*slip.worked_days_line_ids.filtered(lambda l:l.work_entry_type_id.name=='Out of Contract').number_of_days)
+            overtime = sum(slip.line_ids.filtered(lambda l:l.category_id.name == 'Overtime').mapped('total'))
+            input_total = sum(line.amount if line.input_type_id.code not in ['DEDUCTION', 'ATTACH_SALARY'] else -line.amount for line in slip.input_line_ids)
 
-            categories = ['Allowance', 'Basic', 'Bonus', 'Overtime', 'Reimbursement']
-            earnings = sum(
-                line.total for line in slip.line_ids
-                if line.category_id and line.category_id.name in categories
-            )
-            deductions = sum(
-                line.total for line in slip.line_ids
-                if line.category_id and line.category_id.name == 'Deduction'
-            )
-            slip.wht_uae_amount = ((earnings - deductions) / 100) * 0.25
+            slip.wht_uae_amount = (salary_with_allowances+overtime+input_total)/100* 0.25
+
+            # TODO: below is old code
+            # categories = ['Allowance', 'Basic', 'Bonus', 'Overtime', 'Reimbursement']
+            # earnings = sum(
+            #     line.total for line in slip.line_ids
+            #     if line.category_id and line.category_id.name in categories
+            # )
+            # deductions = sum(
+            #     line.total for line in slip.line_ids
+            #     if line.category_id and line.category_id.name == 'Deduction'
+            # )
+            # slip.wht_uae_amount = ((earnings - deductions) / 100) * 0.25
 
     def print_payslip_pdf(self):
         return self.env.ref('ws_hr_payroll_entries.action_report_payslip_custom').report_action(self)
