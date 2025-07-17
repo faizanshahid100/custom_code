@@ -5,6 +5,7 @@ from datetime import date, timedelta
 
 _logger = logging.getLogger(__name__)
 
+
 class HREmployeeInherit(models.Model):
     _inherit = 'hr.employee'
 
@@ -21,8 +22,8 @@ class HREmployeeInherit(models.Model):
                                          ('no', 'No')],
                                         string='Chronic Diseases', tracking=True)
     meds_in_use = fields.Selection([('yes', 'Yes'),
-                                         ('no', 'No')],
-                                        string='Meds in Use', tracking=True)
+                                    ('no', 'No')],
+                                   string='Meds in Use', tracking=True)
     signed = fields.Char(string='Signed')
     joining_date = fields.Date(string='Joining Date')
     confirmation_date = fields.Date(string='Confirmation Date')
@@ -38,14 +39,15 @@ class HREmployeeInherit(models.Model):
     background_check = fields.Char(string="Background Check")
     credit_check = fields.Char(string="Credit Check")
     working_country_id = fields.Many2one('res.country')
-    job_type = fields.Selection([('full_time', 'Full-Time'), ('half_time', 'Half-Time')], string="Job Type", default='full_time', required=True)
+    job_type = fields.Selection([('full_time', 'Full-Time'), ('half_time', 'Half-Time')], string="Job Type",
+                                default='full_time', required=True)
     is_probation = fields.Boolean('Is probation Period', default=True)
     notice_period = fields.Boolean(string="Under Notice Period", default=False)
     notice_period_date = fields.Date(string="Notice Period End Date")
     calendar_tracking_ids = fields.One2many('calendar.tracking', 'employee_id', string="Calendar Tracking")
 
     # Contract
-    contractor = fields.Many2one('res.partner', string="Contractor", domain=[('is_company','=', True)])
+    contractor = fields.Many2one('res.partner', string="Contractor", domain=[('is_company', '=', True)])
     contractor_email = fields.Char('Contractor Email')
     contractor_id = fields.Char(string="ID")
     business_unit = fields.Char(string="Business Unit")
@@ -131,9 +133,9 @@ class HREmployeeInherit(models.Model):
         return res
 
     @api.model
-    def update_dashboard_employee_view(self):
+    def update_dashboard_views_for_power_bi(self):
         """
-        Drops and recreates the dashboard_employee_view in PostgreSQL.
+        Drops and recreates the dashboard_employee_view and dashboard_employee_ticket_calls_view in PostgreSQL.
         This function is meant to be executed as a scheduled action.
         """
         query = """
@@ -167,13 +169,39 @@ class HREmployeeInherit(models.Model):
             LEFT JOIN
                 hr_job j ON e.job_id = j.id
             LEFT JOIN
-            res_partner rp ON e.contractor = rp.id;
-            """
+                res_partner rp ON e.contractor = rp.id;
+
+            DROP VIEW IF EXISTS dashboard_employee_ticket_calls_view;
+
+            CREATE VIEW dashboard_employee_ticket_calls_view AS
+            SELECT
+                e.id AS employee_id,
+                e.kpi_measurement,
+                e.level,
+                e.contractor,
+                e.department_id,
+                e.parent_id,
+                e.employee_status,
+                dp.date_of_project,
+                dp.avg_resolved_ticket,
+                dp.billable_hours,
+                dp.non_billable_hours,
+                dp.no_calls_duration,
+                e.d_ticket_resolved,
+                e.d_billable_hours,
+                e.d_no_of_call_attended
+            FROM
+                hr_employee e
+            LEFT JOIN
+                res_users u ON e.user_id = u.id
+            LEFT JOIN
+                daily_progress dp ON dp.resource_user_id = u.id;
+        """
         try:
             self.env.cr.execute(query)
-            _logger.info("Successfully updated dashboard_employee_view.")
+            _logger.info("Successfully updated dashboard_employee_view and dashboard_employee_ticket_calls_view.")
         except Exception as e:
-            _logger.error("Error updating dashboard_employee_view: %s", str(e))
+            _logger.error("Error updating views: %s", str(e))
 
 
 class CalendarTracking(models.Model):
