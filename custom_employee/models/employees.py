@@ -203,6 +203,20 @@ class HREmployeeInherit(models.Model):
         except Exception as e:
             _logger.error("Error updating views: %s", str(e))
 
+    @api.model
+    def check_one_month_employees(self):
+        today = fields.Date.today()
+        one_month_ago = today - timedelta(days=30)
+
+        employees = self.search([
+            ('joining_date', '=', one_month_ago),
+            ('parent_id', '!=', False),
+        ])
+
+        template = self.env.ref('custom_employee.email_template_employee_one_month_review')
+        if template:
+            for emp in employees:
+                template.send_mail(emp.id, force_send=True)
 
 class CalendarTracking(models.Model):
     _name = "calendar.tracking"
