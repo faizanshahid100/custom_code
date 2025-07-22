@@ -13,6 +13,7 @@
             'wizards/daily_progress_report.xml',
             'wizards/monthly_progress_report.xml',
             'wizards/employee_daily_progress.xml',
+            'wizards/employee_tickets_feedbacks.xml',
              ],
     'demo': [],
     'css': [],
