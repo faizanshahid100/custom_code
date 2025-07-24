@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_gazetted_holiday_form" model="ir.ui.view">
+        <field name="name">gazetted.holiday.form</field>
+        <field name="model">gazetted.holiday</field>
+        <field name="arch" type="xml">
+            <form string="Gazetted Holiday">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="country_id"/>
+                        <field name="year"/>
+                    </group>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="day"/>
+                            <field name="description"/>
+                            <field name="date"/>
+                            <field name="day_name"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_gazetted_holiday_tree" model="ir.ui.view">
+        <field name="name">gazetted.holiday.tree</field>
+        <field name="model">gazetted.holiday</field>
+        <field name="arch" type="xml">
+            <tree string="Gazetted Holidays">
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="year"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_gazetted_holiday" model="ir.actions.act_window">
+        <field name="name">Gazetted Holidays</field>
+        <field name="res_model">gazetted.holiday</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_gazetted_holiday"
+              name="Gazetted Holidays"
+              parent="hr_holidays.menu_hr_holidays_configuration"
+              action="action_gazetted_holiday"
+              sequence="5"/>
+</odoo>
