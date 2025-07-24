@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="employee_tickets_feedbacks_wizard_form" model="ir.ui.view">
+            <field name="name">Employee Tickets Feedbacks Wizard</field>
+            <field name="model">employee.tickets.feedbacks</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Employee Tickets Feedbacks Wizard">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="start_date"/>
+                                <field name="department_id" options="{'no_create': True, 'no_quick_create':True, 'no_create_edit': True}"/>
+                            </group>
+                            <group>
+                                <field name="end_date"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm_tickets" string="Weekly Tickets" type="object" class="btn-primary"/>
+                        <button name="action_confirm_feedbacks" string="Weekly Feedbacks" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="wizard_action_tickets_feedbacks" model="ir.actions.act_window">
+            <field name="name">Employee Tickets Feedbacks</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.tickets.feedbacks</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem parent="hr.hr_menu_hr_reports"
+                  name="Employee Weekly Tickets/Feedbacks"
+                  action="wizard_action_tickets_feedbacks" id="menu_tickets_feedbacks"
+                  sequence="600"
+                  groups="hr.group_hr_manager"/>
+    </data>
+</odoo>

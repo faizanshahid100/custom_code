@@ -3,3 +3,4 @@ employee_attendance_register,employee.attendance.register,model_employee_attenda
 monthly_progress_report,monthly.progress.report,model_monthly_progress_report,,1,1,1,1
 daily_progress_report,daily.progress.report,model_daily_progress_report,,1,1,1,1
 employee_daily_progress,employee.daily.progress,model_employee_daily_progress,,1,1,1,1
+employee_tickets_feedbacks,employee.tickets.feedbacks,model_employee_tickets_feedbacks,,1,1,1,1

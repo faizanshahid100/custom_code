@@ -7,7 +7,7 @@
             <field name="subject">One-Month Performance Review: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
             <field name="email_to">{{ object.parent_id.work_email }}</field>
-            <field name="email_cc">sadia.hamid@primesystemsolutions.com,muhammad.salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p>Dear <t t-out="object.parent_id.name"/>,</p>
