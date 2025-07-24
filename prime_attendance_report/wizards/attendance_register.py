@@ -188,6 +188,12 @@ class EmployeeAttendanceRegister(models.TransientModel):
             'align': 'center',
             'border': 1,
         })
+        format_gazetted_holiday = workbook.add_format({
+            'bg_color': '#00FFFF',
+            'font_color': 'black',
+            'align': 'center',
+            'border': 1,
+        })
         format_present = workbook.add_format({
             'bg_color': '#D1FFBD',
             'align': 'center',
@@ -244,6 +250,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             leaves_day = self.get_employee_leave_dates(employee, self.start_date, self.end_date)
             before_contract_flag = self.get_before_contract(employee, self.start_date, self.end_date)[0]
             before_contract_date = self.get_before_contract(employee, self.start_date, self.end_date)[1]
+            gazetted_holidays = [f'{date.day}-{date.month}-{date.year}' for date in employee.gazetted_holiday_id.line_ids.mapped('date') if date] if employee.gazetted_holiday_id else []
             for col, date in enumerate(date_range, start=5):
                 date_val = str(date['date_list']) + '-' + str(date['month_list']) + '-' + str(date['year_list'])
                 state = attn_dates.get(date_val, self.absent)
@@ -260,6 +267,8 @@ class EmployeeAttendanceRegister(models.TransientModel):
                         worksheet.write(row, col, "Leave", format_leave)
                     elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in off_day:
                         worksheet.write(row, col, "Rest", format_off_day)
+                    elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in gazetted_holidays:
+                        worksheet.write(row, col, "Gazetted", format_gazetted_holiday)
                     else:
                         worksheet.write(row, col, state if state != self.absent else self.absent, format_absent)
 

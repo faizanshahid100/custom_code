@@ -7,6 +7,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/gazetted_holiday_views.xml',
+        'views/hr_employee_ext.xml',
     ],
     'installable': True,
     'application': False,

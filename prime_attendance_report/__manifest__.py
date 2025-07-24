@@ -6,7 +6,7 @@
     'description': """The HR Attendance Report.""",
     'author': "Raza",
     "website" : "https://www.xyz.com",
-    'depends': ['base', 'hr', 'hr_attendance'],
+    'depends': ['base', 'hr', 'hr_attendance', 'gazetted_holiday'],
     'data': [
             'security/ir.model.access.csv',
             'wizards/attendance_register_wizard.xml',
