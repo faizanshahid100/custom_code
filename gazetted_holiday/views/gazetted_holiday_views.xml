@@ -6,16 +6,21 @@
             <form string="Gazetted Holiday">
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="country_id"/>
-                        <field name="year"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="holiday_dates" invisible="1"/>
+                        </group>
                     </group>
                     <field name="line_ids">
                         <tree editable="bottom">
                             <field name="day"/>
                             <field name="description"/>
-                            <field name="date"/>
-                            <field name="day_name"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="total_holidays" sum="Total Holidays"/>
                         </tree>
                     </field>
                 </sheet>
@@ -30,7 +35,6 @@
             <tree string="Gazetted Holidays">
                 <field name="name"/>
                 <field name="country_id"/>
-                <field name="year"/>
             </tree>
         </field>
     </record>
@@ -45,5 +49,6 @@
               name="Gazetted Holidays"
               parent="hr_holidays.menu_hr_holidays_configuration"
               action="action_gazetted_holiday"
+              groups="hr.group_hr_manager"
               sequence="5"/>
 </odoo>
