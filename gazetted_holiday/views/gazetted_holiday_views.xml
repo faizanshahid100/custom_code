@@ -17,7 +17,7 @@
                     <field name="line_ids">
                         <tree editable="bottom">
                             <field name="day"/>
-                            <field name="description"/>
+                            <field name="serve_reward"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="total_holidays" sum="Total Holidays"/>

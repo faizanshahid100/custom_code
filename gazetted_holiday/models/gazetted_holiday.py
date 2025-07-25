@@ -33,7 +33,10 @@ class GazettedHolidayLine(models.Model):
 
     holiday_id = fields.Many2one('gazetted.holiday', string='Gazetted Holiday', ondelete='cascade', required=True)
     day = fields.Char('Day')
-    description = fields.Char(string='Description')
+    serve_reward = fields.Selection([
+        ('floater', 'Floater'),
+        ('overtime', 'Overtime'),
+    ], string='Serve Reward', default='floater')
     date_from = fields.Date(string='Date From', required=True)
     date_to = fields.Date(string='Date To', required=True)
     total_holidays = fields.Float('Total Holidays', compute='_compute_total_holidays')

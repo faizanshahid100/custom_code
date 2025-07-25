@@ -6,9 +6,11 @@
     'depends': ['base', 'hr_holidays'],
     'data': [
         'security/ir.model.access.csv',
+        'data/approvals.xml',
         'views/gazetted_holiday_views.xml',
         'views/hr_employee_ext.xml',
     ],
     'installable': True,
     'application': False,
+    'license': 'LGPL-3',
 }

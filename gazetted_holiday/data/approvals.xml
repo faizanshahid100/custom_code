@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="approval_category_floater_leave" model="approval.category">
+            <field name="name">Floater Leave</field>
+            <field name="description">Floater leave for working on Gazetted Holiday</field>
+            <field name="automated_sequence">True</field>
+            <field name="has_date">required</field>
+            <field name="has_period">required</field>
+            <field name="requirer_document">optional</field>
+            <field name="sequence_code">FLOATER</field>
+            <field name="manager_approval">required</field>
+            <field name="approver_sequence">True</field>
+            <field name="approval_minimum">1</field>
+        </record>
+    </data>
+</odoo>
