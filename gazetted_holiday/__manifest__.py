@@ -9,6 +9,7 @@
         'data/approvals.xml',
         'views/gazetted_holiday_views.xml',
         'views/hr_employee_ext.xml',
+        'views/approval_request_ext.xml',
     ],
     'installable': True,
     'application': False,

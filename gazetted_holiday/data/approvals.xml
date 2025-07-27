@@ -5,7 +5,6 @@
             <field name="name">Floater Leave</field>
             <field name="description">Floater leave for working on Gazetted Holiday</field>
             <field name="automated_sequence">True</field>
-            <field name="has_date">required</field>
             <field name="has_period">required</field>
             <field name="requirer_document">optional</field>
             <field name="sequence_code">FLOATER</field>

@@ -250,7 +250,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             leaves_day = self.get_employee_leave_dates(employee, self.start_date, self.end_date)
             before_contract_flag = self.get_before_contract(employee, self.start_date, self.end_date)[0]
             before_contract_date = self.get_before_contract(employee, self.start_date, self.end_date)[1]
-            gazetted_holidays = [d.strip() for d in employee.gazetted_holiday_id.dates.strip("[]").replace("'", "").split(",")] if employee.gazetted_holiday_id and employee.gazetted_holiday_id.dates else []
+            gazetted_holidays = [d.strip() for d in employee.gazetted_holiday_id.holiday_dates.strip("[]").replace("'", "").split(",")] if employee.gazetted_holiday_id and employee.gazetted_holiday_id.holiday_dates else []
             # gazetted_holidays = [f'{date.day}-{date.month}-{date.year}' for date in employee.gazetted_holiday_id.line_ids.mapped('date') if date] if employee.gazetted_holiday_id else []
             for col, date in enumerate(date_range, start=5):
                 date_val = str(date['date_list']) + '-' + str(date['month_list']) + '-' + str(date['year_list'])
