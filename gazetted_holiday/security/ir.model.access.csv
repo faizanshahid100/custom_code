@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gazetted_holiday,gazetted.holiday,model_gazetted_holiday,,1,1,1,1
+access_gazetted_holiday_line,gazetted.holiday.line,model_gazetted_holiday_line,,1,1,1,1
