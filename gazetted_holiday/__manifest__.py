@@ -2,7 +2,9 @@
     'name': 'Gazetted Holidays',
     'version': '1.0',
     'category': 'Human Resources',
-    'summary': 'Manage Gazetted Holidays by Country and Year',
+    'summary': 'Manage Gazetted Holidays by Employee',
+    'author': "Farooq Butt",
+    "website": "https://primesystemsolutions.com/",
     'depends': ['base', 'hr_holidays'],
     'data': [
         'security/ir.model.access.csv',
