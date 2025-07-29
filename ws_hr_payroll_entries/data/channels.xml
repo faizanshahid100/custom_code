@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <record id="channel_contract_access" model="mail.channel">
+            <field name="name">Contract Access Logs</field>
+            <field name="channel_type">channel</field>
+        </record>
+    </data>
+</odoo>

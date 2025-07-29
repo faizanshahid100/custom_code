@@ -24,6 +24,7 @@
     'data': [
         # 'security/ir.model.access.csv',
         'data/ir_actions_data.xml',
+        'data/channels.xml',
         'views/hr_payslip_run_ext.xml',
         'views/hr_payroll_views.xml',
         'views/hr_rest_day_views.xml',
