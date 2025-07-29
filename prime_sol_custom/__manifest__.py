@@ -9,7 +9,7 @@
     'website': "https://www.yourcompany.com",
     'category': 'Uncategorized',
     'version': '0.3',
-    'depends': ['base', 'mail', 'project','web', 'hr', 'survey'],
+    'depends': ['base', 'mail', 'project', 'web', 'hr', 'survey'],
     'data': [
         'data/ir_cron_data.xml',
         'data/mail_channel.xml',
@@ -28,6 +28,7 @@
         'views/score_weightage.xml',
         'views/score_card.xml',
         'views/hr_leave_type_ext.xml',
+        'views/weekly_ticket_reports.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',
@@ -39,6 +40,7 @@
             'prime_sol_custom/static/src/css/tree_scorecard.css',
         ],
     },
+    'license': 'LGPL-3',
     'installable': True,
     'application': False,
 

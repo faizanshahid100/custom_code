@@ -11,5 +11,6 @@ from . import survey_survey_ext
 from . import survey_user_input_ext
 from . import score_weightage
 from . import score_card
-from . import hr_leave_ext    # to create attendance entry in attendance but no need now
+from . import hr_leave_ext
 from . import hr_leave_type_ext
+from . import weekly_ticket_reports
