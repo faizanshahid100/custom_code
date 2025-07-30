@@ -31,6 +31,7 @@
     <menuitem
             id="meeting_tracker_summary_wizard"
             parent="hr.hr_menu_hr_reports"
+            groups="hr.group_hr_manager"
             name="Meeting Tracker Summary"
             action="action_meeting_summary_wizard"
             sequence="530"/>

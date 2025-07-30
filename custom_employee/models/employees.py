@@ -214,9 +214,13 @@ class HREmployeeInherit(models.Model):
         ])
 
         template = self.env.ref('custom_employee.email_template_employee_one_month_review')
-        if template:
-            for emp in employees:
+        client_template = self.env.ref('custom_employee.employee_one_month_review_for_client')
+        for emp in employees:
+            if template:
                 template.send_mail(emp.id, force_send=True)
+
+            if client_template and emp.contractor and emp.contractor.email:
+                client_template.send_mail(emp.id, force_send=True)
 
 class CalendarTracking(models.Model):
     _name = "calendar.tracking"

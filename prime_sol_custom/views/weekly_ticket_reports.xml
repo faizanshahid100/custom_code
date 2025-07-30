@@ -1,0 +1,71 @@
+<odoo>
+    <data>
+        <record id="view_weekly_ticket_report_tree" model="ir.ui.view">
+            <field name="name">weekly.ticket.report.tree</field>
+            <field name="model">weekly.ticket.report</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="employee_id"/>
+                    <field name="contractor"/>
+                    <field name="level"/>
+                    <field name="job_position" optional="hide"/>
+                    <field name="department" optional="hide"/>
+                    <field name="contractor_manager" optional="hide"/>
+                    <field name="manager" optional="hide"/>
+                    <field name="gender" optional="hide"/>
+                    <!-- Week fields -->
+                    <field name="week_1" widget="html"/>
+                    <field name="week_2" widget="html"/>
+                    <field name="week_3" widget="html"/>
+                    <field name="week_4" widget="html"/>
+                    <field name="week_5" widget="html"/>
+                    <field name="week_6" widget="html"/>
+                    <field name="week_7" widget="html"/>
+                    <field name="week_8" widget="html"/>
+                    <field name="week_9" optional="hide" widget="html"/>
+                    <field name="week_10" optional="hide" widget="html"/>
+                    <field name="week_11" optional="hide" widget="html"/>
+                    <field name="week_12" optional="hide" widget="html"/>
+                    <field name="week_13" optional="hide" widget="html"/>
+                    <field name="week_14" optional="hide" widget="html"/>
+                    <field name="week_15" optional="hide" widget="html"/>
+                    <field name="week_16" optional="hide" widget="html"/>
+                    <field name="week_17" optional="hide" widget="html"/>
+                    <field name="week_18" optional="hide" widget="html"/>
+                    <field name="week_19" optional="hide" widget="html"/>
+                    <field name="week_20" optional="hide" widget="html"/>
+                    <field name="week_21" optional="hide" widget="html"/>
+                    <field name="week_22" optional="hide" widget="html"/>
+                    <field name="week_23" optional="hide" widget="html"/>
+                    <field name="week_24" optional="hide" widget="html"/>
+                    <field name="week_25" optional="hide" widget="html"/>
+                    <field name="week_26" optional="hide" widget="html"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_weekly_ticket_report_search" model="ir.ui.view">
+            <field name="name">weekly.ticket.report.search</field>
+            <field name="model">weekly.ticket.report</field>
+            <field name="arch" type="xml">
+                <search string="Weekly Ticket Reports">
+                    <field name="employee_id"/>
+                    <field name="contractor"/>
+                    <field name="department"/>
+                    <field name="job_position"/>
+                    <field name="manager"/>
+                    <field name="contractor_manager"/>
+                    <field name="gender"/>
+                    <field name="level"/>
+
+                    <group expand="1" string="Group By">
+                        <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                        <filter name="group_by_department" string="Department" context="{'group_by': 'department'}"/>
+                        <filter name="group_by_contractor" string="Contractor" context="{'group_by': 'contractor'}"/>
+                        <filter name="group_by_level" string="Level" context="{'group_by': 'level'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

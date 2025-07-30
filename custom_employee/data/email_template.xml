@@ -4,30 +4,53 @@
         <record id="email_template_employee_one_month_review" model="mail.template">
             <field name="name">Employee 1-Month Performance Review</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
-            <field name="subject">One-Month Performance Review: {{ object.name }}</field>
+            <field name="subject">1-Month Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
             <field name="email_to">{{ object.parent_id.work_email }}</field>
-            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com,hiba.siddiqui@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
-                    <p>Dear <t t-out="object.parent_id.name"/>,</p>
+                    <t t-set="anniversary_date" t-value="object.joining_date + relativedelta(months=1)"/>
+                    <p>Hi Team,</p>
                     <p>
-                        This is a reminder that <strong><t t-out="object.name"/></strong> has completed one month at Prime
-                        System Solutions.
-                    </p>
-                    <p>
-                        Please take a moment to review his/her performance and provide necessary feedback or actions.
+                        Just a quick reminder that <strong><t t-out="object.name"/></strong> completes <strong>1 month</strong> with us today on <strong><t t-out="anniversary_date.strftime('%d %B %Y')"/></strong>.
                     </p>
                     <p>
-                        <strong>Joining Date:</strong>
-                        <t t-out="object.joining_date"/>
+                        Please ensure:
+                    </p>
+                    <ul>
+                        <li>A quick performance/engagement check-in is scheduled with the client  (if not already done)</li>
+                        <li>Any probation/manager name/HR Contact into notes are updated in ODOO</li>
+                        <li>Feedback from Service Delivery/Customer Success Team is captured re discipline, attitude, cultural fit etc.</li>
+                    </ul>
+                    <p>Thanks for continuing to make Prime a place where people thrive 🌱
+                    </p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+<!--        For Client -->
+        <record id="employee_one_month_review_for_client" model="mail.template">
+            <field name="name">Employee 1-Month Performance Review (Client)</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="subject">{{ object.name }} | One-Month Milestone at Prime</field>
+            <field name="email_from">hr@primesystemsolutions.com</field>
+            <field name="email_to">{{ object.contractor.email }}</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com,hiba.siddiqui@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <t t-set="anniversary_date" t-value="object.joining_date + relativedelta(months=1)"/>
+                    <p>Hi <t t-out="object.contractor.name"/>,</p>
+                    <p>
+                        Just a quick note that <strong><t t-out="object.name"/></strong> completes their <strong>first month</strong> with you and Prime today. We hope their performance and integration have met expectations so far.
+                        We’d love to hear your feedback (if you haven’t already shared) to ensure we continue to align closely with your needs.
+                        Please let us know if you’d like to schedule a quick sync or share written feedback — we’re always here to listen and iterate.
                     </p>
                     <p>
-                        <strong>Designation:</strong>
-                        <t t-out="object.job_id.name"/>
+                        Warm regards,
                     </p>
-                    <p>Thank you,<br/>Note: This is an auto-generated mail. Don't need to reply this Email
-                    </p>
+                    <p>Prime System Solutions</p>
+                    <p>Client Success | Prime</p>
                 </div>
             </field>
             <field name="auto_delete" eval="False"/>
