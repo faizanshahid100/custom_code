@@ -297,20 +297,22 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
         # Create records in weekly.ticket.report
         for employee in employees:
+            weekly_tickets = employee.d_ticket_resolved*5
             vals = {
                 'employee_id': employee.id,
-                # 'job_position': employee.job_id.name or '',
-                # 'department': employee.department_id.name or '',
-                # 'contractor': employee.contractor.name or '',
-                # 'contractor_manager': employee.manager or '',
-                # 'manager': employee.parent_id.name or '',
-                # 'gender': dict(employee._fields['gender'].selection).get(employee.gender) or '',
-                # 'level': employee.level or '',
             }
 
             # Add week_1 to week_26
             for week_index in range(1, 27):
-                vals[f'week_{week_index}'] = progress_map[employee.id].get(week_index, 0)
+                if employee.kpi_measurement == 'kpi':
+                    if progress_map[employee.id].get(week_index, 0) >= weekly_tickets:
+                        vals[f'week_{week_index}'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                    else:
+                        vals[
+                            f'week_{week_index}'] = f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                else:
+                    vals[
+                        f'week_{week_index}'] = f"<div style='padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
 
             self.env['weekly.ticket.report'].create(vals)
 

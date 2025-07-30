@@ -6,7 +6,6 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="employee_id"/>
-                    <field name="employee_name"/>
                     <field name="contractor"/>
                     <field name="level"/>
                     <field name="job_position" optional="hide"/>

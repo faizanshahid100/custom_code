@@ -7,7 +7,6 @@ class WeeklyTicketReport(models.Model):
     _description = 'Weekly Ticket Report'
 
     employee_id = fields.Many2one('hr.employee', string='Employee')
-    employee_name = fields.Char('Employee Name', comute='_compute_employee_name')
     job_position = fields.Char(related='employee_id.job_id.name', string='Job Position', store=True)
     department = fields.Char(related='employee_id.department_id.name', string='Department', store=True)
     contractor = fields.Char(related='employee_id.contractor.name', string='Contractor', store=True)
@@ -43,11 +42,3 @@ class WeeklyTicketReport(models.Model):
     week_24 = fields.Char(string='Week 24')
     week_25 = fields.Char(string='Week 25')
     week_26 = fields.Char(string='Week 26')
-
-    @api.depends('employee_name')
-    def _compute_week_fields(self):
-        for rec in self:
-            for i in range(1, 27):
-                field_name = f'week_{i}'
-                styled_html = f"<div style='background-color: #c6efce; padding: 3px'>{rec.employee_id.name}</div>"
-                setattr(rec, field_name, styled_html)
