@@ -10,6 +10,7 @@ access_meeting_attendance_summary,access.meeting.attendance.summary,model_meetin
 access_score_card,access.score.card,model_score_card,,1,1,1,1
 access_score_weightage_user,score.weightage user,model_score_weightage,,1,1,1,1
 access_weekly_ticket_report,weekly.ticket.report,model_weekly_ticket_report,,1,1,1,1
+access_weekly_feedback_report,weekly.feedback.report,model_weekly_feedback_report,,1,1,1,1
 
 access_meeting_summary_wizard,access.meeting.summary,model_meeting_summary,,1,1,1,1
 access_scorecard_wizard,access.scorecard.wizard,model_scorecard_wizard,,1,1,1,1

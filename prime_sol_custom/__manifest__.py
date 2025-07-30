@@ -29,6 +29,7 @@
         'views/score_card.xml',
         'views/hr_leave_type_ext.xml',
         'views/weekly_ticket_reports.xml',
+        'views/weekly_feedback_reports.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',

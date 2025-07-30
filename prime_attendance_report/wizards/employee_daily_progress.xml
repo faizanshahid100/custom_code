@@ -33,6 +33,7 @@
 
     <menuitem parent="hr.hr_menu_hr_reports"
               name="Employee Daily Progress New"
+              groups="hr.group_hr_manager"
               action="action_employee_daily_progress_wizard"
               id="menu_employee_daily_progress"
               sequence="520"/>

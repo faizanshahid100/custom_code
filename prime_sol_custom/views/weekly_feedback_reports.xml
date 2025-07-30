@@ -1,8 +1,8 @@
 <odoo>
     <data>
-        <record id="view_weekly_ticket_report_tree" model="ir.ui.view">
-            <field name="name">weekly.ticket.report.tree</field>
-            <field name="model">weekly.ticket.report</field>
+        <record id="view_weekly_feedback_report_tree" model="ir.ui.view">
+            <field name="name">weekly.feedback.report.tree</field>
+            <field name="model">weekly.feedback.report</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="employee_id"/>
@@ -44,11 +44,11 @@
             </field>
         </record>
 
-        <record id="view_weekly_ticket_report_search" model="ir.ui.view">
-            <field name="name">weekly.ticket.report.search</field>
-            <field name="model">weekly.ticket.report</field>
+        <record id="view_weekly_feedback_report_search" model="ir.ui.view">
+            <field name="name">weekly.feedback.report.search</field>
+            <field name="model">weekly.feedback.report</field>
             <field name="arch" type="xml">
-                <search string="Weekly Ticket Reports">
+                <search string="Weekly Feedback Reports">
                     <field name="employee_id"/>
                     <field name="contractor"/>
                     <field name="department"/>
