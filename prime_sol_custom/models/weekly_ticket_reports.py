@@ -42,3 +42,4 @@ class WeeklyTicketReport(models.Model):
     week_24 = fields.Char(string='Week 24')
     week_25 = fields.Char(string='Week 25')
     week_26 = fields.Char(string='Week 26')
+    week_total = fields.Char(string='Total Counts', default=' ')

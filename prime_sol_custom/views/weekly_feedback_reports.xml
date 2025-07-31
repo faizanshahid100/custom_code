@@ -40,6 +40,7 @@
                     <field name="week_24" optional="hide" widget="html"/>
                     <field name="week_25" optional="hide" widget="html"/>
                     <field name="week_26" optional="hide" widget="html"/>
+                    <field name="week_total" widget="html"/>
                 </tree>
             </field>
         </record>
