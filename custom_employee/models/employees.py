@@ -219,8 +219,9 @@ class HREmployeeInherit(models.Model):
             if template:
                 template.send_mail(emp.id, force_send=True)
 
-            if client_template and emp.contractor and emp.contractor.email:
-                client_template.send_mail(emp.id, force_send=True)
+            # TODO (Uncomment when finalize)
+            # if client_template and emp.contractor and emp.contractor.email:
+            #     client_template.send_mail(emp.id, force_send=True)
 
 class CalendarTracking(models.Model):
     _name = "calendar.tracking"

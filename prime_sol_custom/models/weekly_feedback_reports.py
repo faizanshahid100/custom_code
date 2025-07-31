@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from email.policy import default
+
 from odoo import models, fields, api
 from datetime import date, timedelta
 
@@ -42,3 +44,5 @@ class WeeklyFeedbackReport(models.Model):
     week_24 = fields.Char(string='Week 24')
     week_25 = fields.Char(string='Week 25')
     week_26 = fields.Char(string='Week 26')
+
+    week_total = fields.Char(string='Total Counts', default=' ')

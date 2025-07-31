@@ -296,22 +296,29 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
         # Create records in weekly.ticket.report
         for employee in employees:
-            weekly_tickets = employee.d_ticket_resolved*5
+            weekly_tickets = employee.d_ticket_resolved * 5
             vals = {
                 'employee_id': employee.id,
             }
 
-            # Add week_1 to week_26
+
+            resolved_tickets_total = 0
+            all_tickets_total = 0
             for week_index in range(1, 27):
                 if employee.kpi_measurement == 'kpi':
+                    resolved_tickets_total += progress_map[employee.id].get(week_index, 0)
+                    all_tickets_total += weekly_tickets
                     if progress_map[employee.id].get(week_index, 0) >= weekly_tickets:
-                        vals[f'week_{week_index}'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                        vals[
+                            f'week_{week_index}'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)} / {weekly_tickets}</div>"
                     else:
                         vals[
-                            f'week_{week_index}'] = f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                            f'week_{week_index}'] = f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)} / {weekly_tickets}</div>"
                 else:
                     vals[
                         f'week_{week_index}'] = f"<div style='padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                if employee.kpi_measurement == 'kpi':
+                    vals['week_total'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>" if resolved_tickets_total >= all_tickets_total else f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
 
             self.env['weekly.ticket.report'].create(vals)
 
@@ -322,7 +329,6 @@ class EmployeeTicketsFeedback(models.TransientModel):
             'view_mode': 'tree',
             'target': 'current',
         }
-
 
     def action_confirm_feedbacks(self):
         if self.department_id:
@@ -363,16 +369,30 @@ class EmployeeTicketsFeedback(models.TransientModel):
             vals = {
                 'employee_id': emp.id,
             }
-
+            pos_total = 0
+            neg_total = 0
             for i in range(1, 27):  # up to 26 weeks
                 pos = feedback_map[emp.id][i]['positive']
                 neg = feedback_map[emp.id][i]['negative']
-                if pos:
-                    vals[f'week_{i}'] = f"<div style='background-color:#c6efce;text-align:center; border:1px solid #000;'>+ve</div>"
-                elif neg:
-                    vals[f'week_{i}'] = f"<div style='background-color:#ffc7ce;text-align:center; border:1px solid #000;'>-ve</div>"
+                pos_total += pos
+                neg_total += neg
+                if pos or neg:
+                    vals[f'week_{i}'] = f"""
+                                            <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
+                                                <div style='width:50%; float:left; background-color:#c6efce; padding:5px 0;'>{pos}</div>
+                                                <div style='width:50%; float:right; background-color:#ff0000; color:white; padding:5px 0;'>{neg}</div>
+                                                <div style='clear:both;'></div>
+                                            </div>
+                                        """
                 else:
                     vals[f'week_{i}'] = f"<div style='text-align:center; border:1px solid #000;padding:10px;'></div>"
+                vals['week_total'] = f"""
+                                            <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
+                                                <div style='width:50%; float:left; background-color:#c6efce; padding:5px 0;'>{pos_total}</div>
+                                                <div style='width:50%; float:right; background-color:#ff0000; color:white; padding:5px 0;'>{neg_total}</div>
+                                                <div style='clear:both;'></div>
+                                            </div>
+                                        """
 
             self.env['weekly.feedback.report'].create(vals)
 
