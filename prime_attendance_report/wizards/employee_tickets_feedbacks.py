@@ -304,7 +304,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
             resolved_tickets_total = 0
             all_tickets_total = 0
-            for week_index in range(1, 27):
+            for week_index in range(1, len(week_ranges)+1):
                 if employee.kpi_measurement == 'kpi':
                     resolved_tickets_total += progress_map[employee.id].get(week_index, 0)
                     all_tickets_total += weekly_tickets
@@ -377,22 +377,29 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 pos_total += pos
                 neg_total += neg
                 if pos or neg:
+                    left_style = "background-color:#c6efce;" if pos > 0 else ""
+                    right_style = "background-color:#ff0000; color:white;" if neg > 0 else ""
                     vals[f'week_{i}'] = f"""
-                                            <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
-                                                <div style='width:50%; float:left; background-color:#c6efce; padding:5px 0;'>{pos}</div>
-                                                <div style='width:50%; float:right; background-color:#ff0000; color:white; padding:5px 0;'>{neg}</div>
-                                                <div style='clear:both;'></div>
-                                            </div>
-                                        """
+                        <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
+                            <div style='width:50%; float:left; {left_style} padding:5px 0;'>{pos}</div>
+                            <div style='width:50%; float:right; {right_style} padding:5px 0;'>{neg}</div>
+                            <div style='clear:both;'></div>
+                        </div>
+                    """
                 else:
                     vals[f'week_{i}'] = f"<div style='text-align:center; border:1px solid #000;padding:10px;'></div>"
+
+                # Week total block with conditional background
+                left_style_total = "background-color:#c6efce;" if pos_total > 0 else ""
+                right_style_total = "background-color:#ff0000; color:white;" if neg_total > 0 else ""
+
                 vals['week_total'] = f"""
-                                            <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
-                                                <div style='width:50%; float:left; background-color:#c6efce; padding:5px 0;'>{pos_total}</div>
-                                                <div style='width:50%; float:right; background-color:#ff0000; color:white; padding:5px 0;'>{neg_total}</div>
-                                                <div style='clear:both;'></div>
-                                            </div>
-                                        """
+                    <div style='width:100%; border:1px solid #000; text-align:center; font-weight:bold; font-size:12px;'>
+                        <div style='width:50%; float:left; {left_style_total} padding:5px 0;'>{pos_total}</div>
+                        <div style='width:50%; float:right; {right_style_total} padding:5px 0;'>{neg_total}</div>
+                        <div style='clear:both;'></div>
+                    </div>
+                """
 
             self.env['weekly.feedback.report'].create(vals)
 
