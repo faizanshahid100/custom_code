@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <field name="survey_id" position="after">
                 <field name="employee_id"/>
+                <field name="partner_id"/>
+                <field name="response_date" force_save="1" readonly="1"/>
             </field>
         </field>
     </record>
