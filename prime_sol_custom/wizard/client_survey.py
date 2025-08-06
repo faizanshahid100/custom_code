@@ -45,20 +45,22 @@ class ClientSurvey(models.TransientModel):
         columns_left_bold_style = xlwt.easyxf(
             'font: height 200;align: wrap on,vert centre, horiz left; align: wrap yes,vert centre; border: left thin,right thin,top thin,bottom thin')
 
-        worksheet.col(0).width = 7000
-        worksheet.col(1).width = 4000
-        worksheet.col(2).width = 7000
-        worksheet.col(3).width = 4000
-        worksheet.col(4).width = 5000
+        worksheet.col(0).width = 5000
+        worksheet.col(1).width = 7000
+        worksheet.col(2).width = 4000
+        worksheet.col(3).width = 7000
+        worksheet.col(4).width = 4000
+        worksheet.col(5).width = 5000
 
         for wizard in self:
             pass
 
-        worksheet.write(0, 0, 'Employee', table_heading_style)
-        worksheet.write(0, 1, 'Client', table_heading_style)
-        worksheet.write(0, 2, 'Manager (Client)', table_heading_style)
-        worksheet.write(0, 3, 'Level', table_heading_style)
-        worksheet.write(0, 4, 'Avg. Points', table_heading_style)
+        worksheet.write(0, 0, 'Response Date', table_heading_style)
+        worksheet.write(0, 1, 'Employee', table_heading_style)
+        worksheet.write(0, 2, 'Client', table_heading_style)
+        worksheet.write(0, 3, 'Manager (Client)', table_heading_style)
+        worksheet.write(0, 4, 'Level', table_heading_style)
+        worksheet.write(0, 5, 'Avg. Points', table_heading_style)
         # Get survey responses
         if self.partner_id:
             inputs = self.env['survey.user_input'].search([('response_date', '>=', self.date_from), ('response_date', '<=', self.date_to),('employee_id', '!=', False), ('state', '=', 'done'), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False), ('partner_id', '=', self.partner_id.id)])
@@ -76,11 +78,12 @@ class ClientSurvey(models.TransientModel):
                 .mapped('suggested_answer_id.value') if val.replace('.', '', 1).isdigit()
             ]
             average = sum(suggested_values) / len(suggested_values) if suggested_values else 0
-            worksheet.write(row, 0, input.employee_id.name or '', columns_left_bold_style)
-            worksheet.write(row, 1, input.partner_id.name or '', columns_left_bold_style)
-            worksheet.write(row, 2, input.employee_id.manager or '', columns_left_bold_style)
-            worksheet.write(row, 3, input.employee_id.level or '', columns_left_bold_style)
-            worksheet.write(row, 4, f"{average:.2f}" if average else '', columns_left_bold_style)
+            worksheet.write(row, 0, input.response_date.strftime('%d-%m-%Y') if input.response_date else '', columns_left_bold_style)
+            worksheet.write(row, 1, input.employee_id.name or '', columns_left_bold_style)
+            worksheet.write(row, 2, input.partner_id.name or '', columns_left_bold_style)
+            worksheet.write(row, 3, input.employee_id.manager or '', columns_left_bold_style)
+            worksheet.write(row, 4, input.employee_id.level or '', columns_left_bold_style)
+            worksheet.write(row, 5, f"{average:.2f}" if average else '', columns_left_bold_style)
             row += 1
 
         stream = BytesIO()
