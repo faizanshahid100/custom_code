@@ -14,3 +14,4 @@ access_weekly_feedback_report,weekly.feedback.report,model_weekly_feedback_repor
 
 access_meeting_summary_wizard,access.meeting.summary,model_meeting_summary,,1,1,1,1
 access_scorecard_wizard,access.scorecard.wizard,model_scorecard_wizard,,1,1,1,1
+access_client_survey,access.client.survey,model_client_survey,,1,1,1,1
