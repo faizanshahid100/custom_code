@@ -62,7 +62,7 @@ class EmployeeDailyProgress(models.TransientModel):
         return off_days
 
     def get_employee_leave_dates(self, emp, start_date, end_date):
-        leave_records = self.env['hr.leave'].search([
+        leave_records = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', emp.id),
             ('state', '=', 'validate'),
             ('request_date_from', '>=', start_date),
@@ -85,7 +85,7 @@ class EmployeeDailyProgress(models.TransientModel):
         current_year = date.today().year
 
         # Get all validated leave records for the employee within the current year
-        leaves = self.env['hr.leave'].search([
+        leaves = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', employee.id),
             ('state', '=', 'validate'),
             ('request_date_from', '>=', f'{current_year}-01-01'),
@@ -214,30 +214,30 @@ class EmployeeDailyProgress(models.TransientModel):
 
 
         if not self.department_id and not self.user_ids:
-            users = self.env['res.users'].search([])
+            users = self.env['res.users'].sudo().search([])
         elif self.department_id and not self.user_ids:
-            users = self.env['res.users'].search([('department_id', '=', self.department_id.id)])
+            users = self.env['res.users'].sudo().search([('department_id', '=', self.department_id.id)])
         elif self.user_ids and not self.department_id:
             users = self.user_ids
-        progress_records = self.env['daily.progress'].search([('resource_user_id', 'in', users.ids), ('date_of_project', '>=', self.date_from), ('date_of_project', '<=', self.date_to)])
+        progress_records = self.env['daily.progress'].sudo().search([('resource_user_id', 'in', users.ids), ('date_of_project', '>=', self.date_from), ('date_of_project', '<=', self.date_to)])
         progress_records_group = progress_records.read_group([('resource_user_id', 'in', users.ids), ('date_of_project', '>=', self.date_from), ('date_of_project', '<=', self.date_to)], ['resource_user_id'], ['resource_user_id'])
 
         if users:
             row = 5
             sr_no = 1
             for group in progress_records_group:
-                progress = progress_records.search(group['__domain'])
+                progress = progress_records.sudo().search(group['__domain'])
 
                 # Employee details
                 worksheet.write(row, 0, _(sr_no), columns_left_bold_style)
-                worksheet.write(row, 1, _(progress[0].resource_user_id.employee_id.name), columns_left_bold_style)
-                worksheet.write(row, 2, _(progress[0].resource_user_id.employee_id.department_id.name), columns_left_bold_style)
-                worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.job_id.name), columns_left_bold_style)
-                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.contractor.name if progress[0].resource_user_id.employee_id.contractor else ''), columns_left_bold_style)
-                worksheet.write(row, 5, _(str(progress[0].resource_user_id.employee_id.gender).title() if progress[0].resource_user_id.employee_id.gender != False else ''), columns_left_bold_style)
+                worksheet.write(row, 1, _(progress[0].resource_user_id.employee_id.sudo().name), columns_left_bold_style)
+                worksheet.write(row, 2, _(progress[0].resource_user_id.employee_id.sudo().department_id.name), columns_left_bold_style)
+                worksheet.write(row, 3, _(progress[0].resource_user_id.employee_id.sudo().job_id.name), columns_left_bold_style)
+                worksheet.write(row, 4, _(progress[0].resource_user_id.employee_id.sudo().contractor.name if progress[0].resource_user_id.employee_id.sudo().contractor else ''), columns_left_bold_style)
+                worksheet.write(row, 5, _(str(progress[0].resource_user_id.employee_id.sudo().gender).title() if progress[0].resource_user_id.employee_id.sudo().gender != False else ''), columns_left_bold_style)
                 # worksheet.write(row, 5, _(dict(self.env['hr.employee'].fields_get(['gender'])['gender']['selection']).get(getattr(progress[0].resource_user_id.employee_id, 'gender', ''), '')), columns_left_bold_style)
-                worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.level or ''), columns_left_bold_style)
-                worksheet.write(row, 7, _(str(progress[0].resource_user_id.employee_id.kpi_measurement).title() or ''), columns_left_bold_style)
+                worksheet.write(row, 6, _(progress[0].resource_user_id.employee_id.sudo().level or ''), columns_left_bold_style)
+                worksheet.write(row, 7, _(str(progress[0].resource_user_id.employee_id.sudo().kpi_measurement).title() or ''), columns_left_bold_style)
 
                 # Start filling the dynamic columns after KPI Metric (Column 7)
                 col_index = 8
@@ -245,9 +245,9 @@ class EmployeeDailyProgress(models.TransientModel):
                 for date in date_range:
                     # Fetch progress record for the specific date and user
                     daily_record = progress.filtered(lambda p: p.date_of_project == date)
-                    attendance = self.env['hr.attendance'].search([('employee_id', '=', progress[0].resource_user_id.employee_id.id), ('check_in', '>=', date), ('check_in', '<=', date)], limit=1)
-                    off_day = self.calculate_employee_off_days(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
-                    leaves_day = self.get_employee_leave_dates(progress[0].resource_user_id.employee_id, self.date_from, self.date_to)
+                    attendance = self.env['hr.attendance'].sudo().search([('employee_id', '=', progress[0].resource_user_id.employee_id.sudo().id), ('check_in', '>=', date), ('check_in', '<=', date)], limit=1)
+                    off_day = self.calculate_employee_off_days(progress[0].resource_user_id.employee_id.sudo(), self.date_from, self.date_to)
+                    leaves_day = self.get_employee_leave_dates(progress[0].resource_user_id.employee_id.sudo(), self.date_from, self.date_to)
 
                     if daily_record or attendance:
                         worksheet.write(row, col_index, daily_record.avg_resolved_ticket or 0, columns_center_bold_style)
@@ -288,7 +288,7 @@ class EmployeeDailyProgress(models.TransientModel):
                 worksheet.write(row, col_index + 1, total_billable, columns_center_bold_style)
                 worksheet.write(row, col_index + 2, total_calls, columns_center_bold_style)
                 worksheet.write(row, col_index + 3, total_presents, columns_center_bold_style) # yellow_table_heading_style
-                worksheet.write(row, col_index + 4, self.calculate_total_leaves_from_time_off(progress[0].resource_user_id.employee_id), columns_center_bold_style)
+                worksheet.write(row, col_index + 4, self.calculate_total_leaves_from_time_off(progress[0].resource_user_id.employee_id.sudo()), columns_center_bold_style)
 
 
                 sr_no+=1

@@ -46,7 +46,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
 
     def check_attendance(self):
         data = []
-        report = self.env['hr.attendance'].search(
+        report = self.env['hr.attendance'].sudo().search(
             [('employee_id', 'in', self.employee_ids.ids), ('check_in', '>=', self.start_date),
              ('check_in', '<=', self.end_date + timedelta(days=1))])  # Slight buffer for timezone shift
 
@@ -73,7 +73,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
         if not emp.resource_calendar_id:
             raise ValueError("Employee has no working schedule assigned.")
         off_days = []
-        working_hours = emp.resource_calendar_id
+        working_hours = emp.sudo().resource_calendar_id
         working_days = set(attendance.dayofweek for attendance in working_hours.attendance_ids)
         date_range = [
             (start_date + timedelta(days=i))
@@ -96,7 +96,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
 
             for date in date_range:
                 # Find the tracking record for the current date
-                tracking = emp.calendar_tracking_ids.filtered(
+                tracking = emp.sudo().calendar_tracking_ids.filtered(
                     lambda t: t.start_date <= date <= (t.end_date or date)
                 )
 
@@ -116,7 +116,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
             return off_days
 
     def get_employee_leave_dates(self, emp, start_date, end_date):
-        leave_records = self.env['hr.leave'].search([
+        leave_records = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', emp.id),
             ('state', '=', 'validate'),
             ('request_date_from', '>=', start_date),
@@ -232,25 +232,25 @@ class EmployeeAttendanceRegister(models.TransientModel):
 
         # Write employee data
         row = 9
-        for index, employee in enumerate(self.employee_ids):
+        for index, employee in enumerate(self.employee_ids.sudo()):
             present_days = 0
             worksheet.write(row, 0, index + 1)
-            worksheet.write(row, 1, employee.name)
-            worksheet.write(row, 2, employee.department_id.name if employee.department_id else '')
-            worksheet.write(row, 3, employee.job_id.name if employee.job_id else '')
-            worksheet.write(row, 4, dict(employee._fields['gender'].selection).get(employee.gender) or '')
+            worksheet.write(row, 1, employee.sudo().name)
+            worksheet.write(row, 2, employee.sudo().department_id.name if employee.sudo().department_id else '')
+            worksheet.write(row, 3, employee.sudo().job_id.name if employee.sudo().job_id else '')
+            worksheet.write(row, 4, dict(employee.sudo()._fields['gender'].selection).get(employee.sudo().gender) or '')
 
             total_hours = 0.0  # Variable to keep track of total hours worked for each employee
 
             attn_dates = {
                 f"{att['date']}-{att['month']}-{att['year']}": att['state']
-                for att in data if att['employee'] == employee.id
+                for att in data if att['employee'] == employee.sudo().id
             }
             off_day = self.calculate_employee_off_days(employee, self.start_date, self.end_date)
             leaves_day = self.get_employee_leave_dates(employee, self.start_date, self.end_date)
             before_contract_flag = self.get_before_contract(employee, self.start_date, self.end_date)[0]
             before_contract_date = self.get_before_contract(employee, self.start_date, self.end_date)[1]
-            gazetted_holidays = [d.strip() for d in employee.gazetted_holiday_id.holiday_dates.strip("[]").replace("'", "").split(",")] if employee.gazetted_holiday_id and employee.gazetted_holiday_id.holiday_dates else []
+            gazetted_holidays = [d.strip() for d in employee.sudo().gazetted_holiday_id.holiday_dates.strip("[]").replace("'", "").split(",")] if employee.sudo().gazetted_holiday_id and employee.sudo().gazetted_holiday_id.holiday_dates else []
             # gazetted_holidays = [f'{date.day}-{date.month}-{date.year}' for date in employee.gazetted_holiday_id.line_ids.mapped('date') if date] if employee.gazetted_holiday_id else []
             for col, date in enumerate(date_range, start=5):
                 date_val = str(date['date_list']) + '-' + str(date['month_list']) + '-' + str(date['year_list'])
@@ -285,7 +285,7 @@ class EmployeeAttendanceRegister(models.TransientModel):
         file_data = output.read()
         output.close()
 
-        attachment = self.env['ir.attachment'].create({
+        attachment = self.env['ir.attachment'].sudo().create({
             'name': 'attendance_report.xlsx',
             'type': 'binary',
             'datas': base64.b64encode(file_data),

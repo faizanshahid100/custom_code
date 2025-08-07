@@ -22,7 +22,6 @@ class ClientSurvey(models.TransientModel):
         res.update({
             'date_from': first_day_current_year or False,
             'date_to': today or False,
-            'partner_id': self.env.user.employee_id.contractor.id if self.env.user.employee_id.contractor else False,
             'department_id': self.env.user.employee_id.department_id.id if self.env.user.employee_id.department_id else False,
         })
         return res
@@ -36,6 +35,61 @@ class ClientSurvey(models.TransientModel):
     my_xl_file = fields.Binary('Excel Report')
     file_name = fields.Char('File Name')
 
+    def action_create_report(self):
+        self.env['client.survey.report'].search([]).unlink()
+
+        # Get survey responses
+        if self.partner_id:
+            inputs = self.env['survey.user_input'].search([
+                ('response_date', '>=', self.date_from),
+                ('response_date', '<=', self.date_to),
+                ('employee_id', '!=', False),
+                ('state', '=', 'done'),
+                ('survey_id.title', '=', '2025: Employee Performance Feedback'),
+                ('test_entry', '=', False),
+                ('partner_id', '=', self.partner_id.id)
+            ])
+        else:
+            inputs = self.env['survey.user_input'].search([
+                ('response_date', '>=', self.date_from),
+                ('response_date', '<=', self.date_to),
+                ('employee_id', '!=', False),
+                ('state', '=', 'done'),
+                ('survey_id.title', '=', '2025: Employee Performance Feedback'),
+                ('test_entry', '=', False),
+            ])
+
+        if not inputs:
+            raise ValidationError('There is no survey regarding the parameters')
+
+        for input in inputs:
+            # Calculate average from suggestion answers
+            suggested_values = [
+                float(val) for val in input.user_input_line_ids
+                .filtered(lambda l: l.answer_type == 'suggestion')
+                .mapped('suggested_answer_id.value') if val.replace('.', '', 1).isdigit()
+            ]
+            average = sum(suggested_values) / len(suggested_values) if suggested_values else 0
+
+            # Create client survey report record
+            self.env['client.survey.report'].create({
+                'response_date': input.response_date,
+                'employee_id': input.employee_id.id,
+                'partner_id': input.employee_id.contractor.id,
+                'client_manager': input.employee_id.manager,
+                'level': input.employee_id.level,
+                'avg_points': average,
+            })
+
+        # Show the records in tree view
+        return {
+            'name': f"Survey Report ({self.date_from.strftime('%d-%b-%Y')} - {self.date_to.strftime('%d-%b-%Y')})",
+            'type': 'ir.actions.act_window',
+            'res_model': 'client.survey.report',
+            'view_mode': 'tree',
+            'target': 'current',
+            'domain': [],
+        }
     def action_confirm(self):
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('Department wise Head Count', cell_overwrite_ok=True)
