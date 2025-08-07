@@ -28,7 +28,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     start_date = fields.Date('Start Date', required=True)
     end_date = fields.Date('End Date', required=True)
-    department_id = fields.Many2one('hr.department', string='Department')
+    department_id = fields.Many2one('hr.department', string='Department', domain=[('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
     # def action_confirm_tickets(self):
     #     if self.department_id:
@@ -263,7 +263,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([])
+            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -323,8 +323,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             self.env['weekly.ticket.report'].create(vals)
 
         return {
+            'name': f"Weekly Tickets Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",
             'type': 'ir.actions.act_window',
-            'name': 'Weekly Ticket Report',
             'res_model': 'weekly.ticket.report',
             'view_mode': 'tree',
             'target': 'current',
@@ -334,7 +334,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([])
+            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -404,8 +404,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             self.env['weekly.feedback.report'].create(vals)
 
         return {
+            'name': f"Weekly Feedback Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",
             'type': 'ir.actions.act_window',
-            'name': 'Weekly Feedback Report',
             'res_model': 'weekly.feedback.report',
             'view_mode': 'tree',
             'target': 'current',
