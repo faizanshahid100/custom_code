@@ -28,7 +28,39 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     start_date = fields.Date('Start Date', required=True)
     end_date = fields.Date('End Date', required=True)
-    department_id = fields.Many2one('hr.department', string='Department')
+    department_id = fields.Many2one('hr.department', string='Department', domain=[('name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
+    period = fields.Selection([
+        ('q1', 'Q1 (Jan - Mar)'),
+        ('q2', 'Q2 (Apr - Jun)'),
+        ('q3', 'Q3 (Jul - Sep)'),
+        ('q4', 'Q4 (Oct - Dec)'),
+        ('bi_annual', 'Bi-Annual'),
+        ('annual', 'Annual'),
+    ], string="Time Period")
+
+    @api.onchange('period')
+    def _onchange_period(self):
+        """ Set start_date and end_date based on the selected period """
+        if self.period:
+            year = datetime.date.today().year
+            if self.period == 'q1':
+                self.start_date = datetime.date(year, 1, 1)
+                self.end_date = datetime.date(year, 3, 31)
+            elif self.period == 'q2':
+                self.start_date = datetime.date(year, 4, 1)
+                self.end_date = datetime.date(year, 6, 30)
+            elif self.period == 'q3':
+                self.start_date = datetime.date(year, 7, 1)
+                self.end_date = datetime.date(year, 9, 30)
+            elif self.period == 'q4':
+                self.start_date = datetime.date(year, 10, 1)
+                self.end_date = datetime.date(year, 12, 31)
+            elif self.period == 'bi_annual':
+                self.start_date = datetime.date(year, 1, 1)
+                self.end_date = datetime.date(year, 6, 30)
+            elif self.period == 'annual':
+                self.start_date = datetime.date(year, 1, 1)
+                self.end_date = datetime.date(year, 12, 31)
 
     # def action_confirm_tickets(self):
     #     if self.department_id:
@@ -263,7 +295,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([])
+            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -323,8 +355,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             self.env['weekly.ticket.report'].create(vals)
 
         return {
+            'name': f"Weekly Tickets Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",
             'type': 'ir.actions.act_window',
-            'name': 'Weekly Ticket Report',
             'res_model': 'weekly.ticket.report',
             'view_mode': 'tree',
             'target': 'current',
@@ -334,7 +366,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([])
+            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -404,8 +436,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             self.env['weekly.feedback.report'].create(vals)
 
         return {
+            'name': f"Weekly Feedback Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",
             'type': 'ir.actions.act_window',
-            'name': 'Weekly Feedback Report',
             'res_model': 'weekly.feedback.report',
             'view_mode': 'tree',
             'target': 'current',
