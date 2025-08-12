@@ -127,7 +127,6 @@ class EmployeeAttendanceRegister(models.TransientModel):
             ('employee_id', '=', emp.id),
             ('state', '=', 'validate'),
             ('request_date_from', '>=', start_date),
-            ('request_date_to', '<=', end_date),
         ])
         leave_dates = []
         for leave in leave_records:

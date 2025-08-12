@@ -1,5 +1,5 @@
 {
-    "name": "Pivot DashBoards",
+    "name": "Employee Onboarding/Offboarding",
     "version": "16.0.1.0.1",
     "license": "LGPL-3",
     "author": "Farooq Butt | Prime System Solutions",
@@ -7,13 +7,13 @@
     "summary": " ",
     "sequence": 1,
     "description": """""",
-    "category": "Customizations",
+    "category": "HR Onboarding/Offboarding",
     "depends": [
-        "hr", "board", "hr_holidays"
+        "hr", "hr_contract",
     ],
     "data": [
-        "security/ir.model.access.csv",
-        "views/employee_hiring.xml",
+        # "security/ir.model.access.csv",
+        # "views/employee_hiring.xml",
         # "views/employee_leaves.xml",
     ],
     "installable": True,
