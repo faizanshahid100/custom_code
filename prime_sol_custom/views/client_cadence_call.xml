@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_client_cadence_call_search" model="ir.ui.view">
+    <field name="name">client.cadence.call.search</field>
+    <field name="model">client.cadence.call</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="partner_id"/>
+            <field name="manager_contractor"/>
+            <field name="meeting_schedule"/>
+            <field name="frequency"/>
+            <field name="recurring_invite"/>
+            <field name="notes"/>
+
+            <group expand="0" string="Group By">
+                <filter string="Client" name="group_by_partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                <filter string="Frequency" name="group_by_frequency" domain="[]" context="{'group_by':'frequency'}"/>
+                <filter string="Is Recurring Invite" name="group_by_recurring_invite" domain="[]" context="{'group_by':'recurring_invite'}"/>
+            </group>
+        </search>
+    </field>
+</record>
+    <record id="view_client_cadence_call_tree" model="ir.ui.view">
+        <field name="name">client.cadence.call.tree</field>
+        <field name="model">client.cadence.call</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="id" readonly="1" string="Sr #"/>
+                <field name="partner_id"/>
+                <field name="manager_contractor"/>
+                <field name="meeting_schedule"/>
+                <field name="frequency"/>
+                <field name="recurring_invite"/>
+                <field name="notes"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_client_cadence_call" model="ir.actions.act_window">
+        <field name="name">Client Cadence Calls</field>
+        <field name="res_model">client.cadence.call</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <!-- Menu Item (child of Emp Feedback) -->
+    <menuitem id="menu_client_cadence_call"
+              name="Client Cadence Calls"
+              parent="menu_hr_employee_feedback"
+              action="action_client_cadence_call"/>
+
+</odoo>

@@ -47,12 +47,19 @@ class EmployeeAttendanceRegister(models.TransientModel):
     def check_attendance(self):
         data = []
         report = self.env['hr.attendance'].sudo().search(
-            [('employee_id', 'in', self.employee_ids.ids), ('check_in', '>=', self.start_date),
+            [('employee_id', 'in', self.employee_ids.ids), ('check_in', '>=', self.start_date + timedelta(hours=-8)),
              ('check_in', '<=', self.end_date + timedelta(days=1))])  # Slight buffer for timezone shift
 
         for rec in report:
-            check_in = rec.check_in + timedelta(hours=5) if rec.check_in else None
-            check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
+            if rec.employee_id.country_id.name == 'Philippines':
+                check_in = rec.check_in + timedelta(hours=8) if rec.check_in else None
+                check_out = rec.check_out + timedelta(hours=8) if rec.check_out else None
+            elif rec.employee_id.country_id.name == 'Pakistan':
+                check_in = rec.check_in + timedelta(hours=5) if rec.check_in else None
+                check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
+            else:
+                check_in = rec.check_in + timedelta(hours=5) if rec.check_in else None
+                check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
 
             if check_in and check_out:
                 work_hours = round(rec.worked_hours, 1)
