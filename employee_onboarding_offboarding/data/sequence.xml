@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_employee_onboard" model="ir.sequence">
+        <field name="name">Employee Onboard</field>
+        <field name="code">employee.onboard</field>
+        <field name="prefix">ONB-</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

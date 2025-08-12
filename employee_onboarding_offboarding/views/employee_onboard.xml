@@ -1,0 +1,116 @@
+<odoo>
+    <!-- Tree View -->
+    <record id="view_employee_onboard_tree" model="ir.ui.view">
+        <field name="name">employee.onboard.tree</field>
+        <field name="model">employee.onboard</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="parent_id"/>
+                <field name="hr_responsible"/>
+                <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_onboard_form" model="ir.ui.view">
+        <field name="name">employee.onboard.form</field>
+        <field name="model">employee.onboard</field>
+        <field name="arch" type="xml">
+            <form string="Employee Onboard">
+                <sheet>
+                    <div>
+                        <h2>
+                            <field name="sequence" readonly="1"/>
+                        </h2>
+                    </div>
+                    <br/>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="hr_responsible"/>
+                        </group>
+                        <group>
+                            <field name="department_id" readonly="1"/>
+                            <field name="job_id" readonly="1"/>
+                            <field name="parent_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requests">
+                            <field name="request_ids">
+                                <tree editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="request"/>
+                                    <field name="user_id"/>
+                                    <field name="assigned_date"/>
+                                    <field name="expected_date"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_employee_onboard_search" model="ir.ui.view">
+        <field name="name">employee.onboard.search</field>
+        <field name="model">employee.onboard</field>
+        <field name="arch" type="xml">
+            <search string="Employee Onboard">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="hr_responsible"/>
+                <filter string="This Month" name="this_month"
+                        domain="[('date','&gt;=',context_today().replace(day=1))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
+                    <filter name="group_department" string="Department" context="{'group_by':'department_id'}"/>
+                    <filter name="group_hr" string="HR Responsible" context="{'group_by':'hr_responsible'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!--    Action-->
+    <record id="action_employee_onboard" model="ir.actions.act_window">
+        <field name="name">Employee Onboard</field>
+        <field name="res_model">employee.onboard</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Emloyee Onboard
+            </p>
+        </field>
+    </record>
+    <!--    Menuitem-->
+    <!--            parent="hr.hr_menu_hr_reports"-->
+    <menuitem
+            id="employee_onboarding_offboarding"
+            name="Onboarding"
+            web_icon="employee_onboarding_offboarding,static/description/onboarding.png"
+            sequence="10"/>
+    <menuitem
+            id="employee_onboarding_head_menu"
+            name="Employee Onboarding"
+            action="action_employee_onboard"
+            groups="hr.group_hr_manager"
+            parent="employee_onboarding_offboarding"
+            sequence="20"/>
+    <menuitem
+            id="configuration_head_menu"
+            name="Configurations"
+            groups="hr.group_hr_manager"
+            action="action_employee_onboard"
+            parent="employee_onboarding_offboarding"
+            sequence="50"/>
+
+</odoo>
