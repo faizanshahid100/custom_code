@@ -1,0 +1,83 @@
+from odoo import api, fields, models, _
+from odoo.exceptions import AccessError, ValidationError
+from datetime import timedelta
+
+class EmployeeOnboard(models.Model):
+    _name = "employee.onboard"
+    _rec_name = "employee_id"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _description = "Employee Onboard"
+
+
+    sequence = fields.Char('Sequence', readonly=True, copy=False, index=True, default=lambda self: _('New'))
+    employee_id = fields.Many2one('hr.employee', string='Employee')
+    date = fields.Date('Date', default=fields.Date.today)
+    state = fields.Selection([('inprogress', 'In-Progress'), ('completed', 'Completed')],
+                             string='Request Status', default='inprogress', tracking=True)
+    department_id = fields.Many2one('hr.department', string='Department',related='employee_id.department_id')
+    job_id = fields.Many2one('hr.job', string='Job Position',related='employee_id.job_id')
+    parent_id = fields.Many2one('hr.employee', string='Manager', related='employee_id.parent_id')
+    hr_responsible = fields.Many2one('hr.employee', string='Hr Responsible')
+    request_ids = fields.One2many('checklist.requests', 'onboard_id', string='Requests')
+
+    def action_set_inprogress(self):
+        self.state = 'inprogress'
+
+    def action_set_completed(self):
+        self.state = 'completed'
+
+    @api.model
+    def create(self, vals):
+        # Generate Sequence
+        if vals.get('sequence', _('New')) == _('New'):
+            vals['sequence'] = self.env['ir.sequence'].next_by_code('employee.onboard') or _('New')
+
+        record = super(EmployeeOnboard, self).create(vals)
+
+        # --- Auto-create Checklist Requests from Template ---
+        template = self.env['checklist.template'].search([
+            ('type', '=', 'onboarding'),  # only onboarding template for this model
+            ('active', '=', True)
+        ], limit=1)  # You can make this selection logic more specific if needed
+
+        if template and template.line_ids:
+            request_lines = []
+            for line in template.line_ids:
+                request_lines.append({
+                    'employee_id': record.employee_id.id,
+                    'request': line.requirement,
+                    'user_id': line.responsible_user_id.id,
+                    'assigned_date': fields.Date.today(),
+                    'expected_date': fields.Date.today() + timedelta(days=line.due_days),
+                    'state': 'todo',
+                    'onboard_id': record.id,
+                })
+            self.env['checklist.requests'].create(request_lines)
+
+        return record
+
+
+class ChecklistRequests(models.Model):
+    _name = "checklist.requests"
+    _rec_name = "employee_id"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _description = "Checklist Requests"
+
+    employee_id = fields.Many2one('hr.employee', string='Employee')
+    request = fields.Char('Request')
+    user_id = fields.Many2one('res.users', string='Responsible Person')
+    assigned_date = fields.Date('Assigned Date')
+    expected_date = fields.Date('Expected Date')
+    state = fields.Selection([('todo', 'Todo'),
+                                        ('inprogress', 'In-Progress'),('completed', 'Completed')],
+                                       string='Request Status', default='todo', tracking=True)
+    onboard_id = fields.Many2one('employee.onboard', 'Checklist')
+
+    def action_set_todo(self):
+        self.state = 'todo'
+
+    def action_set_inprogress(self):
+        self.state = 'inprogress'
+
+    def action_set_completed(self):
+        self.state = 'completed'

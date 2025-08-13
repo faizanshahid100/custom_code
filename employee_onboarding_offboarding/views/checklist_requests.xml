@@ -1,0 +1,91 @@
+<odoo>
+    <!-- Search View -->
+    <record id="view_checklist_requests_search" model="ir.ui.view">
+        <field name="name">checklist.requests.search</field>
+        <field name="model">checklist.requests</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="request"/>
+                <field name="user_id"/>
+                <field name="state"/>
+                <filter name="state_todo" string="In-Progress" domain="[('state','!=','completed')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_user" string="Responsible" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_checklist_requests_tree" model="ir.ui.view">
+        <field name="name">checklist.requests.tree</field>
+        <field name="model">checklist.requests</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="request"/>
+                <field name="user_id"/>
+                <field name="assigned_date"/>
+                <field name="expected_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_checklist_requests_form" model="ir.ui.view">
+        <field name="name">checklist.requests.form</field>
+        <field name="model">checklist.requests</field>
+        <field name="arch" type="xml">
+            <form string="Checklist Request">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="todo,inprogress,completed"/>
+                    <button name="action_set_todo" type="object" string="Set Todo"
+                            states="inprogress,completed" class="btn-secondary"/>
+                    <button name="action_set_inprogress" type="object" string="Start"
+                            states="todo" class="btn-primary"/>
+                    <button name="action_set_completed" type="object" string="Complete"
+                            states="inprogress" class="btn-success"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="request" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="assigned_date" readonly="1"/>
+                            <field name="expected_date" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_checklist_requests" model="ir.actions.act_window">
+        <field name="name">Checklist Requests</field>
+        <field name="res_model">checklist.requests</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_state_todo': 1}</field>
+        <field name="search_view_id" ref="view_checklist_requests_search"/>
+    </record>
+
+    <menuitem
+            id="checklist_requests_head_menu"
+            name="Checklist Requests"
+            action="action_checklist_requests"
+            parent="employee_onboarding_offboarding"
+            sequence="30"/>
+
+</odoo>
