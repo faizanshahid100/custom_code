@@ -12,6 +12,7 @@
                 <field name="parent_id"/>
                 <field name="hr_responsible"/>
                 <field name="date"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -22,6 +23,13 @@
         <field name="model">employee.onboard</field>
         <field name="arch" type="xml">
             <form string="Employee Onboard">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="inprogress,completed"/>
+                    <button name="action_set_inprogress" type="object" string="Set In-Progress"
+                            states="completed" class="btn-secondary"/>
+                    <button name="action_set_completed" type="object" string="Complete"
+                            states="inprogress" class="btn-success"/>
+                </header>
                 <sheet>
                     <div>
                         <h2>
@@ -43,7 +51,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids">
+                            <field name="request_ids" readonly="1">
                                 <tree editable="bottom">
                                     <field name="employee_id"/>
                                     <field name="request"/>
@@ -56,6 +64,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
             </form>
         </field>
     </record>
@@ -70,11 +83,9 @@
                 <field name="department_id"/>
                 <field name="job_id"/>
                 <field name="hr_responsible"/>
-                <filter string="This Month" name="this_month"
-                        domain="[('date','&gt;=',context_today().replace(day=1))]"/>
+                <field name="state"/>
+                <filter name="state_inprogress" string="In-Progress" domain="[('state','=','inprogress')]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
-                    <filter name="group_department" string="Department" context="{'group_by':'department_id'}"/>
                     <filter name="group_hr" string="HR Responsible" context="{'group_by':'hr_responsible'}"/>
                 </group>
             </search>
@@ -85,6 +96,7 @@
         <field name="name">Employee Onboard</field>
         <field name="res_model">employee.onboard</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_state_inprogress': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Emloyee Onboard
@@ -97,19 +109,19 @@
             id="employee_onboarding_offboarding"
             name="Onboarding"
             web_icon="employee_onboarding_offboarding,static/description/onboarding.png"
+            groups="employee_onboarding_offboarding.group_onboarding_offboarding_user"
             sequence="10"/>
     <menuitem
             id="employee_onboarding_head_menu"
             name="Employee Onboarding"
             action="action_employee_onboard"
-            groups="hr.group_hr_manager"
+            groups="hr.group_hr_manager,employee_onboarding_offboarding.group_onboarding_offboarding_admin"
             parent="employee_onboarding_offboarding"
             sequence="20"/>
     <menuitem
             id="configuration_head_menu"
             name="Configurations"
-            groups="hr.group_hr_manager"
-            action="action_employee_onboard"
+            groups="hr.group_hr_manager,employee_onboarding_offboarding.group_onboarding_offboarding_admin"
             parent="employee_onboarding_offboarding"
             sequence="50"/>
 

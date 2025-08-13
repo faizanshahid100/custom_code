@@ -1,0 +1,61 @@
+<odoo>
+    <!--    Tree View-->
+    <record id="view_checklist_template_tree" model="ir.ui.view">
+        <field name="name">checklist.template.tree</field>
+        <field name="model">checklist.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    <!--Form View-->
+    <record id="view_checklist_template_form" model="ir.ui.view">
+        <field name="name">checklist.template.form</field>
+        <field name="model">checklist.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="type"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Checklist Items">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="requirement"/>
+                                    <field name="responsible_user_id"/>
+                                    <field name="due_days"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!--Action-->
+    <record id="action_checklist_template" model="ir.actions.act_window">
+        <field name="name">Checklist Templates</field>
+        <field name="res_model">checklist.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!--Menuitem-->
+    <menuitem
+            id="checklist_template_head_menu"
+            name="Checklist Template"
+            groups="hr.group_hr_manager,employee_onboarding_offboarding.group_onboarding_offboarding_admin"
+            parent="configuration_head_menu"
+            action="action_checklist_template"
+            sequence="20"/>
+</odoo>

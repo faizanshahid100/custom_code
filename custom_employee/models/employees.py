@@ -213,11 +213,27 @@ class HREmployeeInherit(models.Model):
             ('parent_id', '!=', False),
         ])
 
-        template = self.env.ref('custom_employee.email_template_employee_one_month_review')
-        client_template = self.env.ref('custom_employee.employee_one_month_review_for_client')
+        template = self.env.ref('custom_employee.email_template_employee_one_month_review', raise_if_not_found=False)
+        client_template = self.env.ref('custom_employee.employee_one_month_review_for_client', raise_if_not_found=False)
+
         for emp in employees:
-            if template:
-                template.send_mail(emp.id, force_send=True)
+            if not template:
+                continue
+
+            # Prepare extra recipients if Philippines
+            extra_cc = ''
+            if emp.country_id and emp.country_id.name == 'Philippines':
+                extra_cc = 'sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com'
+
+            # Send mail with dynamic CC
+            template_values = {
+                'email_cc': f"{template.email_cc},{extra_cc}" if extra_cc else template.email_cc
+            }
+            template.with_context(**template_values).send_mail(emp.id, force_send=True)
+
+            # Optional: send client template
+            if client_template:
+                client_template.with_context(**template_values).send_mail(emp.id, force_send=True)
 
             # TODO (Uncomment when finalize)
             # if client_template and emp.contractor and emp.contractor.email:
