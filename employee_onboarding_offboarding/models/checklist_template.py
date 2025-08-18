@@ -14,6 +14,7 @@ class ChecklistTemplate(models.Model):
         ('offboarding', 'Offboarding')
     ], string="Checklist Type", required=True, default='onboarding', tracking=True)
     active = fields.Boolean("Active", default=True)
+    hr_responsible = fields.Many2one('hr.employee', string='Hr Responsible')
 
     line_ids = fields.One2many('checklist.template.line', 'template_id', string="Checklist Items")
 
