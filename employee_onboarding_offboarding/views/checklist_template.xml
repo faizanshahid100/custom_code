@@ -22,6 +22,7 @@
                         <group>
                             <field name="name"/>
                             <field name="active"/>
+                            <field name="hr_responsible"/>
                         </group>
                         <group>
                             <field name="type"/>

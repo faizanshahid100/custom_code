@@ -39,6 +39,9 @@ class EmployeeOnboard(models.Model):
             ('type', '=', 'onboarding'),  # only onboarding template for this model
             ('active', '=', True)
         ], limit=1)  # You can make this selection logic more specific if needed
+        if template:
+            if template.hr_responsible:
+                record.hr_responsible = template.hr_responsible.id
 
         if template and template.line_ids:
             request_lines = []
@@ -75,9 +78,23 @@ class ChecklistRequests(models.Model):
 
     def action_set_todo(self):
         self.state = 'todo'
+        self._update_onboard_state()
 
     def action_set_inprogress(self):
         self.state = 'inprogress'
+        self._update_onboard_state()
 
     def action_set_completed(self):
         self.state = 'completed'
+        self._update_onboard_state()
+
+    def _update_onboard_state(self):
+        """Update parent onboard state when all requests are completed"""
+        for rec in self:
+            if rec.onboard_id:
+                all_completed = all(line.state == 'completed' for line in rec.onboard_id.request_ids)
+                if all_completed and rec.onboard_id.state != 'completed':
+                    rec.onboard_id.state = 'completed'
+                elif not all_completed and rec.onboard_id.state == 'completed':
+                    # rollback to inprogress if any request is reopened
+                    rec.onboard_id.state = 'inprogress'
