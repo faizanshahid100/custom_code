@@ -1,3 +1,4 @@
+import math
 import logging
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -14,6 +15,8 @@ class DailyProgress(models.Model):
 
     resource_user_id = fields.Many2one('res.users', string='Resource Name *', default=lambda self: self.env.user.id)
     date_of_project = fields.Date("Today Date", required=True, default=lambda self: date.today())
+    week_of_year = fields.Char(string="Week of the Year", compute="_compute_week_of_year", store=True)
+    year_of_kpi = fields.Char(string="KPI Year")
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')
     ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned')
     avg_resolved_ticket = fields.Integer(string='Tasks / Tickets Resolved')
@@ -178,3 +181,16 @@ class DailyProgress(models.Model):
                 record.non_billable_hours = 100 - record.billable_hours
             else:
                 record.non_billable_hours = 0  # You can handle invalid input as you wish
+
+    @api.depends('date_of_project')
+    def _compute_week_of_year(self):
+        """Compute week number (ISO week) based on date_of_project."""
+        for record in self:
+            if record.date_of_project:
+                # ISO week number (1–53, starting Monday)
+                iso_year, week_number, _ = record.date_of_project.isocalendar()
+                record.week_of_year = f"Week-{week_number}"
+                record.year_of_kpi = iso_year
+            else:
+                record.week_of_year = ""
+                record.year_of_kpi = ""

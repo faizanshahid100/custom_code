@@ -172,30 +172,55 @@ class HREmployeeInherit(models.Model):
                 res_partner rp ON e.contractor = rp.id;
 
             DROP VIEW IF EXISTS dashboard_employee_ticket_calls_view;
-
+    
             CREATE VIEW dashboard_employee_ticket_calls_view AS
             SELECT
-                e.id AS employee_id,
+                e.name AS employee_name,
                 e.kpi_measurement,
                 e.level,
-                e.contractor,
-                e.department_id,
-                e.parent_id,
                 e.employee_status,
-                dp.date_of_project,
-                dp.avg_resolved_ticket,
-                dp.billable_hours,
+                e.gender,
+                e.manager AS client_manager,
+                
+                -- Employee daily Target and Achieved KPIs
+                dp.date_of_project AS kpi_date,
+                dp.week_of_year AS kpi_week,
+                dp.year_of_kpi AS kpi_year,
+                e.d_ticket_resolved AS daily_target_tickets,
+                dp.avg_resolved_ticket AS resolved_tickets,
+                
+                e.d_billable_hours AS daily_target_billable_hours,
+                dp.billable_hours AS achieved_billable_hours,
                 dp.non_billable_hours,
-                dp.no_calls_duration,
-                e.d_ticket_resolved,
-                e.d_billable_hours,
-                e.d_no_of_call_attended
+                
+                e.d_no_of_call_attended AS daily_target_calls,
+                dp.no_calls_duration AS attended_calls,
+    
+                -- Readable fields
+                d.name AS department_name,
+                j.name AS job_name,
+                rp.name AS client_name,
+                
+                -- Attendance data
+                ha.check_in,
+                ha.check_out,
+                ha.worked_hours,
+                
+                -- FK fields for relationships
+                e.id AS employee_id,
+                e.department_id,
+                e.job_id,
+                e.contractor,
+                u.id AS user_id
+                
             FROM
                 hr_employee e
-            LEFT JOIN
-                res_users u ON e.user_id = u.id
-            LEFT JOIN
-                daily_progress dp ON dp.resource_user_id = u.id;
+            LEFT JOIN res_users u ON e.user_id = u.id
+            LEFT JOIN hr_department d ON e.department_id = d.id
+            LEFT JOIN hr_job j ON e.job_id = j.id
+            LEFT JOIN res_partner rp ON e.contractor = rp.id
+            LEFT JOIN daily_progress dp ON dp.resource_user_id = u.id
+            LEFT JOIN hr_attendance ha ON ha.employee_id = e.id;
         """
         try:
             self.env.cr.execute(query)
@@ -238,6 +263,7 @@ class HREmployeeInherit(models.Model):
             # TODO (Uncomment when finalize)
             # if client_template and emp.contractor and emp.contractor.email:
             #     client_template.send_mail(emp.id, force_send=True)
+
 
 class CalendarTracking(models.Model):
     _name = "calendar.tracking"
