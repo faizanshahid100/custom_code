@@ -54,38 +54,38 @@ class DailyProgress(models.Model):
                 raise ValidationError(
                     "A record with the same 'Today Date' and 'Resource Name' already exists. You cannot create duplicate records for the same user on the same date.")
 
-    @api.model
-    def create(self, vals):
-        record = super(DailyProgress, self).create(vals)
-        if record.resource_user_id:
-            employee = record.resource_user_id.employee_id
-            if not employee:
-                return record
-
-            # Only validate if the employee has a defined billable hours target
-            if employee.d_billable_hours:
-                total_hours = (record.billable_hours or 0) + (record.non_billable_hours or 0)
-                if total_hours != 100:
-                    raise ValidationError("The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
-
-            # Fields to check if their respective "is_required" flags are not set
-            fields_to_check = {
-                'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
-                'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
-                'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
-            }
-
-            field_metadata = self.fields_get()
-            missing_fields = [
-                field_metadata[field_name]['string']
-                for field_name, value in fields_to_check.items()
-                if value and not record[field_name]
-            ]
-
-            if missing_fields:
-                raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
-
-        return record
+    # @api.model
+    # def create(self, vals):
+    #     record = super(DailyProgress, self).create(vals)
+    #     if record.resource_user_id:
+    #         employee = record.resource_user_id.employee_id
+    #         if not employee:
+    #             return record
+    #
+    #         # Only validate if the employee has a defined billable hours target
+    #         if employee.d_billable_hours:
+    #             total_hours = (record.billable_hours or 0) + (record.non_billable_hours or 0)
+    #             if total_hours != 100:
+    #                 raise ValidationError("The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
+    #
+    #         # Fields to check if their respective "is_required" flags are not set
+    #         fields_to_check = {
+    #             'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
+    #             'billable_hours': employee.d_billable_hours if not record.is_required_billable_hours else None,
+    #             'no_calls_duration': employee.d_no_of_call_attended if not record.is_required_no_calls_duration else None,
+    #         }
+    #
+    #         field_metadata = self.fields_get()
+    #         missing_fields = [
+    #             field_metadata[field_name]['string']
+    #             for field_name, value in fields_to_check.items()
+    #             if value and not record[field_name]
+    #         ]
+    #
+    #         if missing_fields:
+    #             raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+    #
+    #     return record
 
     def write(self, vals):
         res = super(DailyProgress, self).write(vals)
