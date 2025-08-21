@@ -65,8 +65,8 @@ class DailyProgress(models.Model):
             # Only validate if the employee has a defined billable hours target
             if employee.d_billable_hours:
                 total_hours = (record.billable_hours or 0) + (record.non_billable_hours or 0)
-                # if total_hours != 100:
-                #     raise ValidationError("The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
+                if total_hours != 100:
+                    raise ValidationError("The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
 
             # Fields to check if their respective "is_required" flags are not set
             fields_to_check = {
@@ -82,8 +82,8 @@ class DailyProgress(models.Model):
                 if value and not record[field_name]
             ]
 
-            # if missing_fields:
-            #     raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+            if missing_fields:
+                raise ValidationError("The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
 
         return record
 
@@ -101,9 +101,9 @@ class DailyProgress(models.Model):
 
                     if employee.d_billable_hours:
                         total_hours = (billable or 0) + (non_billable or 0)
-                        # if total_hours != 100:
-                        #     raise ValidationError(
-                        #         "The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
+                        if total_hours != 100:
+                            raise ValidationError(
+                                "The total of 'Billable Hours %' and 'Non-Billable Hours %' must be 100%.")
 
                     fields_to_check = {
                         'avg_resolved_ticket': employee.d_ticket_resolved if not record.is_required_avg_resolved_ticket else None,
@@ -118,9 +118,9 @@ class DailyProgress(models.Model):
                         if value and not record[field_name]
                     ]
 
-                    # if missing_fields:
-                    #     raise ValidationError(
-                    #         "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+                    if missing_fields:
+                        raise ValidationError(
+                            "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
 
         return res
 
@@ -185,7 +185,7 @@ class DailyProgress(models.Model):
     @api.depends('date_of_project')
     def _compute_week_of_year(self):
         """Compute week number (ISO week) based on date_of_project."""
-        for record in self.env['daily.progress'].search([]):
+        for record in self:
             if record.date_of_project:
                 # ISO week number (1–53, starting Monday)
                 iso_year, week_number, _ = record.date_of_project.isocalendar()
