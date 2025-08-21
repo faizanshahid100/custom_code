@@ -54,8 +54,8 @@
                         </group>
                         <group>
                             <field name="date_of_project"/>
-                            <field name="week_of_year" invisible="1"/>
-                            <field name="year_of_kpi" invisible="1"/>
+                            <field name="week_of_year" invisible="0"/>
+                            <field name="year_of_kpi" invisible="0"/>
 <!--                            <field name="is_required_ticket_assigned_new" attrs="{'invisible': [('ticket_assigned_new', '!=', 0)]}"/>-->
                             <field name="is_required_avg_resolved_ticket" attrs="{'invisible': [('avg_resolved_ticket', '!=', 0)]}"/>
 <!--                            <field name="is_required_avg_resolution_time" attrs="{'invisible': [('avg_resolution_time', '!=', 0)]}"/>-->
