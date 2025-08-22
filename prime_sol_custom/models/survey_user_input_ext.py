@@ -5,7 +5,8 @@ class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
     employee_id = fields.Many2one('hr.employee', string='Employee')
-    partner_id = fields.Many2one('res.partner','Client', related='employee_id.contractor')
+    client_id = fields.Many2one('res.partner','Client', related='employee_id.contractor')
+    job_id = fields.Many2one('hr.job','Job', related='employee_id.job_id')
     response_date = fields.Date('Client Response Date', compute='_compute_response_date', store=True)
 
     @api.depends('employee_id', 'user_input_line_ids.question_id', 'user_input_line_ids.display_name')

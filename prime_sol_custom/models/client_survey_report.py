@@ -8,7 +8,8 @@ class ClientSurveyReport(models.Model):
 
     response_date = fields.Date('Response Date')
     employee_id = fields.Many2one('hr.employee', string='Employee')
-    partner_id = fields.Many2one('res.partner', string='Client')
+    job_id = fields.Many2one('hr.job', 'Job')
+    client_id = fields.Many2one('res.partner', string='Client')
     client_manager = fields.Char(string='Manager (Client)')
     level = fields.Char('Level')
     avg_points = fields.Float('Avg. points')

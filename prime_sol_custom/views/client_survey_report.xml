@@ -6,13 +6,15 @@
             <search string="Client Survey Report">
                 <field name="response_date"/>
                 <field name="employee_id"/>
-                <field name="partner_id"/>
+                <field name="job_id"/>
+                <field name="client_id"/>
                 <field name="client_manager"/>
                 <field name="level"/>
 
                 <group expand="1" string="Group By">
                     <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
-                    <filter name="group_by_partner" string="Client" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_by_job" string="Job" context="{'group_by': 'job_id'}"/>
+                    <filter name="group_by_partner" string="Client" context="{'group_by': 'client_id'}"/>
                     <filter name="group_by_manager" string="Manager (Client)" context="{'group_by': 'client_manager'}"/>
                     <filter name="group_by_level" string="Level" context="{'group_by': 'level'}"/>
                 </group>
@@ -26,7 +28,8 @@
             <tree>
                 <field name="response_date"/>
                 <field name="employee_id"/>
-                <field name="partner_id"/>
+                <field name="job_id"/>
+                <field name="client_id"/>
                 <field name="client_manager"/>
                 <field name="level"/>
                 <field name="avg_points"/>

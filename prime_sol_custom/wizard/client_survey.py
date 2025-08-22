@@ -47,7 +47,7 @@ class ClientSurvey(models.TransientModel):
                 ('state', '=', 'done'),
                 ('survey_id.title', '=', '2025: Employee Performance Feedback'),
                 ('test_entry', '=', False),
-                ('partner_id', '=', self.partner_id.id)
+                ('client_id', '=', self.partner_id.id)
             ])
         else:
             inputs = self.env['survey.user_input'].search([
@@ -75,7 +75,8 @@ class ClientSurvey(models.TransientModel):
             self.env['client.survey.report'].create({
                 'response_date': input.response_date,
                 'employee_id': input.employee_id.id,
-                'partner_id': input.employee_id.contractor.id,
+                'job_id': input.job_id.id,
+                'client_id': input.employee_id.contractor.id,
                 'client_manager': input.employee_id.manager,
                 'level': input.employee_id.level,
                 'avg_points': average,
@@ -101,23 +102,25 @@ class ClientSurvey(models.TransientModel):
 
         worksheet.col(0).width = 5000
         worksheet.col(1).width = 7000
-        worksheet.col(2).width = 4000
-        worksheet.col(3).width = 7000
-        worksheet.col(4).width = 4000
-        worksheet.col(5).width = 5000
+        worksheet.col(2).width = 9000
+        worksheet.col(3).width = 4000
+        worksheet.col(4).width = 7000
+        worksheet.col(5).width = 4000
+        worksheet.col(6).width = 5000
 
         for wizard in self:
             pass
 
         worksheet.write(0, 0, 'Response Date', table_heading_style)
         worksheet.write(0, 1, 'Employee', table_heading_style)
-        worksheet.write(0, 2, 'Client', table_heading_style)
-        worksheet.write(0, 3, 'Manager (Client)', table_heading_style)
-        worksheet.write(0, 4, 'Level', table_heading_style)
-        worksheet.write(0, 5, 'Avg. Points', table_heading_style)
+        worksheet.write(0, 2, 'Job', table_heading_style)
+        worksheet.write(0, 3, 'Client', table_heading_style)
+        worksheet.write(0, 4, 'Manager (Client)', table_heading_style)
+        worksheet.write(0, 5, 'Level', table_heading_style)
+        worksheet.write(0, 6, 'Avg. Points', table_heading_style)
         # Get survey responses
         if self.partner_id:
-            inputs = self.env['survey.user_input'].search([('response_date', '>=', self.date_from), ('response_date', '<=', self.date_to),('employee_id', '!=', False), ('state', '=', 'done'), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False), ('partner_id', '=', self.partner_id.id)])
+            inputs = self.env['survey.user_input'].search([('response_date', '>=', self.date_from), ('response_date', '<=', self.date_to),('employee_id', '!=', False), ('state', '=', 'done'), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False), ('client_id', '=', self.partner_id.id)])
         elif not self.partner_id:
             inputs = self.env['survey.user_input'].search([('response_date', '>=', self.date_from), ('response_date', '<=', self.date_to),('employee_id', '!=', False), ('state', '=', 'done'), ('survey_id.title', '=', '2025: Employee Performance Feedback'), ('test_entry', '=', False),])
 
@@ -134,10 +137,11 @@ class ClientSurvey(models.TransientModel):
             average = sum(suggested_values) / len(suggested_values) if suggested_values else 0
             worksheet.write(row, 0, input.response_date.strftime('%d-%m-%Y') if input.response_date else '', columns_left_bold_style)
             worksheet.write(row, 1, input.employee_id.name or '', columns_left_bold_style)
-            worksheet.write(row, 2, input.partner_id.name or '', columns_left_bold_style)
-            worksheet.write(row, 3, input.employee_id.manager or '', columns_left_bold_style)
-            worksheet.write(row, 4, input.employee_id.level or '', columns_left_bold_style)
-            worksheet.write(row, 5, f"{average:.2f}" if average else '', columns_left_bold_style)
+            worksheet.write(row, 2, input.employee_id.job_id.name or '', columns_left_bold_style)
+            worksheet.write(row, 3, input.client_id.name or '', columns_left_bold_style)
+            worksheet.write(row, 4, input.employee_id.manager or '', columns_left_bold_style)
+            worksheet.write(row, 5, input.employee_id.level or '', columns_left_bold_style)
+            worksheet.write(row, 6, f"{average:.2f}" if average else '', columns_left_bold_style)
             row += 1
 
         stream = BytesIO()

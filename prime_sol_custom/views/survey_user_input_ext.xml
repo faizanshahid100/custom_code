@@ -6,9 +6,40 @@
         <field name="arch" type="xml">
             <field name="survey_id" position="after">
                 <field name="employee_id"/>
-                <field name="partner_id"/>
+                <field name="client_id"/>
+                <field name="job_id"/>
+            </field>
+            <field name="email" position="after">
                 <field name="response_date" force_save="1" readonly="1"/>
             </field>
+        </field>
+    </record>
+    <!--    Tree View-->
+    <record id="view_survey_user_input_tree_inherit" model="ir.ui.view">
+        <field name="name">survey.user_input.tree.inherit</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="survey_id" position="after">
+                <field name="employee_id"/>
+                <field name="job_id"/>
+                <field name="client_id"/>
+            </field>
+        </field>
+    </record>
+    <!--    Search View-->
+    <!-- Inherit the search view of survey responses -->
+    <record id="view_survey_user_input_search_inherit" model="ir.ui.view">
+        <field name="name">survey.survey_user_input.search.inherit</field>
+        <field name="model">survey.user_input</field>
+        <field name="inherit_id" ref="survey.survey_user_input_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search/field[@name='email']" position="before">
+                <field name="employee_id"/>
+                <field name="client_id"/>
+                <field name="job_id"/>
+            </xpath>
+
         </field>
     </record>
 </odoo>
