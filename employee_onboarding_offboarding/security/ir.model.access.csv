@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_offer,hr.offer.user,model_hr_offer,,1,1,1,1
+
 access_employee_onboard_admin,access_employee.onboard,model_employee_onboard,employee_onboarding_offboarding.group_onboarding_offboarding_admin,1,1,1,1
 access_employee_onboard_user,access_employee.onboard,model_employee_onboard,,1,1,0,0
 access_checklist_requests_admin,access_checklist.requests,model_checklist_requests,employee_onboarding_offboarding.group_onboarding_offboarding_admin,1,1,1,1
