@@ -1,0 +1,54 @@
+<odoo>
+    <record id="candidate_offer_approval_template" model="mail.template">
+        <field name="name">Candidate Offer Approval</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="email_from">hr@primesystemsolutions.com</field>
+        <field name="subject">Offer Approval Required for {{ object.candidate_name }}</field>
+        <field name="body_html" type="html">
+            <p>Dear CEO,</p>
+            <p>A new candidate offer has been submitted for your approval.</p>
+
+            <p><strong>Candidate:</strong> <t t-out="object.candidate_name"/></p>
+            <p><strong>Client:</strong> <t t-out="object.client_id.name"/></p>
+            <p><strong>Designation:</strong> <t t-out="object.job_id.name"/></p>
+            <p><strong>Proposed Joining Date:</strong> <t t-out="object.joining_date"/></p>
+
+            <p>
+                <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>
+                <a t-att-href="url"
+                   style="display:inline-block;padding:10px 20px;background-color:#1e88e5;color:#fff;text-decoration:none;border-radius:5px;">
+                   Review Offer in Odoo
+                </a>
+            </p>
+
+            <p>Please review the offer in the system.</p>
+        </field>
+    </record>
+
+    <record id="candidate_offer_modification_template" model="mail.template">
+        <field name="name">Candidate Offer Modification Notification</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="email_from">hr@primesystemsolutions.com</field>
+        <field name="subject">Offer for {{ object.candidate_name }} sent back for modification</field>
+        <field name="body_html" type="html">
+            <p>Dear <t t-out="object.offer_submitter_id.name"/> ,</p>
+            <p>
+                The offer for candidate <strong><t t-out="object.candidate_name"/></strong> has been
+                sent back to <strong>Modification</strong> state by the CEO.
+            </p>
+            <p>
+                <strong>Reason:</strong><br/>
+                <t t-out="object.remarks"/>
+            </p>
+
+            <p>
+                <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>
+                <a t-att-href="url"
+                   style="display:inline-block;padding:10px 20px;background-color:#1e88e5;color:#fff;text-decoration:none;border-radius:5px;">
+                   Review Offer in Odoo
+                </a>
+            </p>
+            <p>Please review and update the offer accordingly.</p>
+        </field>
+    </record>
+</odoo>

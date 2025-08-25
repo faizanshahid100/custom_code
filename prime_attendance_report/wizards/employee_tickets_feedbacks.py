@@ -293,9 +293,9 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     def action_confirm_tickets(self):
         if self.department_id:
-            employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
+            employees = self.env['hr.employee'].sudo().search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
+            employees = self.env['hr.employee'].sudo().search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -310,7 +310,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
         week_ranges = get_week_ranges(self.start_date, self.end_date)
 
-        progresses = self.env['daily.progress'].search([
+        progresses = self.env['daily.progress'].sudo().search([
             ('date_of_project', '>=', self.start_date),
             ('date_of_project', '<=', self.end_date),
             ('resource_user_id.employee_id', 'in', employees.ids)
@@ -324,7 +324,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
                     progress_map[emp_id][index + 1] += progress.avg_resolved_ticket
                     break
 
-        self.env['weekly.ticket.report'].search([]).unlink()
+        self.env['weekly.ticket.report'].sudo().search([]).unlink()
 
         # Create records in weekly.ticket.report
         for employee in employees:
@@ -352,7 +352,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 if employee.kpi_measurement == 'kpi':
                     vals['week_total'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>" if resolved_tickets_total >= all_tickets_total else f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
 
-            self.env['weekly.ticket.report'].create(vals)
+            self.env['weekly.ticket.report'].sudo().create(vals)
 
         return {
             'name': f"Weekly Tickets Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",
@@ -364,9 +364,9 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     def action_confirm_feedbacks(self):
         if self.department_id:
-            employees = self.env['hr.employee'].search([('department_id', '=', self.department_id.id)])
+            employees = self.env['hr.employee'].sudo().search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
+            employees = self.env['hr.employee'].sudo().search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
@@ -381,7 +381,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
         week_ranges = get_week_ranges(self.start_date, self.end_date)
 
-        feedbacks = self.env['hr.employee.feedback'].search([
+        feedbacks = self.env['hr.employee.feedback'].sudo().search([
             ('employee_id', 'in', employees.ids),
             ('date_feedback', '>=', self.start_date),
             ('date_feedback', '<=', self.end_date)
@@ -395,7 +395,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
                     feedback_map[emp_id][idx + 1][fb.feedback_type] += 1
                     break
 
-        self.env['weekly.feedback.report'].search([]).unlink()
+        self.env['weekly.feedback.report'].sudo().search([]).unlink()
 
         for emp in employees:
             vals = {
@@ -433,7 +433,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
                     </div>
                 """
 
-            self.env['weekly.feedback.report'].create(vals)
+            self.env['weekly.feedback.report'].sudo().create(vals)
 
         return {
             'name': f"Weekly Feedback Report ({self.start_date.strftime('%d-%b-%Y')} - {self.end_date.strftime('%d-%b-%Y')})",

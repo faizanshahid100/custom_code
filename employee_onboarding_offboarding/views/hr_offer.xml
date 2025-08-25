@@ -6,11 +6,11 @@
             <form string="Offer Creation" create="true" edit="true">
                 <header>
                     <button name="action_submit" type="object" string="Submit" states="draft,modification" class="btn-primary"/>
-                    <button name="action_send_back" type="object" string="Send Back" states="submitted"
+                    <button name="action_send_back" type="object" string="Send Back" class="btn-warning" states="submitted,approved,rejected"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_approve" type="object" string="Approve" states="submitted"
+                    <button name="action_approve" type="object" string="Approve" class="btn-success" states="submitted"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_reject" type="object" string="Reject" states="submitted"
+                    <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved"
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,modification,approved,rejected"/>
@@ -23,7 +23,7 @@
                             <field name="contact_number"/>
                             <field name="personal_email"/>
                             <field name="joining_date"/>
-                            <field name="designation"/>
+                            <field name="job_id"/>
                             <field name="salary"/>
                             <field name="allowances"/>
                             <field name="employment_type"/>
@@ -40,19 +40,26 @@
                         </group>
 
                         <group string="Reporting Structure">
+                            <field name="manager"/>
+                            <field name="manager_email"/>
+                            <field name="dept_hod"/>
+                            <field name="dept_hod_email"/>
                             <field name="manager_id"/>
-                            <field name="manager_email" readonly="1"/>
-                            <field name="hod_id"/>
-                            <field name="hod_email" readonly="1"/>
                         </group>
 
                         <group string="Additional Notes">
                             <field name="buddy_info"/>
                             <field name="remarks"/>
                             <field name="special_instructions"/>
+                            <field name="offer_submitter_id" readonly="1"/>
                         </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
             </form>
         </field>
     </record>
@@ -63,7 +70,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="candidate_name"/>
-                <field name="designation"/>
+                <field name="job_id"/>
                 <field name="client_id"/>
                 <field name="joining_date"/>
                 <field name="salary"/>
