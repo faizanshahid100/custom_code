@@ -1,0 +1,92 @@
+<odoo>
+    <record id="view_hr_offer_form" model="ir.ui.view">
+        <field name="name">hr.offer.form</field>
+        <field name="model">hr.offer</field>
+        <field name="arch" type="xml">
+            <form string="Offer Creation" create="true" edit="true">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" states="draft,modification" class="btn-primary"/>
+                    <button name="action_send_back" type="object" string="Send Back" class="btn-warning" states="submitted,approved,rejected"
+                            groups="employee_onboarding_offboarding.group_ceo"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-success" states="submitted"
+                            groups="employee_onboarding_offboarding.group_ceo"/>
+                    <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved"
+                            groups="employee_onboarding_offboarding.group_ceo"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,modification,approved,rejected"/>
+                </header>
+
+                <sheet>
+                    <group>
+                        <group string="Candidate Details">
+                            <field name="candidate_name"/>
+                            <field name="contact_number"/>
+                            <field name="personal_email"/>
+                            <field name="joining_date"/>
+                            <field name="job_id"/>
+                            <field name="salary"/>
+                            <field name="allowances"/>
+                            <field name="employment_type"/>
+                            <field name="probation_period"/>
+                        </group>
+
+                        <group string="Client Assignment">
+                            <field name="client_id"/>
+                            <field name="client_joining_date"/>
+                            <field name="pillar"/>
+                            <field name="work_location"/>
+                            <field name="reporting_time"/>
+                            <field name="working_hours"/>
+                        </group>
+
+                        <group string="Reporting Structure">
+                            <field name="manager"/>
+                            <field name="manager_email"/>
+                            <field name="dept_hod"/>
+                            <field name="dept_hod_email"/>
+                            <field name="manager_id"/>
+                        </group>
+
+                        <group string="Additional Notes">
+                            <field name="buddy_info"/>
+                            <field name="remarks"/>
+                            <field name="special_instructions"/>
+                            <field name="offer_submitter_id" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_offer_tree" model="ir.ui.view">
+        <field name="name">hr.offer.tree</field>
+        <field name="model">hr.offer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="candidate_name"/>
+                <field name="job_id"/>
+                <field name="client_id"/>
+                <field name="joining_date"/>
+                <field name="salary"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_offer_root" name="Offers"
+              parent="employee_onboarding_offboarding.employee_onboarding_head_menu"/>
+    <menuitem id="menu_hr_offer" name="Offer Creation" parent="employee_onboarding_offboarding.menu_hr_offer_root"
+              action="action_hr_offer"/>
+
+    <record id="action_hr_offer" model="ir.actions.act_window">
+        <field name="name">Offers</field>
+        <field name="res_model">hr.offer</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
