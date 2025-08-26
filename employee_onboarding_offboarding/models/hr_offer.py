@@ -47,16 +47,18 @@ class HrOffer(models.Model):
 
     # Additional Notes
     buddy_info = fields.Char("Buddy Info", tracking=True)
-    remarks = fields.Text("Remarks", tracking=True)
+    remarks = fields.Text("Modification Remarks", tracking=True)
     special_instructions = fields.Text("Special Instructions", tracking=True)
     offer_submitter_id = fields.Many2one('res.users', string='Offer Submitter')
 
     # Workflow
     state = fields.Selection([
-        ("draft", "Draft"),
-        ("submitted", "Submitted for CEO Approval"),
-        ("modification", "Sent Back for Modification"),
-        ("approved", "Approved"),
+        ("draft", "New"),
+        ("submitted", "CEO Approval"),
+        ("modification", "Modification"),
+        ("approved", "Approved & Sent Offer"),
+        ("send_employee_form", "Employee Form Sent"),
+        ("send_contract", "Contract Sent"),
         ("rejected", "Rejected"),
     ], default="draft", tracking=True)
 
@@ -116,7 +118,13 @@ class HrOffer(models.Model):
     def action_approve(self):
         if not self.env.user.has_group("employee_onboarding_offboarding.group_ceo"):
             raise ValidationError("Only CEO can approve offers.")
+
         self.write({"state": "approved"})
+
+        # Send offer email to candidate
+        template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+        if template and self.personal_email:
+            template.send_mail(self.id, force_send=True)
 
     def action_reject(self):
         self.write({"state": "rejected"})

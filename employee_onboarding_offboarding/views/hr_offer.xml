@@ -8,12 +8,12 @@
                     <button name="action_submit" type="object" string="Submit" states="draft,modification" class="btn-primary"/>
                     <button name="action_send_back" type="object" string="Send Back" class="btn-warning" states="submitted,approved,rejected"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_approve" type="object" string="Approve" class="btn-success" states="submitted"
+                    <button name="action_approve" type="object" string="Approve &amp; Send Offer" class="btn-success" states="submitted"
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved"
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,submitted,modification,approved,rejected"/>
+                           statusbar_visible="draft,submitted,modification,approved,send_employee_form,send_contract,rejected"/>
                 </header>
 
                 <sheet>
