@@ -10,50 +10,80 @@
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <button name="action_approve" type="object" string="Approve &amp; Send Offer" class="btn-success" states="submitted"
                             groups="employee_onboarding_offboarding.group_ceo"/>
+                    <button name="action_sent_contract" type="object" string="Send Contract" class="btn-warning" states="approved"
+                            groups="employee_onboarding_offboarding.group_responsible_hr"/>
+                    <button name="action_hire" type="object" string="Hire Candidate" class="btn-success" states="send_contract"
+                            groups="employee_onboarding_offboarding.group_responsible_hr"/>
                     <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved"
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,submitted,modification,approved,send_employee_form,send_contract,rejected"/>
+                           statusbar_visible="draft,submitted,modification,approved,rejected"/>
                 </header>
 
                 <sheet>
                     <group>
                         <group string="Candidate Details">
-                            <field name="candidate_name"/>
-                            <field name="contact_number"/>
-                            <field name="personal_email"/>
-                            <field name="joining_date"/>
-                            <field name="job_id"/>
-                            <field name="salary"/>
-                            <field name="allowances"/>
-                            <field name="employment_type"/>
-                            <field name="probation_period"/>
+                            <field name="candidate_name" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="contact_number" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="personal_email" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="country_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="joining_date" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="job_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="salary" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="allowances" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="employment_type" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="probation_period" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                         </group>
 
                         <group string="Client Assignment">
-                            <field name="client_id"/>
-                            <field name="client_joining_date"/>
-                            <field name="pillar"/>
-                            <field name="work_location"/>
-                            <field name="reporting_time"/>
-                            <field name="working_hours"/>
+                            <field name="client_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="client_joining_date" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="pillar" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="work_location" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="reporting_time" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="working_hours" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                         </group>
 
                         <group string="Reporting Structure">
-                            <field name="manager"/>
-                            <field name="manager_email"/>
-                            <field name="dept_hod"/>
-                            <field name="dept_hod_email"/>
-                            <field name="manager_id"/>
+                            <field name="manager" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="manager_email" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="dept_hod" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="dept_hod_email" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="manager_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                         </group>
 
                         <group string="Additional Notes">
-                            <field name="buddy_info"/>
-                            <field name="remarks"/>
-                            <field name="special_instructions"/>
+                            <field name="buddy_info" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="remarks" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="special_instructions" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="offer_submitter_id" readonly="1"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Contract Info" name="contract_info" attrs="{'invisible': [('state', 'not in', ('approved', 'send_contract', 'hired'))]}">
+                            <group>
+                                <group>
+                                    <field name="candidate_name"/>
+                                    <field name="date_of_birth" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="personal_email"/>
+                                    <field name="address" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="candidate_mobile" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="id_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="tax_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="linked_in_profile" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                </group>
+                                <group>
+                                    <field name="ice_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="ice_relation" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="bank_name" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="bank_info" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="account_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="iban_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="swift_code" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

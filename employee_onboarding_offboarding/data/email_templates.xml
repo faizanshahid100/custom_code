@@ -5,7 +5,9 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Approval Required for {{ object.candidate_name }}</field>
         <field name="body_html" type="html">
-            <p>Dear<strong> CEO,</strong></p>
+            <p>Dear
+                <strong>CEO,</strong>
+            </p>
             <p>A new candidate offer has been submitted for your approval.</p>
 
             <p>
@@ -78,7 +80,9 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">{{ ','.join(user.email for user in object.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email) }}</field>
+        <field name="email_cc">{{ ','.join(user.email for user in
+            object.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email) }}
+        </field>
         <field name="body_html" type="html">
             <p>Dear
                 <b>
@@ -156,13 +160,25 @@
             <h4>Next Steps</h4>
             <p>
                 To confirm your acceptance, please reply to this email by
-                <b><t t-out="format_date((datetime.date.today() + relativedelta(days=+2)), date_format='EEEE, d MMMM y')"/></b>.
+                <b>
+                    <t t-out="format_date((datetime.date.today() + relativedelta(days=+2)), date_format='EEEE, d MMMM y')"/>
+                </b>
+                .
                 Kindly attach the following documents with your confirmation:
             </p>
             <ul>
                 <li>A copy of your CNIC (front and back)</li>
                 <li>A clear, front-facing photograph for introductory cards</li>
             </ul>
+            <p>Fill out the Candidate Information Form by clicking the button below:</p>
+            <p>
+                <a href="https://forms.office.com/r/1frZvYykWQ" target="_blank"
+                   style="display:inline-block; padding:10px 20px; font-size:14px;
+                          font-weight:bold; color:#ffffff; background-color:#1a73e8;
+                          text-decoration:none; border-radius:6px;">
+                    Candidate Information Form
+                </a>
+            </p>
 
             <p>
                 Once we receive your confirmation, we will issue the formal employment contract for digital signature.
@@ -191,4 +207,190 @@
             </p>
         </field>
     </record>
+    <!--    Contract-->
+    <!-- Independent Contractor Agreement Email Template -->
+    <record id="hr_offer_independent_contract_email_template" model="mail.template">
+        <field name="name">Independent Contractor Agreement Email</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="email_from">hr@primesystemsolutions.com</field>
+        <field name="subject">Independent Contractor Service Agreement</field>
+        <field name="email_to">{{object.personal_email}}</field>
+        <field name="email_cc">{{ ','.join(user.email for user in
+            object.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email) }}
+        </field>
+        <field name="body_html" type="html">
+            <div style="font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#333;">
+                <p>Dear
+                    <b>
+                        <t t-out="object.candidate_name"/>
+                    </b>
+                    ,
+                </p>
+
+                <p>Please find below your <b>Independent Contractor Service Agreement</b> with <b>Prime System Solutions
+                    FZ-LLC</b>:
+                </p>
+
+                <hr/>
+                <h3 style="text-align:center;">INDEPENDENT CONTRACTOR SERVICE AGREEMENT</h3>
+
+                <p>
+                    This Independent Contractor Service Agreement (“Agreement”) is made this
+                    <b>
+                        <t t-out="format_date(datetime.date.today(), date_format='EEEE, d MMMM y')"/>
+                    </b>
+                    , by and between:
+                </p>
+                <p>
+                    <b>PRIME SYSTEM SOLUTIONS FZ-LLC</b>, a company organized under the laws of Dubai,
+                    with principal office address at CWEP0363 Compass Building, Al Shohada Road,
+                    Al Hamra Industrial Zone-FZ, Ras Al Khaimah, United Arab Emirates,
+                    hereinafter referred to as the “Company”.
+                </p>
+                <p>
+                    -and-
+                </p>
+                <p>
+                    <b>
+                        <t t-out="object.candidate_name"/>
+                    </b>
+                    (<t t-out="object.id_number"/>),<t t-out="object.country_id.name"/>, of legal age,
+                    residing at
+                    <b>
+                        <t t-out="object.address"/>
+                    </b>
+                    , hereinafter referred to as the “Contractor”.
+                </p>
+
+                <p>
+                    WHEREAS, the Company is engaged in the business of IT Consultancy/Technical Staff Augmentation;
+                    <br/>
+                    WHEREAS, Contractor manifests and guarantees that he/she possesses the requisite qualities
+                    and competencies needed by the Company;
+                    <br/>
+                    WHEREAS, both parties mutually agree to enter into this Agreement in good faith.
+                </p>
+
+                <p>
+                    <b>SECTION 1. PURPOSE OF AGREEMENT</b>
+                    <br/>
+                    The Company hereby engages the Contractor to provide the services described in Annex “A”.
+                    The Services shall be performed as an independent contractor and not as an employee.
+                </p>
+
+                <p>
+                    <b>SECTION 2. TERM OF AGREEMENT</b>
+                    <br/>
+                    This Agreement shall commence on
+                    <b>
+                        <t t-out="object.joining_date"/>
+                    </b>
+                    and continue until terminated as per Section 8.
+                </p>
+
+                <p>
+                    <b>SECTION 3. PERFORMANCE OF SERVICES</b>
+                    <br/>
+                    The Contractor shall perform the Services in accordance with industry standards
+                    and the specifications provided in Annex “A”.
+                </p>
+
+                <p>
+                    <b>SECTION 4. CONTRACTOR’S RATE</b>
+                    <br/>
+                    The Company shall pay the Contractor a fixed fee as specified in Annex “A”.
+                    Contractor shall be responsible for all applicable taxes in their country.
+                </p>
+
+                <hr/>
+                <p>
+                    <b>PRIME SYSTEM SOLUTIONS FZ-LLC</b>
+                    <br/>
+                    <i>By:</i>
+                    <br/>
+                    <br/>
+                    _________________________
+                    <br/>
+                    <b>Sadia Hamid</b>
+                    <br/>
+                    Chief Executive Officer
+                </p>
+
+                <p>Date: _________________________</p>
+
+                <br/>
+                <p>
+                    <i>Confirm:</i>
+                    <br/>
+                    <br/>
+                    _________________________
+                    <br/>
+                    <strong>
+                        <t t-out="object.candidate_name"/>
+                    </strong>
+                </p>
+
+                <p>Date: _________________________</p>
+
+                <hr/>
+                <h4>ANNEX “A”</h4>
+                <ul>
+                    <li>
+                        <b>Contractor Title:</b>
+                        <t t-out="object.job_id.name"/>
+                    </li>
+                    <li>
+                        <b>Basic Salary:</b>
+                        PKR
+                        <t t-out="object.salary"/>
+                    </li>
+                    <li>
+                        <b>Allowances:</b>
+                        PKR
+                        <t t-out="object.allowances"/>
+                    </li>
+                    <li>
+                        <b>Probation Period:</b>
+                        3 months
+                    </li>
+                    <li>
+                        <b>Health Insurance:</b>
+                        OPD &amp; IPD covered
+                    </li>
+                    <li>
+                        <b>Payment Cycle:</b>
+                        Monthly, paid on the 5th of each month
+                    </li>
+                    <li>
+                        <b>Work Arrangement:</b>
+                        <t t-out="dict(onsite='Onsite, Lahore', remote='Remote', hybrid='Hybrid').get(object.work_location, '')"/>
+                    </li>
+                    <li>
+                        <b>Work Schedule:</b>
+                        <t t-out="object.reporting_time"/>
+                    </li>
+                    <li>
+                        <b>Conditional Incentives:</b>
+                        At the discretion of the Company
+                    </li>
+                </ul>
+
+                <br/>
+                <p>
+                    Please confirm your acceptance by replying to this email.
+                    Welcome to <b>Prime System Solutions</b>!
+                </p>
+
+                <br/>
+                <p>
+                    Regards,
+                    <br/>
+                    HR Team
+                    <br/>
+                    Prime System Solutions
+                </p>
+            </div>
+        </field>
+    </record>
+
 </odoo>

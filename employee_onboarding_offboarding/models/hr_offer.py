@@ -12,6 +12,7 @@ class HrOffer(models.Model):
     candidate_name = fields.Char("Candidate Name", required=True, tracking=True)
     contact_number = fields.Char("Contact Number", required=True, tracking=True)
     personal_email = fields.Char("Personal Email", required=True, tracking=True)
+    country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
     salary = fields.Float("Salary", tracking=True)
@@ -35,7 +36,7 @@ class HrOffer(models.Model):
         ("remote", "Remote"),
         ("hybrid", "Hybrid"),
     ], string="Work Location",default='onsite', required=True, tracking=True)
-    reporting_time = fields.Char("Reporting Time", tracking=True)
+    reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
     working_hours = fields.Float("Working Hours (per day)", tracking=True)
 
     # Reporting Structure
@@ -57,10 +58,27 @@ class HrOffer(models.Model):
         ("submitted", "CEO Approval"),
         ("modification", "Modification"),
         ("approved", "Approved & Sent Offer"),
-        ("send_employee_form", "Employee Form Sent"),
         ("send_contract", "Contract Sent"),
+        ("hired", "Hired"),
         ("rejected", "Rejected"),
     ], default="draft", tracking=True)
+
+    # Contract Info (Existing fields also be used here)
+    date_of_birth = fields.Date(string='Date of Birth', tracking=True)
+    address = fields.Char(string='Address', tracking=True)
+    candidate_mobile = fields.Char(string='Mobile #', tracking=True)
+    id_number = fields.Char(string='ID number/Passport', tracking=True)
+    tax_number = fields.Char(string='Tax ID (NTN, TIN)', tracking=True)
+    ice_number = fields.Char(string='ICE Number', tracking=True)
+    ice_relation = fields.Char(string='ICE Relation', tracking=True)
+    bank_name = fields.Char(string='Bank Name', tracking=True)
+    bank_info = fields.Char(string='Branch City and Branch Code', tracking=True)
+    account_number = fields.Char(string='Account Number', tracking=True)
+    iban_number = fields.Char(string='IBAN Number', tracking=True)
+    swift_code = fields.Char(string='SWIFT Code', tracking=True)
+    linked_in_profile = fields.Char(string='LinkedIn Profile Link', tracking=True)
+
+
 
     def name_get(self):
         result = []
@@ -125,6 +143,19 @@ class HrOffer(models.Model):
         template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
         if template and self.personal_email:
             template.send_mail(self.id, force_send=True)
+
+    def action_sent_contract(self):
+        self.write({"state": "send_contract"})
+
+        # Send email to candidate
+        template = self.env.ref("employee_onboarding_offboarding.hr_offer_independent_contract_email_template")
+        if template and self.personal_email:
+            template.send_mail(self.id, force_send=True)
+
+        return True
+
+    def action_hire(self):
+        self.write({"state": "hired"})
 
     def action_reject(self):
         self.write({"state": "rejected"})
