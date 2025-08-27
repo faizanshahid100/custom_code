@@ -238,6 +238,7 @@ class HrOffer(models.Model):
             }
             self.env["mail.mail"].create(mail_values).send()
     def action_hire(self):
+        # TODO: on hire we have to create employee and pre onboarding requirements
         self.write({"state": "hired"})
 
     def action_reject(self):
