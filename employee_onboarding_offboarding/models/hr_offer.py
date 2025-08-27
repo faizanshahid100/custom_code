@@ -1,6 +1,11 @@
 from email.policy import default
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+import base64
+from odoo import models, fields, api
+from docx import Document
+import os
+from datetime import date
 
 
 class HrOffer(models.Model):
@@ -144,16 +149,94 @@ class HrOffer(models.Model):
         if template and self.personal_email:
             template.send_mail(self.id, force_send=True)
 
+    # def action_sent_contract(self):
+    #     self.write({"state": "send_contract"})
+    #
+    #     # Send email to candidate
+    #     template = self.env.ref("employee_onboarding_offboarding.hr_offer_independent_contract_email_template")
+    #     if template and self.personal_email:
+    #         template.send_mail(self.id, force_send=True)
+    #
+    #     return True
     def action_sent_contract(self):
-        self.write({"state": "send_contract"})
+        for record in self:
+            record.write({"state": "send_contract"})
 
-        # Send email to candidate
-        template = self.env.ref("employee_onboarding_offboarding.hr_offer_independent_contract_email_template")
-        if template and self.personal_email:
-            template.send_mail(self.id, force_send=True)
+            # Get module base path
+            module_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.join(module_path, "..")
 
-        return True
+            # Template in /data/
+            template_path = os.path.join(base_path, "data", "contract_template.docx")
 
+            # Contracts folder
+            contracts_dir = os.path.join(base_path, "contracts")
+            if not os.path.exists(contracts_dir):
+                os.makedirs(contracts_dir)
+
+            # Load template
+            doc = Document(template_path)
+
+            # Replace variables
+            replacements = {
+                "{{ candidate_name }}": record.candidate_name or "",
+                "{{ id_number }}": record.id_number or "",
+                "{{ address }}": record.address or "",
+                "{{ offer_issue_date }}": fields.Date.today().strftime("%d %B %Y"),
+                "{{ joining_date }}": record.joining_date.strftime("%d %B %Y") if record.joining_date else "",
+                "{{ salary }}": str(record.salary) if record.salary else "",
+                "{{ probation_period }}": str(record.probation_period or ""),
+                "{{ work_location }}": record.work_location or "",
+                "{{ reporting_time }}": record.reporting_time or "",
+            }
+
+            for para in doc.paragraphs:
+                for key, value in replacements.items():
+                    if key in para.text:
+                        para.text = para.text.replace(key, value)
+
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for key, value in replacements.items():
+                            if key in cell.text:
+                                cell.text = cell.text.replace(key, value)
+
+            # Save final doc in contracts folder
+            safe_name = record.candidate_name.replace(" ", "_")+'_'+record.id_number
+            final_path = os.path.join(contracts_dir, f"Contract_{safe_name}.docx")
+            doc.save(final_path)
+
+            # Attach to Odoo
+            with open(final_path, "rb") as f:
+                file_data = f.read()
+
+            attachment = self.env["ir.attachment"].create({
+                "name": f"Contract_{safe_name}.docx",
+                "type": "binary",
+                "datas": base64.b64encode(file_data),
+                "res_model": "hr.offer",
+                "res_id": record.id,
+                "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            })
+
+            # --- SEND EMAIL WITH ATTACHMENT ---
+            mail_values = {
+                "subject": "Independent Contractor Service Agreement",
+                "body_html": f"""
+                                <p>Dear <b>{record.candidate_name}</b>,</p>
+                                <p>Please find attached your Independent Contractor Service Agreement.</p>
+                                <p>Kindly review, sign, and reply back with confirmation.</p>
+                                <br/>
+                                <p><b>Regards,</b><br/>
+                                HR Team<br/>
+                                Prime System Solutions</p>
+                            """,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": record.personal_email,
+                "attachment_ids": [(6, 0, [attachment.id])],
+            }
+            self.env["mail.mail"].create(mail_values).send()
     def action_hire(self):
         self.write({"state": "hired"})
 

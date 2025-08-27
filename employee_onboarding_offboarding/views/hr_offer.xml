@@ -10,7 +10,7 @@
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <button name="action_approve" type="object" string="Approve &amp; Send Offer" class="btn-success" states="submitted"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_sent_contract" type="object" string="Send Contract" class="btn-warning" states="approved"
+                    <button name="action_sent_contract" type="object" string="Send Contract" class="btn-warning" states="approved,hired"
                             groups="employee_onboarding_offboarding.group_responsible_hr"/>
                     <button name="action_hire" type="object" string="Hire Candidate" class="btn-success" states="send_contract"
                             groups="employee_onboarding_offboarding.group_responsible_hr"/>
