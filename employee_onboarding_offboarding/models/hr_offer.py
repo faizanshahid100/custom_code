@@ -1,6 +1,6 @@
 from email.policy import default
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 import base64
 from odoo import models, fields, api
 from docx import Document
@@ -17,6 +17,7 @@ class HrOffer(models.Model):
     candidate_name = fields.Char("Candidate Name", required=True, tracking=True)
     contact_number = fields.Char("Contact Number", required=True, tracking=True)
     personal_email = fields.Char("Personal Email", required=True, tracking=True)
+    official_email = fields.Char("Official Email", tracking=True)
     country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
@@ -35,6 +36,7 @@ class HrOffer(models.Model):
     pillar = fields.Selection([
         ("business", "Business"),
         ("tech", "Tech"),
+        ("management", "Management"),
     ], string="Business/Tech Pillar", required=True, tracking=True)
     work_location = fields.Selection([
         ("onsite", "On-Site"),
@@ -42,7 +44,7 @@ class HrOffer(models.Model):
         ("hybrid", "Hybrid"),
     ], string="Work Location",default='onsite', required=True, tracking=True)
     reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
-    working_hours = fields.Float("Working Hours (per day)", tracking=True)
+    working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
 
     # Reporting Structure
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
@@ -84,28 +86,11 @@ class HrOffer(models.Model):
     linked_in_profile = fields.Char(string='LinkedIn Profile Link', tracking=True)
 
 
-
     def name_get(self):
         result = []
         for rec in self:
             result.append((rec.id, '%s - ( %s)' % (rec.candidate_name, rec.client_id.name)))
         return result
-
-    # System Validation
-    @api.constrains("candidate_name", "contact_number", "personal_email",
-                    "joining_date", "job_id", "salary", "employment_type",
-                    "client_id", "client_joining_date", "pillar", "work_location",
-                    "reporting_time", "working_hours", "manager_id", "dept_hod")
-    def _check_required_fields(self):
-        for rec in self:
-            mandatory_fields = [
-                rec.candidate_name, rec.contact_number, rec.personal_email,
-                rec.joining_date, rec.job_id, rec.salary, rec.employment_type,
-                rec.client_id, rec.client_joining_date, rec.pillar, rec.work_location,
-                rec.reporting_time, rec.working_hours, rec.manager_id, rec.dept_hod,
-            ]
-            if not all(mandatory_fields):
-                raise ValidationError("All mandatory fields must be completed before submission.")
 
     # Workflow Actions
     def action_submit(self):
@@ -149,15 +134,6 @@ class HrOffer(models.Model):
         if template and self.personal_email:
             template.send_mail(self.id, force_send=True)
 
-    # def action_sent_contract(self):
-    #     self.write({"state": "send_contract"})
-    #
-    #     # Send email to candidate
-    #     template = self.env.ref("employee_onboarding_offboarding.hr_offer_independent_contract_email_template")
-    #     if template and self.personal_email:
-    #         template.send_mail(self.id, force_send=True)
-    #
-    #     return True
     def action_sent_contract(self):
         for record in self:
             record.write({"state": "send_contract"})
@@ -234,12 +210,50 @@ class HrOffer(models.Model):
                             """,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": record.personal_email,
+                "email_cc": ','.join(user.email for user in record.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
                 "attachment_ids": [(6, 0, [attachment.id])],
             }
             self.env["mail.mail"].create(mail_values).send()
+
     def action_hire(self):
         # TODO: on hire we have to create employee and pre onboarding requirements
         self.write({"state": "hired"})
+        if not self.official_email:
+            raise ValidationError('Please enter Official Email first')
 
     def action_reject(self):
         self.write({"state": "rejected"})
+
+    def request_official_email(self):
+        for record in self:
+            # Get IT Support users
+            it_support_group = self.env.ref("employee_onboarding_offboarding.group_it_support")
+            it_support_emails = [user.email for user in it_support_group.users if user.email]
+
+            if not it_support_emails:
+                raise UserError("No IT Support user with email found.")
+
+            # Get HR Responsible users
+            hr_group = self.env.ref("employee_onboarding_offboarding.group_responsible_hr")
+            hr_emails = [user.email for user in hr_group.users if user.email]
+
+            # Build subject & body
+            subject = f"Request to Create Official Email - {record.candidate_name}"
+            body = f"""
+                Dear IT Support Team,<br/><br/>
+                Please create an official email ID for the candidate <b>{record.candidate_name}</b>.<br/>
+                Personal Email: {record.personal_email}<br/><br/>
+                Once created, kindly inform HR Responsible ({', '.join(hr_emails)}).<br/><br/>
+                Regards,<br/>
+                HR Team
+            """
+
+            # Send mail
+            mail_values = {
+                "subject": subject,
+                "body_html": body,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": ",".join(it_support_emails),
+                "email_cc": ",".join(hr_emails),
+            }
+            self.env["mail.mail"].create(mail_values).send()

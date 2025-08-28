@@ -66,6 +66,12 @@
                                     <field name="candidate_name"/>
                                     <field name="date_of_birth" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                     <field name="personal_email"/>
+                                    <br/>
+                                    <div>
+                                        <button name="request_official_email" string="Request Official Email" type="object" class="btn-warning" attrs="{'invisible': [('official_email', '!=', False)]}"/>
+                                    </div>
+
+                                    <field name="official_email" attrs="{'readonly': [('state', 'in', ('hired'))]}"/> <!-- official Email  -->
                                     <field name="address" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                     <field name="candidate_mobile" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                     <field name="id_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
@@ -82,6 +88,9 @@
                                     <field name="swift_code" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                 </group>
                             </group>
+                        </page>
+                        <page string="Employee Info" name="employee_info" attrs="{'invisible': [('state', 'not in', ('send_contract', 'hired'))]}">
+                            <group></group>
                         </page>
                     </notebook>
                 </sheet>
