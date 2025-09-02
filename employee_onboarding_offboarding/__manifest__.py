@@ -9,7 +9,7 @@
     "description": """""",
     "category": "HR Onboarding/Offboarding",
     "depends": [
-        "hr", "hr_contract",
+        "hr", "hr_contract", 'gazetted_holiday'
     ],
     "data": [
         "security/security_groups.xml",
@@ -17,8 +17,8 @@
         "data/sequence.xml",
         "data/email_templates.xml",
         "wizards/hr_offer_sendback.xml",
-        "views/hr_offer.xml",
         "views/employee_onboard.xml",
+        "views/hr_offer.xml",
         "views/checklist_requests.xml",
         "views/checklist_template.xml",
     ],
