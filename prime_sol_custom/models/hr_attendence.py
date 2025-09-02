@@ -83,7 +83,7 @@ class HrAttendance(models.Model):
         time_limit_12_hr = timedelta(hours=13, minutes=15)
         now = fields.Datetime.now()
 
-        attendances = self.search([
+        attendances = self.sudo().search([
             ('check_out', '=', False),
             ('check_in', '!=', False),
         ])
