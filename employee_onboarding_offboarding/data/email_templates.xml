@@ -26,6 +26,14 @@
                 <strong>Proposed Joining Date:</strong>
                 <t t-out="object.joining_date"/>
             </p>
+            <p>
+                <strong>Salary:</strong>
+                <t t-out="object.salary"/>
+            </p>
+            <p>
+                <strong>Allowances:</strong>
+                <t t-out="object.allowances"/>
+            </p>
 
             <p>
                 <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>

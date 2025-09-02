@@ -18,6 +18,8 @@ class HrOffer(models.Model):
     contact_number = fields.Char("Contact Number", required=True, tracking=True)
     personal_email = fields.Char("Personal Email", required=True, tracking=True)
     official_email = fields.Char("Official Email", tracking=True)
+    gazetted_holiday_id = fields.Many2one('gazetted.holiday', string='Gazetted Holiday Policy', tracking=True)
+    employee_id = fields.Many2one('hr.employee', string='Employee')
     country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
@@ -50,6 +52,7 @@ class HrOffer(models.Model):
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
     manager = fields.Char(string='Manager (Client)')
     manager_email = fields.Char(string='Manager Email')
+    department_id = fields.Many2one('hr.department', string='Department')
     dept_hod = fields.Char(string="Dept HOD", tracking=True)
     dept_hod_email = fields.Char(string="HOD Email", readonly=True, tracking=True)
 
@@ -213,13 +216,42 @@ class HrOffer(models.Model):
                 "email_cc": ','.join(user.email for user in record.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
                 "attachment_ids": [(6, 0, [attachment.id])],
             }
-            self.env["mail.mail"].create(mail_values).send()
+            self.env["mail.mail"].sudo().create(mail_values).send()
 
     def action_hire(self):
-        # TODO: on hire we have to create employee and pre onboarding requirements
-        self.write({"state": "hired"})
-        if not self.official_email:
-            raise ValidationError('Please enter Official Email first')
+        for record in self:
+            # Change state
+            record.write({"state": "hired"})
+
+            # Validations
+            if not record.official_email:
+                raise ValidationError('Please enter Official Email first')
+            elif not record.gazetted_holiday_id:
+                raise ValidationError('Please enter Gazetted Holiday first')
+
+            # Create Employee
+            employee_vals = {
+                "name": record.candidate_name,
+                "work_email": record.official_email,
+                "work_phone": record.candidate_mobile,
+                "private_email": record.personal_email,
+                "birthday": record.date_of_birth,
+                # "address_home_id": record.address_id.id if record.address_id else False,
+                "job_id": record.job_id.id if record.job_id else False,
+                "department_id": record.department_id.id if record.department_id else False,
+                "parent_id": record.manager_id.id if record.manager_id else False,
+                "coach_id": record.manager_id.id if record.manager_id else False,
+                "country_id": record.country_id.id if record.country_id else False,
+                # "bank_account_id": record.bank_account_id.id if hasattr(record, 'bank_account_id') else False,
+                # "work_location_id": record.work_location_id.id if hasattr(record, 'work_location_id') else False,
+                "joining_date": record.joining_date,
+                "gazetted_holiday_id": record.gazetted_holiday_id.id,
+            }
+
+            employee = self.env["hr.employee"].create(employee_vals)
+
+            # (Optional) link back offer → employee
+            record.write({"employee_id": employee.id})
 
     def action_reject(self):
         self.write({"state": "rejected"})
@@ -256,4 +288,4 @@ class HrOffer(models.Model):
                 "email_to": ",".join(it_support_emails),
                 "email_cc": ",".join(hr_emails),
             }
-            self.env["mail.mail"].create(mail_values).send()
+            self.env["mail.mail"].sudo().create(mail_values).send()
