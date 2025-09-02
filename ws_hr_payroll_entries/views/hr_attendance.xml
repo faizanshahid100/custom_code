@@ -1,17 +1,17 @@
 <odoo>
     <data>
 
-        <record id="hr_attendance_tree_view_shift_allot" model="ir.ui.view">
-            <field name="name">hr.attendance.form.shift.allot</field>
-            <field name="model">hr.attendance</field>
-            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='check_in']" position="before">
-                    <field name="att_date" invisible="0" groups="hr_attendance.group_hr_attendance_user"/>
+<!--        <record id="hr_attendance_tree_view_shift_allot" model="ir.ui.view">-->
+<!--            <field name="name">hr.attendance.form.shift.allot</field>-->
+<!--            <field name="model">hr.attendance</field>-->
+<!--            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='check_in']" position="before">-->
+<!--                    <field name="att_date" invisible="0" groups="hr_attendance.group_hr_attendance_user"/>-->
 <!--                    <field name="attend_date" invisible="1" groups="hr_attendance.group_hr_attendance_user"/>-->
-                </xpath>
-            </field>
-        </record>
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
 
     </data>
 </odoo>
