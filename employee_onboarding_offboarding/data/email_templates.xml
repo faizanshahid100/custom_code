@@ -5,19 +5,33 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Approval Required for {{ object.candidate_name }}</field>
         <field name="body_html" type="html">
-            <p>Dear CEO,</p>
+            <p>Dear
+                <strong>CEO,</strong>
+            </p>
             <p>A new candidate offer has been submitted for your approval.</p>
 
-            <p><strong>Candidate:</strong> <t t-out="object.candidate_name"/></p>
-            <p><strong>Client:</strong> <t t-out="object.client_id.name"/></p>
-            <p><strong>Designation:</strong> <t t-out="object.job_id.name"/></p>
-            <p><strong>Proposed Joining Date:</strong> <t t-out="object.joining_date"/></p>
+            <p>
+                <strong>Candidate:</strong>
+                <t t-out="object.candidate_name"/>
+            </p>
+            <p>
+                <strong>Client:</strong>
+                <t t-out="object.client_id.name"/>
+            </p>
+            <p>
+                <strong>Designation:</strong>
+                <t t-out="object.job_id.name"/>
+            </p>
+            <p>
+                <strong>Proposed Joining Date:</strong>
+                <t t-out="object.joining_date"/>
+            </p>
 
             <p>
                 <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>
                 <a t-att-href="url"
                    style="display:inline-block;padding:10px 20px;background-color:#1e88e5;color:#fff;text-decoration:none;border-radius:5px;">
-                   Review Offer in Odoo
+                    Review Offer in Odoo
                 </a>
             </p>
 
@@ -31,13 +45,21 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer for {{ object.candidate_name }} sent back for modification</field>
         <field name="body_html" type="html">
-            <p>Dear <t t-out="object.offer_submitter_id.name"/> ,</p>
+            <p>Dear
+                <t t-out="object.offer_submitter_id.name"/>
+                ,
+            </p>
             <p>
-                The offer for candidate <strong><t t-out="object.candidate_name"/></strong> has been
+                The offer for candidate
+                <strong>
+                    <t t-out="object.candidate_name"/>
+                </strong>
+                has been
                 sent back to <strong>Modification</strong> state by the CEO.
             </p>
             <p>
-                <strong>Reason:</strong><br/>
+                <strong>Reason:</strong>
+                <br/>
                 <t t-out="object.remarks"/>
             </p>
 
@@ -45,10 +67,144 @@
                 <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>
                 <a t-att-href="url"
                    style="display:inline-block;padding:10px 20px;background-color:#1e88e5;color:#fff;text-decoration:none;border-radius:5px;">
-                   Review Offer in Odoo
+                    Review Offer in Odoo
                 </a>
             </p>
             <p>Please review and update the offer accordingly.</p>
+        </field>
+    </record>
+
+    <record id="candidate_offer_final_template" model="mail.template">
+        <field name="name">Candidate Final Offer Email</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="email_from">hr@primesystemsolutions.com</field>
+        <field name="subject">Offer Letter - Prime System Solutions</field>
+        <field name="email_to">{{object.personal_email}}</field>
+        <field name="email_cc">{{ ','.join(user.email for user in
+            object.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email) }}
+        </field>
+        <field name="body_html" type="html">
+            <p>Dear
+                <b>
+                    <strong>
+                        <t t-out="object.candidate_name"/>
+                    </strong>
+                </b>
+                ,
+            </p>
+
+            <p>
+                We are pleased to extend to you an offer for the position of
+                <b>
+                    <t t-out="object.job_id.name"/>
+                </b>
+                at <b>Prime System Solutions</b>.
+                Your professional background, expertise, and enthusiasm make you a strong fit for our team,
+                and we are confident that you will contribute meaningfully to our mission.
+            </p>
+
+            <p>
+                At Prime System Solutions, we foster a dynamic and collaborative work environment where innovation
+                thrives,
+                boundaries are challenged, and careers flourish. Our goal is to connect individuals, locations, and
+                processes driven
+                by fresh ideas, strategic vision, and a shared passion for excellence.
+                We celebrate diversity, recognize hard work, and are committed to building a team of achievers, leaders,
+                and innovators.
+            </p>
+
+            <h4>Employment Details:</h4>
+            <p>
+                <b>Work Environment</b>
+            </p>
+            <ul>
+                <li>
+                    <b>Location/Site:</b>
+                    <t t-out="dict(onsite='Onsite, Lahore', remote='Remote', hybrid='Hybrid').get(object.work_location, '')"/>
+                </li>
+                <li>
+                    <b>Business Hours:</b>
+                    12 PM to 9 PM PKT (Subject to change as per requirements)
+                </li>
+            </ul>
+
+            <p>
+                <b>Compensation &amp; Benefits</b>
+            </p>
+            <ul>
+                <li>
+                    <b>Basic Salary:</b>
+                    PKR
+                    <t t-out="'{:,.0f}'.format(object.salary)"/>
+                    per month
+                </li>
+                <li>
+                    <b>Employment Type:</b>
+                    <t t-out="object.employment_type.capitalize()"/>
+                </li>
+                <li>
+                    <b>Probation Period:</b>
+                    <t t-out="object.probation_period"/>
+                    months
+                </li>
+            </ul>
+
+            <p>
+                <b>Health Insurance Coverage</b>
+            </p>
+            <ul>
+                <li>OPD: Up to PKR 60,000 per annum</li>
+                <li>IPD: Up to PKR 350,000 per person (employee, spouse and children)</li>
+            </ul>
+
+            <h4>Next Steps</h4>
+            <p>
+                To confirm your acceptance, please reply to this email by
+                <b>
+                    <t t-out="format_date((datetime.date.today() + relativedelta(days=+2)), date_format='EEEE, d MMMM y')"/>
+                </b>
+                .
+                Kindly attach the following documents with your confirmation:
+            </p>
+            <ul>
+                <li>A copy of your CNIC (front and back)</li>
+                <li>A clear, front-facing photograph for introductory cards</li>
+            </ul>
+            <p>Fill out the Candidate Information Form by clicking the button below:</p>
+            <p>
+                <a href="https://forms.office.com/r/1frZvYykWQ" target="_blank"
+                   style="display:inline-block; padding:10px 20px; font-size:14px;
+                          font-weight:bold; color:#ffffff; background-color:#1a73e8;
+                          text-decoration:none; border-radius:6px;">
+                    Candidate Information Form
+                </a>
+            </p>
+
+            <p>
+                Once we receive your confirmation, we will issue the formal employment contract for digital signature.
+                <br/>
+                Your expected joining date is
+                <b>
+                    <t t-out="object.joining_date"/>
+                </b>
+                .
+            </p>
+
+            <p>
+                We are excited to have you join our team and look forward to the impact your skills and experience will
+                bring
+                to Prime System Solutions. If you have any questions or need further clarification,
+                please feel free to reach out.
+            </p>
+
+            <br/>
+            <p>
+                <b>Regards,</b>
+                <br/>
+                HR Team
+                <br/>
+                Prime System Solutions
+            </p>
         </field>
     </record>
 </odoo>

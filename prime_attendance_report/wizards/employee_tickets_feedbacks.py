@@ -308,6 +308,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 current = week_end + timedelta(days=1)
             return ranges
 
+        # Start from very first coming Monday
+        self.start_date = self.start_date + timedelta(days=(7 - self.start_date.weekday()) % 7)
         week_ranges = get_week_ranges(self.start_date, self.end_date)
 
         progresses = self.env['daily.progress'].sudo().search([

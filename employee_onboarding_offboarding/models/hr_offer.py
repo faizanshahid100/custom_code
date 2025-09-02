@@ -1,6 +1,11 @@
 from email.policy import default
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+import base64
+from odoo import models, fields, api
+from docx import Document
+import os
+from datetime import date
 
 
 class HrOffer(models.Model):
@@ -12,6 +17,8 @@ class HrOffer(models.Model):
     candidate_name = fields.Char("Candidate Name", required=True, tracking=True)
     contact_number = fields.Char("Contact Number", required=True, tracking=True)
     personal_email = fields.Char("Personal Email", required=True, tracking=True)
+    official_email = fields.Char("Official Email", tracking=True)
+    country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
     salary = fields.Float("Salary", tracking=True)
@@ -29,14 +36,15 @@ class HrOffer(models.Model):
     pillar = fields.Selection([
         ("business", "Business"),
         ("tech", "Tech"),
+        ("management", "Management"),
     ], string="Business/Tech Pillar", required=True, tracking=True)
     work_location = fields.Selection([
         ("onsite", "On-Site"),
         ("remote", "Remote"),
         ("hybrid", "Hybrid"),
     ], string="Work Location",default='onsite', required=True, tracking=True)
-    reporting_time = fields.Char("Reporting Time", tracking=True)
-    working_hours = fields.Float("Working Hours (per day)", tracking=True)
+    reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
+    working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
 
     # Reporting Structure
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
@@ -47,40 +55,42 @@ class HrOffer(models.Model):
 
     # Additional Notes
     buddy_info = fields.Char("Buddy Info", tracking=True)
-    remarks = fields.Text("Remarks", tracking=True)
+    remarks = fields.Text("Modification Remarks", tracking=True)
     special_instructions = fields.Text("Special Instructions", tracking=True)
     offer_submitter_id = fields.Many2one('res.users', string='Offer Submitter')
 
     # Workflow
     state = fields.Selection([
-        ("draft", "Draft"),
-        ("submitted", "Submitted for CEO Approval"),
-        ("modification", "Sent Back for Modification"),
-        ("approved", "Approved"),
+        ("draft", "New"),
+        ("submitted", "CEO Approval"),
+        ("modification", "Modification"),
+        ("approved", "Approved & Sent Offer"),
+        ("send_contract", "Contract Sent"),
+        ("hired", "Hired"),
         ("rejected", "Rejected"),
     ], default="draft", tracking=True)
+
+    # Contract Info (Existing fields also be used here)
+    date_of_birth = fields.Date(string='Date of Birth', tracking=True)
+    address = fields.Char(string='Address', tracking=True)
+    candidate_mobile = fields.Char(string='Mobile #', tracking=True)
+    id_number = fields.Char(string='ID number/Passport', tracking=True)
+    tax_number = fields.Char(string='Tax ID (NTN, TIN)', tracking=True)
+    ice_number = fields.Char(string='ICE Number', tracking=True)
+    ice_relation = fields.Char(string='ICE Relation', tracking=True)
+    bank_name = fields.Char(string='Bank Name', tracking=True)
+    bank_info = fields.Char(string='Branch City and Branch Code', tracking=True)
+    account_number = fields.Char(string='Account Number', tracking=True)
+    iban_number = fields.Char(string='IBAN Number', tracking=True)
+    swift_code = fields.Char(string='SWIFT Code', tracking=True)
+    linked_in_profile = fields.Char(string='LinkedIn Profile Link', tracking=True)
+
 
     def name_get(self):
         result = []
         for rec in self:
             result.append((rec.id, '%s - ( %s)' % (rec.candidate_name, rec.client_id.name)))
         return result
-
-    # System Validation
-    @api.constrains("candidate_name", "contact_number", "personal_email",
-                    "joining_date", "job_id", "salary", "employment_type",
-                    "client_id", "client_joining_date", "pillar", "work_location",
-                    "reporting_time", "working_hours", "manager_id", "dept_hod")
-    def _check_required_fields(self):
-        for rec in self:
-            mandatory_fields = [
-                rec.candidate_name, rec.contact_number, rec.personal_email,
-                rec.joining_date, rec.job_id, rec.salary, rec.employment_type,
-                rec.client_id, rec.client_joining_date, rec.pillar, rec.work_location,
-                rec.reporting_time, rec.working_hours, rec.manager_id, rec.dept_hod,
-            ]
-            if not all(mandatory_fields):
-                raise ValidationError("All mandatory fields must be completed before submission.")
 
     # Workflow Actions
     def action_submit(self):
@@ -116,7 +126,134 @@ class HrOffer(models.Model):
     def action_approve(self):
         if not self.env.user.has_group("employee_onboarding_offboarding.group_ceo"):
             raise ValidationError("Only CEO can approve offers.")
+
         self.write({"state": "approved"})
+
+        # Send offer email to candidate
+        template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+        if template and self.personal_email:
+            template.send_mail(self.id, force_send=True)
+
+    def action_sent_contract(self):
+        for record in self:
+            record.write({"state": "send_contract"})
+
+            # Get module base path
+            module_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.join(module_path, "..")
+
+            # Template in /data/
+            template_path = os.path.join(base_path, "data", "contract_template.docx")
+
+            # Contracts folder
+            contracts_dir = os.path.join(base_path, "contracts")
+            if not os.path.exists(contracts_dir):
+                os.makedirs(contracts_dir)
+
+            # Load template
+            doc = Document(template_path)
+
+            # Replace variables
+            replacements = {
+                "{{ candidate_name }}": record.candidate_name or "",
+                "{{ id_number }}": record.id_number or "",
+                "{{ address }}": record.address or "",
+                "{{ offer_issue_date }}": fields.Date.today().strftime("%d %B %Y"),
+                "{{ joining_date }}": record.joining_date.strftime("%d %B %Y") if record.joining_date else "",
+                "{{ salary }}": str(record.salary) if record.salary else "",
+                "{{ probation_period }}": str(record.probation_period or ""),
+                "{{ work_location }}": record.work_location or "",
+                "{{ reporting_time }}": record.reporting_time or "",
+            }
+
+            for para in doc.paragraphs:
+                for key, value in replacements.items():
+                    if key in para.text:
+                        para.text = para.text.replace(key, value)
+
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for key, value in replacements.items():
+                            if key in cell.text:
+                                cell.text = cell.text.replace(key, value)
+
+            # Save final doc in contracts folder
+            safe_name = record.candidate_name.replace(" ", "_")+'_'+record.id_number
+            final_path = os.path.join(contracts_dir, f"Contract_{safe_name}.docx")
+            doc.save(final_path)
+
+            # Attach to Odoo
+            with open(final_path, "rb") as f:
+                file_data = f.read()
+
+            attachment = self.env["ir.attachment"].create({
+                "name": f"Contract_{safe_name}.docx",
+                "type": "binary",
+                "datas": base64.b64encode(file_data),
+                "res_model": "hr.offer",
+                "res_id": record.id,
+                "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            })
+
+            # --- SEND EMAIL WITH ATTACHMENT ---
+            mail_values = {
+                "subject": "Independent Contractor Service Agreement",
+                "body_html": f"""
+                                <p>Dear <b>{record.candidate_name}</b>,</p>
+                                <p>Please find attached your Independent Contractor Service Agreement.</p>
+                                <p>Kindly review, sign, and reply back with confirmation.</p>
+                                <br/>
+                                <p><b>Regards,</b><br/>
+                                HR Team<br/>
+                                Prime System Solutions</p>
+                            """,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": record.personal_email,
+                "email_cc": ','.join(user.email for user in record.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                "attachment_ids": [(6, 0, [attachment.id])],
+            }
+            self.env["mail.mail"].create(mail_values).send()
+
+    def action_hire(self):
+        # TODO: on hire we have to create employee and pre onboarding requirements
+        self.write({"state": "hired"})
+        if not self.official_email:
+            raise ValidationError('Please enter Official Email first')
 
     def action_reject(self):
         self.write({"state": "rejected"})
+
+    def request_official_email(self):
+        for record in self:
+            # Get IT Support users
+            it_support_group = self.env.ref("employee_onboarding_offboarding.group_it_support")
+            it_support_emails = [user.email for user in it_support_group.users if user.email]
+
+            if not it_support_emails:
+                raise UserError("No IT Support user with email found.")
+
+            # Get HR Responsible users
+            hr_group = self.env.ref("employee_onboarding_offboarding.group_responsible_hr")
+            hr_emails = [user.email for user in hr_group.users if user.email]
+
+            # Build subject & body
+            subject = f"Request to Create Official Email - {record.candidate_name}"
+            body = f"""
+                Dear IT Support Team,<br/><br/>
+                Please create an official email ID for the candidate <b>{record.candidate_name}</b>.<br/>
+                Personal Email: {record.personal_email}<br/><br/>
+                Once created, kindly inform HR Responsible ({', '.join(hr_emails)}).<br/><br/>
+                Regards,<br/>
+                HR Team
+            """
+
+            # Send mail
+            mail_values = {
+                "subject": subject,
+                "body_html": body,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": ",".join(it_support_emails),
+                "email_cc": ",".join(hr_emails),
+            }
+            self.env["mail.mail"].create(mail_values).send()

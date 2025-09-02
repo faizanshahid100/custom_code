@@ -23,8 +23,10 @@ class HrOfferSendBackWizard(models.TransientModel):
                     "employee_onboarding_offboarding.candidate_offer_modification_template",
                     raise_if_not_found=False
                 )
+                group_talent_acquisition = self.env.ref('employee_onboarding_offboarding.group_talent_acquisition')
                 if mail_template:
                     mail_template.send_mail(offer.id, force_send=True, email_values={
-                        "email_to": offer.offer_submitter_id.email,
+                        "email_to": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_talent_acquisition').users if user.email),
+                        # "email_cc": offer.offer_submitter_id.email,
                     })
         return {"type": "ir.actions.act_window_close"}
