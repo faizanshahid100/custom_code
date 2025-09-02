@@ -270,10 +270,10 @@ class EmployeeAttendanceRegister(models.TransientModel):
                     # if before_contract_flag:
                     if date['date_list'] in before_contract_date:
                         worksheet.write(row, col, "-", format_off_day)
-                    elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in leaves_day:
-                        worksheet.write(row, col, "Leave", format_leave)
                     elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in off_day:
                         worksheet.write(row, col, "Rest", format_off_day)
+                    elif str(date['date_list'])+'-'+str(date['month_list'])+'-'+str(date['year_list']) in leaves_day:
+                        worksheet.write(row, col, "Leave", format_leave)
                     elif f"{date['date_list']:02d}-{date['month_list']:02d}-{date['year_list']}" in gazetted_holidays:
                         worksheet.write(row, col, "Gazetted", format_gazetted_holiday)
                     else:
