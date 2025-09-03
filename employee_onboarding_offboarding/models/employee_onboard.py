@@ -65,7 +65,7 @@ class EmployeeOnboard(models.Model):
                 if req.employee_id.work_email:  # only if employee has email
                     subject = f"New Onboarding Task Assigned - {req.request}"
                     body = f"""
-                                    <p>Dear {req.employee_id.name},</p>
+                                    <p>Dear {req.user_id.name},</p>
                                     <p>A new Pre-Onboarding task has been assigned to you:</p>
                                     <ul>
                                         <li><b>Task:</b> {req.request}</li>
