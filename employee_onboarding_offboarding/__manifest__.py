@@ -17,6 +17,7 @@
         "data/sequence.xml",
         "data/email_templates.xml",
         "wizards/hr_offer_sendback.xml",
+        "views/hr_employee_ext.xml",
         "views/employee_onboard.xml",
         "views/hr_offer.xml",
         "views/checklist_requests.xml",

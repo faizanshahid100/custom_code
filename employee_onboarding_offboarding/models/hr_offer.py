@@ -15,11 +15,11 @@ class HrOffer(models.Model):
 
     # Candidate Details
     candidate_name = fields.Char("Candidate Name", required=True, tracking=True)
-    contact_number = fields.Char("Contact Number", required=True, tracking=True)
+    # contact_number = fields.Char("Contact Number", required=True, tracking=True)
     personal_email = fields.Char("Personal Email", required=True, tracking=True)
     official_email = fields.Char("Official Email", tracking=True)
     gazetted_holiday_id = fields.Many2one('gazetted.holiday', string='Gazetted Holiday Policy', tracking=True)
-    employee_id = fields.Many2one('hr.employee', string='Employee')
+    employee_id = fields.Many2one('hr.employee', string='Employee', ondelete='cascade')
     country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
@@ -42,11 +42,12 @@ class HrOffer(models.Model):
     ], string="Business/Tech Pillar", required=True, tracking=True)
     work_location = fields.Selection([
         ("onsite", "On-Site"),
-        ("remote", "Remote"),
+        ("fully_remote", "Remote"),
         ("hybrid", "Hybrid"),
     ], string="Work Location",default='onsite', required=True, tracking=True)
     reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
     working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
+    checklist_template_id = fields.Many2one('checklist.template', string='Checklist Template', tracking=True)
 
     # Reporting Structure
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
@@ -76,9 +77,10 @@ class HrOffer(models.Model):
     # Contract Info (Existing fields also be used here)
     date_of_birth = fields.Date(string='Date of Birth', tracking=True)
     address = fields.Char(string='Address', tracking=True)
-    candidate_mobile = fields.Char(string='Mobile #', tracking=True)
+    candidate_mobile = fields.Char(string='Candidate Mobile', tracking=True)
     id_number = fields.Char(string='ID number/Passport', tracking=True)
     tax_number = fields.Char(string='Tax ID (NTN, TIN)', tracking=True)
+    ice_name = fields.Char(string='ICE Name', tracking=True)
     ice_number = fields.Char(string='ICE Number', tracking=True)
     ice_relation = fields.Char(string='ICE Relation', tracking=True)
     bank_name = fields.Char(string='Bank Name', tracking=True)
@@ -228,12 +230,15 @@ class HrOffer(models.Model):
                 raise ValidationError('Please enter Official Email first')
             elif not record.gazetted_holiday_id:
                 raise ValidationError('Please enter Gazetted Holiday first')
+            elif not record.checklist_template_id:
+                raise ValidationError('Please enter Checklist first')
 
             # Create Employee
             employee_vals = {
                 "name": record.candidate_name,
                 "work_email": record.official_email,
                 "work_phone": record.candidate_mobile,
+                "mobile_phone": record.candidate_mobile,
                 "private_email": record.personal_email,
                 "birthday": record.date_of_birth,
                 # "address_home_id": record.address_id.id if record.address_id else False,
@@ -245,10 +250,18 @@ class HrOffer(models.Model):
                 # "bank_account_id": record.bank_account_id.id if hasattr(record, 'bank_account_id') else False,
                 # "work_location_id": record.work_location_id.id if hasattr(record, 'work_location_id') else False,
                 "joining_date": record.joining_date,
+                "joining_salary": record.salary,
+                "work_mode": record.work_location,
+                "total_working_hour": record.working_hours,
                 "gazetted_holiday_id": record.gazetted_holiday_id.id,
+                "checklist_template_id": record.checklist_template_id.id,
+                "emergency_contact": record.ice_name,
+                "emergency_phone": record.ice_number,
+                "emergency_contact_relation": record.ice_relation,
+                "identification_id": record.id_number,
             }
 
-            employee = self.env["hr.employee"].create(employee_vals)
+            employee = self.env["hr.employee"].sudo().create(employee_vals)
 
             # (Optional) link back offer → employee
             record.write({"employee_id": employee.id})
