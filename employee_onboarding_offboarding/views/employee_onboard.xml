@@ -41,12 +41,14 @@
                         <group>
                             <field name="employee_id"/>
                             <field name="date" readonly="1"/>
+                            <field name="joining_date" readonly="1"/>
                             <field name="hr_responsible" readonly="1"/>
                         </group>
                         <group>
                             <field name="department_id" readonly="1"/>
                             <field name="job_id" readonly="1"/>
                             <field name="parent_id" readonly="1"/>
+                            <field name="checklist_template_id" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
