@@ -8,13 +8,15 @@
                     <button name="action_submit" type="object" string="Submit" states="draft,modification" class="btn-primary"/>
                     <button name="action_send_back" type="object" string="Send Back" class="btn-warning" states="submitted,approved,rejected"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_approve" type="object" string="Approve &amp; Send Offer" class="btn-success" states="submitted"
+                    <button name="action_approve" type="object" string="Approve " class="btn-success" states="submitted"
                             groups="employee_onboarding_offboarding.group_ceo"/>
-                    <button name="action_sent_contract" type="object" string="Send Contract" class="btn-warning" states="approved"
+                    <button name="action_sent_offer" type="object" string="Send Offer" class="btn-warning" states="approved"
+                            groups="employee_onboarding_offboarding.group_responsible_hr"/>
+                    <button name="action_sent_contract" type="object" string="Send Contract" class="btn-warning" states="send_offer"
                             groups="employee_onboarding_offboarding.group_responsible_hr"/>
                     <button name="action_hire" type="object" string="Hire Candidate" class="btn-success" states="send_contract"
                             groups="employee_onboarding_offboarding.group_responsible_hr"/>
-                    <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved"
+                    <button name="action_reject" type="object" string="Reject" class="btn-danger" states="submitted,approved,send_offer"
                             groups="employee_onboarding_offboarding.group_ceo"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,modification,approved,rejected"/>

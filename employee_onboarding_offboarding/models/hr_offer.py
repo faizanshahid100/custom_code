@@ -68,7 +68,8 @@ class HrOffer(models.Model):
         ("draft", "New"),
         ("submitted", "CEO Approval"),
         ("modification", "Modification"),
-        ("approved", "Approved & Sent Offer"),
+        ("approved", "Approved"),
+        ("send_offer", "Offer Sent"),
         ("send_contract", "Contract Sent"),
         ("hired", "Hired"),
         ("rejected", "Rejected"),
@@ -133,6 +134,12 @@ class HrOffer(models.Model):
             raise ValidationError("Only CEO can approve offers.")
 
         self.write({"state": "approved"})
+
+    def action_sent_offer(self):
+        if not self.env.user.has_group("employee_onboarding_offboarding.group_responsible_hr"):
+            raise ValidationError("Only HR Responsible can Send offers.")
+
+        self.write({"state": "send_offer"})
 
         # Send offer email to candidate
         template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
@@ -233,6 +240,12 @@ class HrOffer(models.Model):
             elif not record.checklist_template_id:
                 raise ValidationError('Please enter Checklist first')
 
+            user = self.env['res.users'].sudo().create({
+                'name': record.candidate_name,
+                'login': record.official_email,
+                'password': '123',
+            })
+
             # Create Employee
             employee_vals = {
                 "name": record.candidate_name,
@@ -263,6 +276,7 @@ class HrOffer(models.Model):
                 "emergency_phone": record.ice_number,
                 "emergency_contact_relation": record.ice_relation,
                 "identification_id": record.id_number,
+                "user_id": user.id,
             }
 
             employee = self.env["hr.employee"].sudo().create(employee_vals)
