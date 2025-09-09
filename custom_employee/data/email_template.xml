@@ -8,7 +8,7 @@
             <field name="email_from">hr@primesystemsolutions.com</field>
             <field name="email_to">sadia.hamid@primesystemsolutions.com</field>
             <field name="email_cc">
-                salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com,hiba.siddiqui@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,durre.nayab@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com
+                salman@primesystemsolutions.com,adnan.shahzad@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com,hiba.siddiqui@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,durre.nayab@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,myle.gruet@primesystemsolutions.com
             </field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
