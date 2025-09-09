@@ -68,7 +68,8 @@ class HrOffer(models.Model):
         ("draft", "New"),
         ("submitted", "CEO Approval"),
         ("modification", "Modification"),
-        ("approved", "Approved & Sent Offer"),
+        ("approved", "Approved"),
+        ("send_offer", "Offer Sent"),
         ("send_contract", "Contract Sent"),
         ("hired", "Hired"),
         ("rejected", "Rejected"),
@@ -133,6 +134,30 @@ class HrOffer(models.Model):
             raise ValidationError("Only CEO can approve offers.")
 
         self.write({"state": "approved"})
+
+        # Find all HR Responsible users
+        hr_users = self.env['res.users'].search([
+            ('groups_id', 'in', self.env.ref("employee_onboarding_offboarding.group_responsible_hr").id)
+        ])
+
+        # Send email notification
+        if hr_users:
+            for user in hr_users:
+                if user.login:
+                    mail_values = {
+                        'subject': "Offer Approved by CEO",
+                        'body_html': f"<p>Dear {user.name},</p>"
+                                     f"<p>The CEO has approved the offer <b>{self.candidate_name}</b>. "
+                                     f"Now you can proceed to send it to the employee.</p>",
+                        'email_to': user.email,
+                    }
+                    self.env['mail.mail'].sudo().create(mail_values).send()
+
+    def action_sent_offer(self):
+        if not self.env.user.has_group("employee_onboarding_offboarding.group_responsible_hr"):
+            raise ValidationError("Only HR Responsible can Send offers.")
+
+        self.write({"state": "send_offer"})
 
         # Send offer email to candidate
         template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
@@ -226,12 +251,76 @@ class HrOffer(models.Model):
             record.write({"state": "hired"})
 
             # Validations
-            if not record.official_email:
-                raise ValidationError('Please enter Official Email first')
-            elif not record.gazetted_holiday_id:
+            if not record.gazetted_holiday_id:
                 raise ValidationError('Please enter Gazetted Holiday first')
             elif not record.checklist_template_id:
-                raise ValidationError('Please enter Checklist first')
+                raise ValidationError('Please enter Checklist Template first')
+
+            if record.employment_type != 'intern':
+                if not record.official_email:
+                    raise ValidationError('Please enter Official Email first')
+
+
+                user = self.env['res.users'].sudo().create({
+                    'name': record.candidate_name,
+                    'login': record.official_email,
+                    'password': '123',
+                })
+
+                # Create Employee
+                employee_vals = {
+                    "name": record.candidate_name,
+                    "work_email": record.official_email,
+                    "work_phone": record.candidate_mobile,
+                    "mobile_phone": record.candidate_mobile,
+                    "private_email": record.personal_email,
+                    "birthday": record.date_of_birth,
+                    # "address_home_id": record.address_id.id if record.address_id else False,
+                    "job_id": record.job_id.id if record.job_id else False,
+                    "department_id": record.department_id.id if record.department_id else False,
+                    "parent_id": record.manager_id.id if record.manager_id else False,
+                    "coach_id": record.manager_id.id if record.manager_id else False,
+                    "country_id": record.country_id.id if record.country_id else False,
+                    # "bank_account_id": record.bank_account_id.id if hasattr(record, 'bank_account_id') else False,
+                    # "work_location_id": record.work_location_id.id if hasattr(record, 'work_location_id') else False,
+                    "manager": record.manager,
+                    "manager_email": record.manager_email,
+                    "dept_hod": record.dept_hod,
+                    "dept_hod_email": record.dept_hod_email,
+                    "joining_date": record.joining_date,
+                    "joining_salary": record.salary,
+                    "work_mode": record.work_location,
+                    "total_working_hour": record.working_hours,
+                    "gazetted_holiday_id": record.gazetted_holiday_id.id,
+                    "checklist_template_id": record.checklist_template_id.id,
+                    "emergency_contact": record.ice_name,
+                    "emergency_phone": record.ice_number,
+                    "emergency_contact_relation": record.ice_relation,
+                    "identification_id": record.id_number,
+                    "user_id": user.id,
+                }
+
+                employee = self.env["hr.employee"].sudo().create(employee_vals)
+
+                # (Optional) link back offer → employee
+                record.write({"employee_id": employee.id})
+
+    def action_make_profile(self):
+        for record in self:
+            # Validations
+            if not record.gazetted_holiday_id:
+                raise ValidationError('Please enter Gazetted Holiday first')
+            elif not record.checklist_template_id:
+                raise ValidationError('Please enter Checklist Template first')
+
+            if not record.official_email:
+                raise ValidationError('Please enter Official Email first')
+
+            user = self.env['res.users'].sudo().create({
+                'name': record.candidate_name,
+                'login': record.official_email,
+                'password': '123',
+            })
 
             # Create Employee
             employee_vals = {
@@ -263,12 +352,16 @@ class HrOffer(models.Model):
                 "emergency_phone": record.ice_number,
                 "emergency_contact_relation": record.ice_relation,
                 "identification_id": record.id_number,
+                "user_id": user.id,
             }
 
             employee = self.env["hr.employee"].sudo().create(employee_vals)
 
             # (Optional) link back offer → employee
-            record.write({"employee_id": employee.id})
+            record.write({
+                "employee_id": employee.id,
+                "employment_type" : "permanent"
+                            })
 
     def action_reject(self):
         self.write({"state": "rejected"})
