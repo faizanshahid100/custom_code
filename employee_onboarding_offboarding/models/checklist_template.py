@@ -17,6 +17,7 @@ class ChecklistTemplate(models.Model):
     hr_responsible = fields.Many2one('hr.employee', string='Hr Responsible')
 
     line_ids = fields.One2many('checklist.template.line', 'template_id', string="Checklist Items")
+    post_line_ids = fields.One2many('post.checklist.template.line', 'template_id', string="Checklist Items")
 
 
 class ChecklistTemplateLine(models.Model):
@@ -26,6 +27,16 @@ class ChecklistTemplateLine(models.Model):
     template_id = fields.Many2one('checklist.template', string="Template", ondelete="cascade")
     requirement = fields.Char("Requirement", required=True)
     responsible_user_id = fields.Many2one('res.users', string="Responsible Person", required=True)
-    due_days = fields.Integer("Before Joining Days", help="Number of days after employee joining/leaving to complete this task")
+    due_days = fields.Integer("Before Joining Days", help="Number of days before employee joining to complete this task")
     notes = fields.Text("Notes")
 
+
+class PostCheckListTemplate(models.Model):
+    _name = "post.checklist.template.line"
+    _description = "Post Onboarding Checklist"
+
+    template_id = fields.Many2one('checklist.template', string="Template", ondelete="cascade")
+    requirement = fields.Char("Requirement", required=True)
+    responsible_user_id = fields.Many2one('res.users', string="Responsible Person", required=True)
+    post_days = fields.Integer("After Joining Days", help="Number of days after employee joining to complete this task")
+    notes = fields.Text("Notes")

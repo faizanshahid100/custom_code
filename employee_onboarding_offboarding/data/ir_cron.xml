@@ -1,0 +1,12 @@
+<odoo>
+    <record id="ir_cron_checklist_task_reminder" model="ir.cron">
+        <field name="name">Checklist Task Reminder</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_checklist_requests"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_remind_responsible_users()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -264,7 +264,7 @@ class HrOffer(models.Model):
                 user = self.env['res.users'].sudo().create({
                     'name': record.candidate_name,
                     'login': record.official_email,
-                    'password': '123',
+                    'password': '12345',
                 })
 
                 # Create Employee
@@ -319,7 +319,7 @@ class HrOffer(models.Model):
             user = self.env['res.users'].sudo().create({
                 'name': record.candidate_name,
                 'login': record.official_email,
-                'password': '123',
+                'password': '12345',
             })
 
             # Create Employee

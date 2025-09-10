@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
-from datetime import timedelta
+from datetime import date, timedelta
+
 
 class EmployeeOnboard(models.Model):
     _name = "employee.onboard"
@@ -58,6 +59,16 @@ class EmployeeOnboard(models.Model):
                     'state': 'todo',
                     'onboard_id': record.id,
                 })
+            # for line in template.post_line_ids:
+            #     request_lines.append({
+            #         'employee_id': record.employee_id.id,
+            #         'request': line.requirement,
+            #         'user_id': line.responsible_user_id.id,
+            #         'assigned_date': fields.Date.today(),
+            #         'expected_date': record.joining_date + timedelta(days=line.due_days),
+            #         'state': 'todo',
+            #         'onboard_id': record.id,
+            #     })
             requests = self.env['checklist.requests'].create(request_lines)
 
             # --- Send mail to employee for each task ---
@@ -125,3 +136,47 @@ class ChecklistRequests(models.Model):
                 elif not all_completed and rec.onboard_id.state == 'completed':
                     # rollback to inprogress if any request is reopened
                     rec.onboard_id.state = 'inprogress'
+
+    # -----------------------------
+    # Cron Job Function
+    # -----------------------------
+    def _cron_remind_responsible_users(self):
+        today = date.today()
+        reminder_tasks = self.search([
+            ('state', '!=', 'completed'),
+            ('expected_date', '!=', False)
+        ])
+
+        for task in reminder_tasks:
+            # 1 day before expected date
+            if task.expected_date == today + timedelta(days=1):
+                task._send_reminder_mail("Reminder: Task due tomorrow!")
+
+            # On or after expected date
+            elif task.expected_date <= today:
+                task._send_reminder_mail("Reminder: Task overdue!")
+
+    def _send_reminder_mail(self, subject_prefix):
+        if self.user_id and self.user_id.email:
+            subject = f"{subject_prefix} - {self.request}"
+            body = f"""
+                <p>Dear {self.user_id.name},</p>
+                <p>This is a reminder for the onboarding task assigned to you:</p>
+                <ul>
+                    <li><b>Employee:</b> {self.employee_id.name}</li>
+                    <li><b>Task:</b> {self.request}</li>
+                    <li><b>Expected Completion Date:</b> {self.expected_date.strftime('%d %B %Y')}</li>
+                    <li><b>Status:</b> {self.state}</li>
+                </ul>
+                <p>Please complete this task as soon as possible.</p>
+                <br/>
+                <p>Regards,<br/>HR Team</p>
+            """
+            mail_values = {
+                "subject": subject,
+                "body_html": body,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": self.user_id.email,
+                "email_cc": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+            }
+            self.env["mail.mail"].sudo().create(mail_values).send()
