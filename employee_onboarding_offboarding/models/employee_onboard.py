@@ -59,16 +59,7 @@ class EmployeeOnboard(models.Model):
                     'state': 'todo',
                     'onboard_id': record.id,
                 })
-            # for line in template.post_line_ids:
-            #     request_lines.append({
-            #         'employee_id': record.employee_id.id,
-            #         'request': line.requirement,
-            #         'user_id': line.responsible_user_id.id,
-            #         'assigned_date': fields.Date.today(),
-            #         'expected_date': record.joining_date + timedelta(days=line.due_days),
-            #         'state': 'todo',
-            #         'onboard_id': record.id,
-            #     })
+
             requests = self.env['checklist.requests'].create(request_lines)
 
             # --- Send mail to employee for each task ---

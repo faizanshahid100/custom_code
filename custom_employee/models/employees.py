@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 import logging
 from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class HREmployeeInherit(models.Model):
                                    string='Meds in Use', tracking=True)
     signed = fields.Char(string='Signed')
     joining_date = fields.Date(string='Joining Date')
-    confirmation_date = fields.Date(string='Confirmation Date')
+    confirmation_date = fields.Date(string='Confirmation Date', compute='_compute_confirmation_date', store=True)
     leaving_date = fields.Date(string='Leaving Date')
     joining_salary = fields.Integer(string='Joining Salary')
     current_salary = fields.Integer(string='Current Salary')
@@ -264,6 +265,14 @@ class HREmployeeInherit(models.Model):
             # if client_template and emp.contractor and emp.contractor.email:
             #     client_template.send_mail(emp.id, force_send=True)
 
+    @api.depends('joining_date', 'country_id')
+    def _compute_confirmation_date(self):
+        for rec in self:
+            if rec.joining_date and rec.country_id:
+                months = 3 if rec.country_id.name == 'Pakistan' else 6
+                rec.confirmation_date = rec.joining_date + relativedelta(months=months)
+            else:
+                rec.confirmation_date = False
 
 class CalendarTracking(models.Model):
     _name = "calendar.tracking"

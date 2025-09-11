@@ -7,6 +7,23 @@
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
         <field name="numbercall">-1</field>
-        <field name="active" eval="True"/>
+    </record>
+    <record id="ir_cron_employee_feedback_survey" model="ir.cron">
+        <field name="name">Send Feedback Survey After 1st Day</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_feedback_survey()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="ir_cron_send_login_credentials" model="ir.cron">
+        <field name="name">Send Odoo Credentials Before Joining</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_login_credentials()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
     </record>
 </odoo>

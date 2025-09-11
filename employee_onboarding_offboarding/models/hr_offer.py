@@ -2,10 +2,9 @@ from email.policy import default
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 import base64
-from odoo import models, fields, api
 from docx import Document
 import os
-from datetime import date
+from datetime import date, timedelta
 
 
 class HrOffer(models.Model):
@@ -399,3 +398,62 @@ class HrOffer(models.Model):
                 "email_cc": ",".join(hr_emails),
             }
             self.env["mail.mail"].sudo().create(mail_values).send()
+
+    def _cron_send_login_credentials(self):
+        tomorrow = date.today() + timedelta(days=1)
+        records = self.search([('joining_date', '=', tomorrow), ('official_email', '!=', False)])
+        if not records:
+            return
+
+        # Get PDF file from module data folder
+        module_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.join(module_path, "..")
+        pdf_path = os.path.join(base_path, "data", "odoo_guideline_handbook.pdf")
+        pdf_data = False
+        if os.path.exists(pdf_path):
+            with open(pdf_path, "rb") as f:
+                pdf_data = base64.b64encode(f.read())
+
+        for rec in records:
+            subject = "Welcome to Prime System Solutions - Your Odoo Credentials"
+            body = f"""
+                <p>Dear <b>{rec.candidate_name}</b>,</p>
+                <p>Welcome aboard! Your professional account has been created. Below are your Odoo login credentials:</p>
+                <ul>
+                    <li><b>Click to Login:</b> 
+                        <a href="https://eportal.primesystemsolutions.com/web?db=PrimeSystemSolution#cids=1&action=menu">
+                            ePortal - Prime System Solutions
+                        </a>
+                    </li>
+                    <li><b>User ID:</b> {rec.official_email}</li>
+                    <li><b>Password:</b> 12345</li>
+                </ul>
+                <p>For your convenience, we have attached the <b>Odoo Guideline Handbook</b> which explains how to use Odoo and change your password.</p>
+                <br/>
+                <p>We are excited to have you on the team!</p>
+                <p>Regards,<br/>HR Team</p>
+            """
+
+            mail_values = {
+                "subject": subject,
+                "body_html": body,
+                "email_from": "hr@primesystemsolutions.com",
+                "email_to": rec.personal_email,
+                "email_cc": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                "attachment_ids": [],
+            }
+
+            # Attach PDF
+            if pdf_data:
+                attachment = self.env['ir.attachment'].create({
+                    'name': 'Odoo Guideline Handbook.pdf',
+                    'type': 'binary',
+                    'datas': pdf_data,
+                    'res_model': 'hr.offer',
+                    'res_id': rec.id,
+                    'mimetype': 'application/pdf'
+                })
+                mail_values["attachment_ids"] = [(6, 0, [attachment.id])]
+
+            self.env['mail.mail'].sudo().create(mail_values).send()
+
