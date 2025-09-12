@@ -50,3 +50,31 @@ class HrEmployeeExt(models.Model):
                 "email_to": emp.work_email,
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
+
+    def _cron_mid_probation_notify(self):
+        today = fields.Date.today()
+        employees = self.search([('joining_date', '!=', False), ('confirmation_date', '!=', False)])
+
+        for emp in employees:
+            if emp.joining_date and emp.confirmation_date:
+                total_days = (emp.confirmation_date - emp.joining_date).days
+                mid_date = emp.joining_date + timedelta(days=total_days // 2)
+
+                if today == mid_date and emp.parent_id and emp.parent_id.work_email:
+                    subject = f"Mid-Probation Review Reminder - {emp.name}"
+                    body = f"""
+                        <p>Dear {emp.parent_id.name},</p>
+                        <p>This is a reminder to record mid-probation review notes in Odoo for your team member <b>{emp.name}</b>.</p>
+                        <p>Please review their progress and provide feedback. HR will support with any training if needed.</p>
+                        <br/>
+                        <p>Regards,<br/>HR System</p>
+                    """
+                    self.env['mail.mail'].sudo().create({
+                        'subject': subject,
+                        'body_html': body,
+                        'email_from': 'hr@primesystemsolutions.com',
+                        'email_to': emp.parent_id.work_email,
+                    }).send()
+
+    def _cron_confirm_employee(self):
+        pass
