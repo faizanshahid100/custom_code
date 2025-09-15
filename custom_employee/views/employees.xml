@@ -24,7 +24,7 @@
                     <field name="meds_in_use"/>
                     <field name="signed"/>
                     <field name="joining_date" required="1"/>
-                    <field name="confirmation_date"/>
+                    <field name="confirmation_date" readonly="0"/>
                     <field name="leaving_date"/>
                     <field name="joining_salary"/>
                     <field name="current_salary"/>

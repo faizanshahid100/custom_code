@@ -1,0 +1,48 @@
+<odoo>
+    <record id="ir_cron_checklist_task_reminder" model="ir.cron">
+        <field name="name">Checklist Task Reminder</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_checklist_requests"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_remind_responsible_users()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="ir_cron_employee_feedback_survey" model="ir.cron">
+        <field name="name">Send Feedback Survey After 1st Day</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_feedback_survey()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="ir_cron_send_login_credentials" model="ir.cron">
+        <field name="name">Send Odoo Credentials Before Joining</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_send_login_credentials()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <!-- Mid-Probation Notification -->
+    <record id="ir_cron_mid_probation_notify" model="ir.cron">
+        <field name="name">Mid Probation Notification</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_mid_probation_notify()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+
+    <!-- Confirmation Process -->
+    <record id="ir_cron_confirm_employee" model="ir.cron">
+        <field name="name">Employee Confirmation Process</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_confirm_employee()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+</odoo>

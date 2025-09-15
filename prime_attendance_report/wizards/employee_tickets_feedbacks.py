@@ -335,24 +335,52 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 'employee_id': employee.id,
             }
 
-
             resolved_tickets_total = 0
             all_tickets_total = 0
-            for week_index in range(1, len(week_ranges)+1):
+            last_week_index = len(week_ranges)
+
+            for week_index in range(1, last_week_index + 1):
+                current_value = progress_map[employee.id].get(week_index, 0)
+
                 if employee.kpi_measurement == 'kpi':
-                    resolved_tickets_total += progress_map[employee.id].get(week_index, 0)
+                    resolved_tickets_total += current_value
                     all_tickets_total += weekly_tickets
-                    if progress_map[employee.id].get(week_index, 0) >= weekly_tickets:
-                        vals[
-                            f'week_{week_index}'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)} / {weekly_tickets}</div>"
+
+                    # --- Different logic for last week ---
+                    if week_index == last_week_index:
+                        if current_value == 0:
+                            color = "#ff0000"  # red
+                            text_color = "white"
+                        elif current_value >= weekly_tickets:
+                            color = "#c6efce"  # green
+                            text_color = "black"
+                        else:
+                            color = "#ffff99"  # yellow
+                            text_color = "black"
                     else:
-                        vals[
-                            f'week_{week_index}'] = f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)} / {weekly_tickets}</div>"
+                        # existing logic for previous weeks
+                        if current_value >= weekly_tickets:
+                            color = "#c6efce"
+                            text_color = "black"
+                        else:
+                            color = "#ff0000"
+                            text_color = "white"
+
+                    vals[f'week_{week_index}'] = (
+                        f"<div style='background-color: {color}; color: {text_color}; padding: 3px;text-align: center;'>"
+                        f"{current_value} / {weekly_tickets}</div>"
+                    )
                 else:
-                    vals[
-                        f'week_{week_index}'] = f"<div style='padding: 3px;text-align: center;'>{progress_map[employee.id].get(week_index, 0)}</div>"
+                    vals[f'week_{week_index}'] = (
+                        f"<div style='padding: 3px;text-align: center;'>{current_value}</div>"
+                    )
+
                 if employee.kpi_measurement == 'kpi':
-                    vals['week_total'] = f"<div style='background-color: #c6efce; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>" if resolved_tickets_total >= all_tickets_total else f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
+                    vals['week_total'] = (
+                        f"<div style='background-color: #c6efce; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
+                        if resolved_tickets_total >= all_tickets_total else
+                        f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
+                    )
 
             self.env['weekly.ticket.report'].sudo().create(vals)
 

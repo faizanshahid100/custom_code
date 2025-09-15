@@ -16,6 +16,7 @@
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "data/email_templates.xml",
+        "data/ir_cron.xml",
         "wizards/hr_offer_sendback.xml",
         "views/hr_employee_ext.xml",
         "views/employee_onboard.xml",
