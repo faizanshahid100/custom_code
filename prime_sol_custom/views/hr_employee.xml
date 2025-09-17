@@ -10,6 +10,8 @@
                 <field name="id" position="after">
                     <field name="hour_start_from" string="Hour Start From" t-options="{'widget': 'time'}"/>
                     <field name="total_working_hour" string="Total Working Hour" t-options="{'widget': 'time'}"/>
+                    <field name="employment_type" required="1"/>
+                    <field name="working_hours_type" required="1"/>
                 </field>
                 <xpath expr="//notebook/page[last()]" position="after">
                     <page string="Daily Target" name="daily_target">

@@ -9,7 +9,7 @@
     'website': "https://www.yourcompany.com",
     'category': 'Uncategorized',
     'version': '0.3',
-    'depends': ['base', 'mail', 'project', 'web', 'hr', 'survey'],
+    'depends': ['base', 'mail', 'project', 'web', 'hr', 'survey', 'approvals'],
     'data': [
         'data/ir_cron_data.xml',
         'data/mail_channel.xml',
@@ -36,6 +36,7 @@
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',
         'wizard/client_survey.xml',
+        'wizard/approval_overtime.xml',
     ],
     'assets': {
         'web.assets_backend': [
