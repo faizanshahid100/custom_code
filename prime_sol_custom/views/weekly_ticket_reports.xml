@@ -8,6 +8,8 @@
                     <field name="employee_id"/>
                     <field name="contractor"/>
                     <field name="level"/>
+                    <field name="employment_type"/>
+                    <field name="working_hours_type"/>
                     <field name="job_position" optional="hide"/>
                     <field name="department" optional="hide"/>
                     <field name="contractor_manager" optional="hide"/>
@@ -53,6 +55,8 @@
                 <search string="Weekly Ticket Reports">
                     <field name="employee_id"/>
                     <field name="contractor"/>
+                    <field name="employment_type"/>
+                    <field name="working_hours_type"/>
                     <field name="department"/>
                     <field name="job_position"/>
                     <field name="manager"/>
@@ -60,10 +64,32 @@
                     <field name="gender"/>
                     <field name="level"/>
 
+                    <!-- Custom Filters -->
+                    <filter name="filter_permanent_employee"
+                            string="Permanent Employee"
+                            domain="[('employment_type','=','permanent')]"/>
+                    <filter name="filter_contractor"
+                            string="Contractor"
+                            domain="[('employment_type','=','contract')]"/>
+                    <filter name="filter_contractor"
+                            string="Interns"
+                            domain="[('employment_type','=','intern')]"/>
+
+                    <filter name="filter_permanent_employee"
+                            string="Peak Hrs Employees"
+                            domain="[('working_hours_type','=','peak')]"/>
+                    <filter name="filter_contractor"
+                            string="Off Hrs Employees"
+                            domain="[('working_hours_type','=','off')]"/>
+
                     <group expand="1" string="Group By">
                         <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
                         <filter name="group_by_department" string="Department" context="{'group_by': 'department'}"/>
                         <filter name="group_by_contractor" string="Contractor" context="{'group_by': 'contractor'}"/>
+                        <filter name="group_by_employment_type" string="Employment Type"
+                                context="{'group_by': 'employment_type'}"/>
+                        <filter name="group_by_working_hours_type" string="Working Hours Type"
+                                context="{'group_by': 'working_hours_type'}"/>
                         <filter name="group_by_level" string="Level" context="{'group_by': 'level'}"/>
                     </group>
                 </search>

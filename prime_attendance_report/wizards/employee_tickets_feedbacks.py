@@ -333,6 +333,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             weekly_tickets = employee.d_ticket_resolved * 5
             vals = {
                 'employee_id': employee.id,
+                'employment_type': employee.employment_type,
+                'working_hours_type': employee.working_hours_type,
             }
 
             resolved_tickets_total = 0

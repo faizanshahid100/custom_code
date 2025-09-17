@@ -16,6 +16,11 @@ class WeeklyTicketReport(models.Model):
     manager = fields.Char(related='employee_id.parent_id.name', string='Manager', store=True)
     gender = fields.Selection(related='employee_id.gender', string='Gender', store=True)
     level = fields.Char(related='employee_id.level', string='Level', store=True)
+    employment_type = fields.Selection(
+        [("permanent", "Permanent"), ("contract", "Contract"), ("intern", "Internship"), ], string="Employment Type",
+        default='permanent')
+    working_hours_type = fields.Selection([('peak', 'Peak Hours'), ('off', 'Off Hours')], string="Working Hours Type",
+                                          default='peak')
 
     # Week fields for 6 months (26 weeks)
     week_1 = fields.Char(string='W 1', default=' ')

@@ -1,0 +1,43 @@
+<odoo>
+    <record id="view_approval_overtime_form" model="ir.ui.view">
+        <field name="name">approval.overtime.form</field>
+        <field name="model">approval.overtime</field>
+        <field name="arch" type="xml">
+            <form string="Overtime Approval">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="request_owner_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Submit" type="object" name="action_submit_overtime" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_approval_overtime" model="ir.actions.act_window">
+        <field name="name">Overtime Approval</field>
+        <field name="res_model">approval.overtime</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Items -->
+
+    <menuitem id="menu_approvals_reporting"
+              name="Reporting"
+              parent="approvals.approvals_menu_root"
+              sequence="20"/>
+
+    <menuitem id="menu_overtime_report"
+              name="Overtime Report"
+              parent="prime_sol_custom.menu_approvals_reporting"
+              action="action_approval_overtime"
+              sequence="10"/>
+</odoo>

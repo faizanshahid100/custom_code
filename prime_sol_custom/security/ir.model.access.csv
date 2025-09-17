@@ -17,3 +17,4 @@ access_client_cadence_call_manager,client.cadence.call manager,model_client_cade
 access_meeting_summary_wizard,access.meeting.summary,model_meeting_summary,,1,1,1,1
 access_scorecard_wizard,access.scorecard.wizard,model_scorecard_wizard,,1,1,1,1
 access_client_survey,access.client.survey,model_client_survey,,1,1,1,1
+access_approval_overtime_user,access.approval.overtime.user,model_approval_overtime,,1,1,1,1

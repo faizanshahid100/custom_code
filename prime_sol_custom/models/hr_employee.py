@@ -1,3 +1,5 @@
+from email.policy import default
+
 from PIL.ImageChops import offset
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
@@ -8,6 +10,8 @@ class HrEmployee(models.Model):
 
     hour_start_from = fields.Float('Hour Start From', default=0.0)
     total_working_hour = fields.Float('Total Working Hour', default=9.0)
+    employment_type = fields.Selection([("permanent", "Permanent"), ("contract", "Contract"), ("intern", "Internship"),], string="Employment Type", default='permanent')
+    working_hours_type = fields.Selection([('peak', 'Peak Hours'), ('off', 'Off Hours')], string="Working Hours Type", default='peak')
 
     kpi_measurement = fields.Selection([('na', 'N/A' ), ('billable', 'Billable'), ('kpi', 'KPI')], default='na', required=1)
     d_ticket_resolved = fields.Integer('Ticket Resolved')
