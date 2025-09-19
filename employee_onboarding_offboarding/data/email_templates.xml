@@ -8,33 +8,114 @@
             <p>Dear
                 <strong>CEO,</strong>
             </p>
-            <p>A new candidate offer has been submitted for your approval.</p>
+            <p>A new candidate offer has been submitted for your approval. Please review the details below:</p>
 
-            <p>
-                <strong>Candidate:</strong>
-                <t t-out="object.candidate_name"/>
-            </p>
-            <p>
-                <strong>Client:</strong>
-                <t t-out="object.client_id.name"/>
-            </p>
-            <p>
-                <strong>Designation:</strong>
-                <t t-out="object.job_id.name"/>
-            </p>
-            <p>
-                <strong>Proposed Joining Date:</strong>
-                <t t-out="object.joining_date"/>
-            </p>
-            <p>
-                <strong>Salary:</strong>
-                <t t-out="object.salary"/>
-            </p>
-            <p>
-                <strong>Allowances:</strong>
-                <t t-out="object.allowances"/>
-            </p>
-
+            <table style="border-collapse:collapse; width:100%; border:1px solid #000;">
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Candidate</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.candidate_name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Mobile</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.candidate_mobile"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Candidate Email</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.personal_email"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Pillar</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.pillar"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Reporting Time</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.reporting_time"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Working Hours</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.working_hours"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Manager (Client)</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.manager"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Manager Email</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.manager_email"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Client</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.client_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Designation</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.job_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Department</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.department_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Department HoD</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.dept_hod"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">HoD Email</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.dept_hod_email"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Internal Manager</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.manager_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Proposed Joining Date</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.joining_date"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Salary</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.salary"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Allowances</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.allowances"/>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <br/>
             <p>
                 <t t-set="url" t-value="'/web#id=%s&amp;model=hr.offer&amp;view_type=form' % object.id"/>
                 <a t-att-href="url"
@@ -43,7 +124,8 @@
                 </a>
             </p>
 
-            <p>Please review the offer in the system.</p>
+            <p>Regards,<br/>HR Team
+            </p>
         </field>
     </record>
 
