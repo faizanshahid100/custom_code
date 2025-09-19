@@ -6,7 +6,7 @@
 			<field name="model">hr.rest.day</field>
 			<field name="arch" type="xml">
 				<tree string="Rest Day" create="false" edit="false">
-					<field name="employee_id" />
+					<field name="employee_id" options="{'no_create':True, 'no_open':True}"/>
                     <field name="date" />
 				</tree>
 			</field>

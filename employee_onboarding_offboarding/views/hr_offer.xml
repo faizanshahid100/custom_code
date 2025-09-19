@@ -59,7 +59,8 @@
                         </group>
 
                         <group string="Additional Notes">
-                            <field name="buddy_info" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="buddy_id" attrs="{'required': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="buddy_info"/>
                             <field name="remarks" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="special_instructions" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="offer_submitter_id" readonly="1"/>
@@ -70,7 +71,7 @@
                             <group>
                                 <group>
                                     <field name="candidate_name"/>
-                                    <field name="date_of_birth" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="date_of_birth" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                     <field name="personal_email"/>
                                     <br/>
                                     <div>
@@ -80,21 +81,21 @@
                                     <field name="official_email" attrs="{'readonly': [('state', '=', 'hired'), ('employment_type', '!=', 'intern')]}"/>
                                     <field name="gazetted_holiday_id" attrs="{'readonly': [('state', 'in', ('hired'))]}"/>
                                     <field name="employee_id" readonly="1"/>
-                                    <field name="address" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="candidate_mobile" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="id_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="tax_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="linked_in_profile" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="address" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="candidate_mobile" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="id_number" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="tax_number" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="linked_in_profile" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                 </group>
                                 <group>
-                                    <field name="ice_name" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="ice_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="ice_relation" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="bank_name" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="bank_info" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="account_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="iban_number" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                                    <field name="swift_code" attrs="{'required': [('state', '=', 'approved')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="ice_name" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="ice_number" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="ice_relation" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="bank_name" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="bank_info" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="account_number" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="iban_number" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                                    <field name="swift_code" attrs="{'required': [('state', '=', 'send_offer')], 'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                                 </group>
                             </group>
                         </page>

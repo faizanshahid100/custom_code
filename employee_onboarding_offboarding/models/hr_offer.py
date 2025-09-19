@@ -58,6 +58,7 @@ class HrOffer(models.Model):
 
     # Additional Notes
     buddy_info = fields.Char("Buddy Info", tracking=True)
+    buddy_id = fields.Many2one('hr.employee', string='Buddy Name', tracking=True)
     remarks = fields.Text("Modification Remarks", tracking=True)
     special_instructions = fields.Text("Special Instructions", tracking=True)
     offer_submitter_id = fields.Many2one('res.users', string='Offer Submitter')
@@ -158,9 +159,15 @@ class HrOffer(models.Model):
 
         self.write({"state": "send_offer"})
 
-        # Send offer email to candidate
-        template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
-        if template and self.personal_email:
+        if self.personal_email:
+            template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+
+            # Get all HR Responsible emails
+            hr_users = self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users
+            hr_emails = ",".join([u.email for u in hr_users if u.email])
+
+            # Send email with cc
+            template.email_cc = hr_emails
             template.send_mail(self.id, force_send=True)
 
     def action_sent_contract(self):
@@ -428,6 +435,17 @@ class HrOffer(models.Model):
                     <li><b>User ID:</b> {rec.official_email}</li>
                     <li><b>Password:</b> 12345</li>
                 </ul>
+                
+                <p>Welcome aboard! Your professional MS 365 account has been created. Below are your Odoo login credentials:</p>
+                <ul>
+                    <li><b>Click to Login:</b> 
+                        <a href="https://m365.cloud.microsoft/apps/?auth=2&origindomain=microsoft365">
+                            LogIn Microsoft 365
+                        </a>
+                    </li>
+                    <li><b>User ID:</b> {rec.official_email}</li>
+                    <li><b>Password:</b> Prime@123###</li>
+                </ul>
                 <p>For your convenience, we have attached the <b>Odoo Guideline Handbook</b> which explains how to use Odoo and change your password.</p>
                 <br/>
                 <p>We are excited to have you on the team!</p>
@@ -457,3 +475,104 @@ class HrOffer(models.Model):
 
             self.env['mail.mail'].sudo().create(mail_values).send()
 
+    @api.model
+    def _cron_notify_buddy_before_joining(self):
+        tomorrow = date.today() + timedelta(days=1)
+        offers = self.search([
+            ('joining_date', '=', tomorrow),
+            ('buddy_id', '!=', False),
+            ('state', '=', 'hired'),
+        ])
+
+        for offer in offers:
+            buddy = offer.buddy_id
+            if buddy.work_email:
+                subject = f"New Joiner Tomorrow: {offer.candidate_name}"
+                body = f"""
+                        <p>Hi {buddy.name},</p>
+                        <p>I’m reaching out to inform you that you’ve been assigned as the work buddy for <b>{offer.candidate_name}</b>, who joined us on <b> {offer.joining_date.strftime('%d %B %Y')} </b> as a <b> {offer.job_id.name or 'N/A'} </b>.</p>
+                        <p>Your support will play a key role in helping him get settled, understand our processes, and integrate smoothly into the team. Please connect with him to offer guidance, answer any questions he may have, and share your insights about our work culture and day-to-day practices.</p>
+                        </br>
+                        <p>With your experience and knowledge, I’m confident that <b>{offer.candidate_name}</b> will feel welcomed and well-supported. Let me know if you need anything from my side.</p>
+                        <p>Thank you for taking on this important role!</p>
+                        <br/>
+                        <p>Regards,<br/>HR Team</p>
+                    """
+
+                hr_users = self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users
+                hr_emails = ",".join([u.email for u in hr_users if u.email])
+                self.env['mail.mail'].sudo().create({
+                    'subject': subject,
+                    'body_html': body,
+                    'email_from': 'hr@primesystemsolutions.com',
+                    'email_to': buddy.work_email,
+                    'email_cc': hr_emails+','+offer.personal_email,  # optional: also CC candidate
+                }).send()
+
+    @api.model
+    def _cron_notify_accountant_after_one_day(self):
+        from datetime import date, timedelta
+
+        yesterday = date.today() - timedelta(days=1)
+
+        offers = self.search([
+            ('joining_date', '=', yesterday),
+            ('personal_email', '!=', False),
+            ('state', '=', 'hired')
+        ])
+
+        if not offers:
+            return
+
+        accountant_group = self.env.ref('employee_onboarding_offboarding.group_accountant_id')
+        hr_group = self.env.ref('employee_onboarding_offboarding.group_responsible_hr')
+
+        accountant_emails = [u.email for u in accountant_group.users if u.email]
+        hr_emails = [u.email for u in hr_group.users if u.email]
+
+        if not accountant_emails:
+            return
+
+        for offer in offers:
+            employee_code = offer.employee_id.barcode or ''
+            salary_after_probation = (offer.salary or 0) + (offer.allowances or 0)
+
+            # build table
+            table_html = f"""
+                <table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse;">
+                    <tr><th>Employee Code</th><td>{employee_code}</td></tr>
+                    <tr><th>Employee CNIC</th><td>{offer.id_number or ''}</td></tr>
+                    <tr><th>Employee Name</th><td>{offer.candidate_name or ''}</td></tr>
+                    <tr><th>Bank Name</th><td>{offer.bank_name or ''}</td></tr>
+                    <tr><th>Branch City and Branch Code</th><td>{offer.bank_info or ''}</td></tr>
+                    <tr><th>Designation</th><td>{offer.job_id.name or ''}</td></tr>
+                    <tr><th>Department</th><td>{offer.department_id.name or ''}</td></tr>
+                    <tr><th>Joining Date</th><td>{offer.joining_date.strftime('%d %B %Y') if offer.joining_date else ''}</td></tr>
+                    <tr><th>Basic Salary</th><td>{offer.salary or 0:.0f}</td></tr>
+                    <tr><th>Allowances</th><td>{offer.allowances or 0:.0f}</td></tr>
+                    <tr><th>Salary</th><td>{(offer.salary or 0) + (offer.allowances or 0):.0f}</td></tr>
+                    <tr><th>Probation Period</th><td>{offer.probation_period or 0} months</td></tr>
+                    <tr><th>Salary After Probation</th><td>{salary_after_probation:.0f}</td></tr>
+                    <tr><th>Account Number</th><td>{offer.account_number or ''}</td></tr>
+                    <tr><th>IBAN Number</th><td>{offer.iban_number or ''}</td></tr>
+                    <tr><th>SWIFT Code</th><td>{offer.swift_code or ''}</td></tr>
+                    <tr><th>Address</th><td>{offer.address or ''}</td></tr>
+                </table>
+                """
+
+            subject = f"New Joiner Details - {offer.candidate_name} (Joined Yesterday)"
+            body = f"""
+                    <p>Dear Accounts Team,</p>
+                    <p>Please find below the details of the newly joined employee:</p>
+                    {table_html}
+                    <br/>
+                    <p>Regards,<br/>HR Team</p>
+                """
+
+            self.env['mail.mail'].sudo().create({
+                'subject': subject,
+                'body_html': body,
+                'email_from': 'hr@primesystemsolutions.com',
+                'email_to': ",".join(accountant_emails),
+                'email_cc': ",".join(hr_emails + [offer.personal_email]),
+            }).send()
