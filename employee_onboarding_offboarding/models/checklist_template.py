@@ -27,7 +27,8 @@ class ChecklistTemplateLine(models.Model):
     template_id = fields.Many2one('checklist.template', string="Template", ondelete="cascade")
     requirement = fields.Char("Requirement", required=True)
     responsible_user_id = fields.Many2one('res.users', string="Responsible Person", required=True)
-    due_days = fields.Integer("Before Joining Days", help="Number of days before employee joining to complete this task")
+    task_type = fields.Selection([("before", "Before"), ("after", "After")], string=" ", required=True, default="before" )
+    due_days = fields.Integer("Joining Days", help="Number of days before employee joining to complete this task")
     notes = fields.Text("Notes")
 
 

@@ -55,7 +55,7 @@ class EmployeeOnboard(models.Model):
                     'request': line.requirement,
                     'user_id': line.responsible_user_id.id,
                     'assigned_date': fields.Date.today(),
-                    'expected_date': record.joining_date - timedelta(days=line.due_days),
+                    'expected_date': record.joining_date - timedelta(days=line.due_days) if line.task_type == 'before' else record.joining_date + timedelta(days=line.due_days),
                     'state': 'todo',
                     'onboard_id': record.id,
                 })

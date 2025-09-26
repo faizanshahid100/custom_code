@@ -1,0 +1,25 @@
+<odoo>
+    <record model="ir.ui.view" id="attendance_dashboard_tree">
+        <field name="name">attendance.dashboard.tree</field>
+        <field name="model">attendance.dashboard</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="duty_start"/>
+                <field name="threshold"/>
+                <field name="minutes_overdue"/>
+                <field name="hours_overdue"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_attendance_dashboard">
+        <field name="name">Attendance Dashboard</field>
+        <field name="res_model">attendance.dashboard</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="attendance_dashboard_tree"/>
+    </record>
+
+    <menuitem id="menu_attendance_dashboard_root" name="Attendance Dashboard"
+              parent="hr_attendance.menu_hr_attendance_root" action="action_attendance_dashboard"/>
+</odoo>
