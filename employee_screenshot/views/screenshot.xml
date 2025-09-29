@@ -1,0 +1,62 @@
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_employee_screenshot_tree" model="ir.ui.view">
+        <field name="name">employee.screenshot.tree</field>
+        <field name="model">employee.screenshot</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="timestamp"/>
+                <field name="filename"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_screenshot_form" model="ir.ui.view">
+        <field name="name">employee.screenshot.form</field>
+        <field name="model">employee.screenshot</field>
+        <field name="arch" type="xml">
+            <form string="Employee Screenshot">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="user_id"/>
+                        <field name="timestamp"/>
+                        <field name="filename"/>
+                        <!-- Show image preview + download -->
+                        <field name="screenshot"
+                               filename="filename"
+                               widget="image"
+                               class="oe_avatar"/>
+                        <field name="screenshot"
+                               filename="filename"
+                               widget="binary"
+                               options="{'save_as': True}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Window -->
+    <record id="action_employee_screenshot" model="ir.actions.act_window">
+        <field name="name">Employee Screenshots</field>
+        <field name="res_model">employee.screenshot</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No screenshots captured yet.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item under Employees -->
+    <menuitem id="menu_employee_screenshot_root"
+              name="Screenshots"
+              parent="hr.menu_hr_root"
+              action="action_employee_screenshot"
+              sequence="50"/>
+</odoo>

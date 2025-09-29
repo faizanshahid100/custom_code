@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No Access Template -->
+    <template id="portal_no_access" name="Portal No Access">
+        <t t-call="web.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="alert alert-warning text-center">
+                            <h4 class="alert-heading">Attendance Portal</h4>
+                            <p t-esc="error_message"/>
+                            <hr/>
+                            <p class="mb-0">Please contact your HR department for assistance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Main Dashboard Template -->
+    <template id="portal_attendance_dashboard" name="Attendance Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-3">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h1 class="h3">My Attendance</h1>
+                    </div>
+                </div>
+                <!-- Current Status Card -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h5 class="card-title mb-1">Current Status</h5>
+                                        <span t-attf-class="badge badge-#{status_info['status'] == 'checked_in' and 'success' or 'secondary'} badge-lg">
+                                            <i t-attf-class="fa #{status_info['status'] == 'checked_in' and 'fa-clock' or 'fa-pause-circle'} mr-1"/>
+                                            <span t-esc="status_info['status_text']"/>
+                                        </span>
+                                        <t t-if="status_info['last_activity']">
+                                            <p class="text-muted mt-2 mb-0">
+                                                Last activity: <span t-esc="status_info['last_activity']" t-options="{'widget': 'datetime', 'format': 'MMM dd, yyyy HH:mm'}"/>
+                                            </p>
+                                        </t>
+                                    </div>
+                                    <div class="col-md-6 text-md-right">
+                                        <t t-if="status_info['can_emergency_checkout']">
+                                            <button type="button" class="btn btn-warning btn-lg" id="emergencyCheckoutBtn">
+                                                <i class="fa fa-exclamation-triangle mr-2"/>
+                                                Emergency Check-Out
+                                            </button>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h2 class="text-primary mb-1" t-esc="'%.1f' % today_hours"/>
+                                <p class="text-muted mb-0">Hours Today</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h2 class="text-info mb-1" t-esc="'%.1f' % weekly_hours"/>
+                                <p class="text-muted mb-0">Hours This Week</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h2 class="text-success mb-1" t-esc="'%.1f' % monthly_hours"/>
+                                <p class="text-muted mb-0">Hours This Month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Attendance -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Attendance</h5>
+                                <a href="/my/attendance/history" class="btn btn-outline-primary btn-sm">
+                                    View All <i class="fa fa-arrow-right ml-1"/>
+                                </a>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="recent_attendances">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm mb-0">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Check In</th>
+                                                    <th>Check Out</th>
+                                                    <th>Hours</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="recent_attendances" t-as="attendance">
+                                                    <tr>
+                                                        <td t-esc="attendance['date_display']"/>
+                                                        <td t-esc="attendance['check_in_display']"/>
+                                                        <td t-esc="attendance['check_out_display']"/>
+                                                        <td t-esc="attendance['hours_display']"/>
+                                                        <td>
+                                                            <span t-attf-class="badge badge-#{attendance['status_class']}">
+                                                                <span t-esc="attendance['status'] == 'complete' and 'Complete' or 'Active'"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center py-4">
+                                        <i class="fa fa-clock fa-3x text-muted mb-3"/>
+                                        <p class="text-muted">No attendance records found</p>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Attendance History Template -->
+    <template id="portal_attendance_history" name="Attendance History">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-3">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h1 class="h3">Attendance History</h1>
+                    </div>
+                </div>
+                <!-- Filters -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <form method="GET" class="row align-items-end">
+                                    <div class="col-md-3 mb-3">
+                                        <label for="date_from" class="form-label">From Date</label>
+                                        <input type="date" class="form-control" name="date_from" id="date_from" t-att-value="date_from"/>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="date_to" class="form-label">To Date</label>
+                                        <input type="date" class="form-control" name="date_to" id="date_to" t-att-value="date_to"/>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="sortby" class="form-label">Sort By</label>
+                                        <select name="sortby" class="form-control">
+                                            <t t-foreach="searchbar_sortings.items()" t-as="sort_item">
+                                                <option t-att-value="sort_item[0]" t-att-selected="sortby == sort_item[0] and 'selected' or None" t-esc="sort_item[1]['label']"/>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <button type="submit" class="btn btn-primary mr-2">
+                                            <i class="fa fa-search mr-1"/> Filter
+                                        </button>
+                                        <a t-attf-href="/my/attendance/export?format=csv&amp;date_from=#{date_from}&amp;date_to=#{date_to}" class="btn btn-outline-success">
+                                            <i class="fa fa-download mr-1"/> Export CSV
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="text-primary mb-1" t-esc="'%.1f' % summary['total_hours']"/>
+                                <p class="text-muted mb-0">Total Hours</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="text-info mb-1" t-esc="summary['total_days']"/>
+                                <p class="text-muted mb-0">Total Days</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="text-success mb-1" t-esc="'%.1f' % summary['avg_hours_per_day']"/>
+                                <p class="text-muted mb-0">Avg Hours/Day</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Attendance Records</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <t t-if="attendances">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Check In</th>
+                                                    <th>Check Out</th>
+                                                    <th>Hours Worked</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="attendances" t-as="attendance">
+                                                    <tr>
+                                                        <td class="font-weight-medium" t-esc="attendance['date_display']"/>
+                                                        <td t-esc="attendance['check_in_display']"/>
+                                                        <td t-esc="attendance['check_out_display']"/>
+                                                        <td t-esc="attendance['hours_display']"/>
+                                                        <td>
+                                                            <span t-attf-class="badge badge-#{attendance['status_class']}">
+                                                                <span t-esc="attendance['status'] == 'complete' and 'Complete' or 'In Progress'"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- Pagination -->
+                                    <div class="card-footer bg-white">
+                                        <t t-call="portal.pager">
+                                            <t t-set="classname">d-flex justify-content-center</t>
+                                        </t>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center py-5">
+                                        <i class="fa fa-calendar-times fa-3x text-muted mb-3"/>
+                                        <h4 class="text-muted">No attendance records found</h4>
+                                        <p class="text-muted">Try adjusting your date range or filters.</p>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

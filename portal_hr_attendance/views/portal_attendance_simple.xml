@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <template id="portal_no_access" name="Portal No Access">
+        <html>
+            <head>
+                <title>Attendance Portal</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+            </head>
+            <body>
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="alert alert-warning text-center">
+                                <h4 class="alert-heading">Attendance Portal</h4>
+                                <p t-esc="error_message"/>
+                                <hr/>
+                                <p class="mb-0">Please contact your HR department for assistance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <!-- Simple Portal Dashbard  Template (change button icons by fetching from attendence module in backend)-->
+    <template id="portal_attendance_dashboard" name="Attendance Dashboard">
+        <html>
+            <head>
+                <title>My Attendance - Dashboard</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta name="csrf-token" t-att-content="request.csrf_token()"/>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+                <style>
+                    .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; }
+                    .emergency-btn { background: linear-gradient(45deg, #ff6b6b, #ff8e53); border: none; }
+                </style>
+            </head>
+            <body>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <div class="container">
+                        <a class="navbar-brand" href="/my">Portal</a>
+                        <div class="navbar-nav">
+                            <a class="nav-link" href="/my/attendance">Dashboard</a>
+                            <a class="nav-link" href="/my/attendance/history">History</a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="container mt-4">
+                    <h1 class="h3 mb-4">My Attendance</h1>
+                    
+                    <!-- Current Status -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6">
+                                            <h5>Current Status</h5>
+                                            <span t-attf-class="badge badge-#{status_info['status'] == 'checked_in' and 'success' or 'secondary'} badge-lg">
+                                                <i t-attf-class="fa #{status_info['status'] == 'checked_in' and 'fa-clock' or 'fa-pause-circle'} mr-1"/>
+                                                <span t-esc="status_info['status_text']"/>
+                                            </span>
+                                            <t t-if="status_info['last_activity']">
+                                                <p class="text-muted mt-2 mb-0">
+                                                    Last activity: <span t-esc="status_info['last_activity']"/>
+                                                </p>
+                                            </t>
+                                        </div>
+                                        <div class="col-md-6 text-md-right">
+                                            <t t-if="status_info['status'] == 'checked_out'">
+                                                <button type="button" class="btn btn-success btn-lg" onclick="checkIn()">
+                                                    <i class="fa fa-play mr-2"/>
+                                                    Check In
+                                                </button>
+                                            </t>
+                                            <t t-elif="status_info['status'] == 'checked_in'">
+                                                <button type="button" class="btn btn-danger btn-lg mr-2" onclick="checkOut()">
+                                                    <i class="fa fa-stop mr-2"/>
+                                                    Check Out
+                                                </button>
+                                                <t t-if="status_info['can_emergency_checkout']">
+                                                    <button type="button" class="btn emergency-btn btn-sm text-white" onclick="emergencyCheckout()">
+                                                        <i class="fa fa-exclamation-triangle mr-1"/>
+                                                        Emergency
+                                                    </button>
+                                                </t>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card text-center">
+                                <div class="card-body">
+                                    <h2 class="mb-1" t-esc="'%.1f' % today_hours"/>
+                                    <p class="mb-0">Hours Today</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card text-center">
+                                <div class="card-body">
+                                    <h2 class="mb-1" t-esc="'%.1f' % weekly_hours"/>
+                                    <p class="mb-0">Hours This Week</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card text-center">
+                                <div class="card-body">
+                                    <h2 class="mb-1" t-esc="'%.1f' % monthly_hours"/>
+                                    <p class="mb-0">Hours This Month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Attendance -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Recent Attendance</h5>
+                                    <a href="/my/attendance/history" class="btn btn-outline-primary btn-sm">View All</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <t t-if="recent_attendances">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Check In</th>
+                                                        <th>Check Out</th>
+                                                        <th>Hours</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="recent_attendances" t-as="attendance">
+                                                        <tr>
+                                                            <td t-esc="attendance['date_display']"/>
+                                                            <td t-esc="attendance['check_in_display']"/>
+                                                            <td t-esc="attendance['check_out_display']"/>
+                                                            <td t-esc="attendance['hours_display']"/>
+                                                            <td>
+                                                                <span t-attf-class="badge badge-#{attendance['status_class']}">
+                                                                    <span t-esc="attendance['status'] == 'complete' and 'Complete' or 'Active'"/>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="text-center py-4">
+                                            <p class="text-muted">No attendance records found</p>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script><![CDATA[
+                // Get CSRF token from meta tag or cookie
+                function getCSRFToken() {
+                    var token = $('meta[name="csrf-token"]').attr('content');
+                    if (!token) {
+                        // Fallback: get from cookie
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = cookies[i].trim();
+                            if (cookie.indexOf('csrf_token=') === 0) {
+                                return cookie.substring('csrf_token='.length);
+                            }
+                        }
+                    }
+                    return token;
+                }
+
+                // Setup CSRF token for all AJAX requests
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+                        }
+                    }
+                });
+                ]]></script>
+                <script><![CDATA[
+                function checkIn() {
+                    if (confirm('Are you sure you want to check in?')) {
+                        $.ajax({
+                            url: '/my/attendance/checkin',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({}),
+                            success: function(response) {
+                                console.log('Check-in response:', response);
+                                // Handle JSON-RPC response format
+                                var result = response.result || response;
+                                if (result && result.success) {
+                                    alert('Check-in successful! ' + result.message);
+                                    location.reload();
+                                } else {
+                                    console.error('Check-in failed:', result);
+                                    alert('Error: ' + (result && result.error ? result.error : 'Unknown error - check browser console'));
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Check-in error:', {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText,
+                                    statusCode: xhr.status
+                                });
+                                alert('Network error (' + xhr.status + '): ' + (error || 'Please try again. Check browser console for details.'));
+                            }
+                        });
+                    }
+                }
+
+                function checkOut() {
+                    if (confirm('Are you sure you want to check out?')) {
+                        $.ajax({
+                            url: '/my/attendance/checkout',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({}),
+                            success: function(response) {
+                                console.log('Check-out response:', response);
+                                // Handle JSON-RPC response format
+                                var result = response.result || response;
+                                if (result && result.success) {
+                                    alert('Check-out successful! ' + result.message + (result.worked_hours ? ' (Worked: ' + result.worked_hours.toFixed(2) + ' hours)' : ''));
+                                    location.reload();
+                                } else {
+                                    console.error('Check-out failed:', result);
+                                    alert('Error: ' + (result && result.error ? result.error : 'Unknown error - check browser console'));
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Check-out error:', {
+                                    status: status,
+                                    error: error,
+                                    responseText: xhr.responseText,
+                                    statusCode: xhr.status
+                                });
+                                alert('Network error (' + xhr.status + '): ' + (error || 'Please try again. Check browser console for details.'));
+                            }
+                        });
+                    }
+                }
+
+                function emergencyCheckout() {
+                    if (confirm('Are you sure you want to perform an emergency checkout?')) {
+                        $.ajax({
+                            url: '/my/attendance/emergency-checkout',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({}),
+                            success: function(response) {
+                                console.log('Emergency checkout response:', response);
+                                // Handle JSON-RPC response format
+                                var result = response.result || response;
+                                if (result && result.success) {
+                                    alert('Emergency checkout completed successfully!');
+                                    location.reload();
+                                } else {
+                                    alert('Error: ' + (result && result.error ? result.error : 'Unknown error'));
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Emergency checkout error:', xhr.responseText);
+                                alert('Network error: ' + (error || 'Please try again.'));
+                            }
+                        });
+                    }
+                }
+                ]]></script>
+            </body>
+        </html>
+    </template>
+
+    <!-- Simple History Template -->
+    <template id="portal_attendance_history" name="Attendance History">
+        <html>
+            <head>
+                <title>My Attendance - History</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+            </head>
+            <body>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <div class="container">
+                        <a class="navbar-brand" href="/my">Portal</a>
+                        <div class="navbar-nav">
+                            <a class="nav-link" href="/my/attendance">Dashboard</a>
+                            <a class="nav-link active" href="/my/attendance/history">History</a>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="container mt-4">
+                    <h1 class="h3 mb-4">Attendance History</h1>
+                    
+                    <!-- Filters -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form method="GET" class="row align-items-end">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="date_from">From Date</label>
+                                            <input type="date" class="form-control" name="date_from" id="date_from" t-att-value="date_from"/>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="date_to">To Date</label>
+                                            <input type="date" class="form-control" name="date_to" id="date_to" t-att-value="date_to"/>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="sortby">Sort By</label>
+                                            <select name="sortby" class="form-control">
+                                                <t t-foreach="searchbar_sortings.items()" t-as="sort_item">
+                                                    <option t-att-value="sort_item[0]" t-att-selected="sortby == sort_item[0] and 'selected' or None" t-esc="sort_item[1]['label']"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <button type="submit" class="btn btn-primary mr-2">
+                                                <i class="fa fa-search mr-1"/> Filter
+                                            </button>
+                                            <a t-attf-href="/my/attendance/export?format=csv&amp;date_from=#{date_from}&amp;date_to=#{date_to}" class="btn btn-outline-success">
+                                                <i class="fa fa-download mr-1"/> Export CSV
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-primary mb-1" t-esc="'%.1f' % summary['total_hours']"/>
+                                    <p class="text-muted mb-0">Total Hours</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-info mb-1" t-esc="summary['total_days']"/>
+                                    <p class="text-muted mb-0">Total Days</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-success mb-1" t-esc="'%.1f' % summary['avg_hours_per_day']"/>
+                                    <p class="text-muted mb-0">Avg Hours/Day</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Attendance Records</h5>
+                                </div>
+                                <div class="card-body p-0">
+                                    <t t-if="attendances">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Check In</th>
+                                                        <th>Check Out</th>
+                                                        <th>Hours Worked</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="attendances" t-as="attendance">
+                                                        <tr>
+                                                            <td t-esc="attendance['date_display']"/>
+                                                            <td t-esc="attendance['check_in_display']"/>
+                                                            <td t-esc="attendance['check_out_display']"/>
+                                                            <td t-esc="attendance['hours_display']"/>
+                                                            <td>
+                                                                <span t-attf-class="badge badge-#{attendance['status_class']}">
+                                                                    <span t-esc="attendance['status'] == 'complete' and 'Complete' or 'In Progress'"/>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="text-center py-5">
+                                            <h4 class="text-muted">No attendance records found</h4>
+                                            <p class="text-muted">Try adjusting your date range or filters.</p>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+            </body>
+        </html>
+    </template>
+</odoo>

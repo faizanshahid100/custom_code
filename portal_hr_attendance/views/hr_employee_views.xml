@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Muda added a field on employee form to allow hi portal access -->
+    <record id="hr_employee_view_form_portal" model="ir.ui.view">
+        <field name="name">hr.employee.form.portal</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='employee_type']" position="after">
+                <field name="has_portal_access"/>
+                <field name="portal_notifications" attrs="{'invisible': ['|', ('user_id', '=', False), ('has_portal_access', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

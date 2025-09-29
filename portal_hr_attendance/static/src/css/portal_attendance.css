@@ -1,0 +1,252 @@
+/* Portal Attendance CSS */
+
+/* Main Layout */
+.portal-attendance-layout {
+    padding-top: 20px;
+}
+
+/* Status Cards */
+.attendance-status-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.attendance-status-card:hover {
+    transform: translateY(-2px);
+}
+
+.status-badge-lg {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 25px;
+}
+
+/* Emergency Checkout Button */
+.emergency-checkout-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.emergency-checkout-btn:hover {
+    background: linear-gradient(45deg, #ff5252, #ff7043);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+}
+
+.emergency-checkout-btn:active {
+    transform: translateY(0);
+}
+
+/* Stats Cards */
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: scale(1.02);
+}
+
+.stats-card.primary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stats-card.success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stats-card.info {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+/* Table Styling */
+.attendance-table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.attendance-table .table {
+    margin-bottom: 0;
+}
+
+.attendance-table .thead-light th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.attendance-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Filter Cards */
+.filter-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 15px;
+    }
+    
+    .emergency-checkout-btn {
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+    }
+    
+    .attendance-table .table td,
+    .attendance-table .table th {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Status Indicators */
+.status-complete {
+    background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+    color: white;
+}
+
+.status-active {
+    background: linear-gradient(45deg, #f093fb, #f5576c);
+    color: white;
+}
+
+.status-pending {
+    background: linear-gradient(45deg, #ffecd2, #fcb69f);
+    color: #333;
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Alert Styling */
+.alert-custom {
+    border-radius: 12px;
+    border: none;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.alert-warning-custom {
+    background: linear-gradient(45deg, #ffeaa7, #fdcb6e);
+    color: #2d3436;
+}
+
+.alert-success-custom {
+    background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+    color: white;
+}
+
+/* Form Styling */
+.form-control-custom {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control-custom:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Button Styling */
+.btn-custom {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(45deg, #5a6fd8, #6a4190);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Card Header Custom */
+.card-header-custom {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-bottom: 2px solid #dee2e6;
+    padding: 1.25rem;
+    font-weight: 600;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-custom {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+}
+
+.border-radius-custom {
+    border-radius: 12px !important;
+}
