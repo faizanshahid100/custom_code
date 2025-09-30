@@ -94,6 +94,10 @@ class HrEmployee(models.Model):
         if not channel:
             return  # No channel found
 
+        # Get users in the group 'prime_sol_custom.group_birthday_notification'
+        group = self.env.ref('prime_sol_custom.group_birthday_notification', raise_if_not_found=False)
+        notify_users = group.users if group else self.env['res.users']
+
         for employee in employees:
             birthday = employee.birthday
             if not birthday:
@@ -109,17 +113,30 @@ class HrEmployee(models.Model):
             if 0 <= days_until <= 3:
                 if days_until == 0:
                     msg = (
+                        "HR Team,</b><br/>"
                         f"<b>🎉 It's {employee.name}'s Birthday Today! 🎂</b><br/>"
                         f"Let's celebrate and send your best wishes! 🥳<br/><br/><br/>"
                     )
                 else:
                     msg = (
+                        "Hi HR team,</b><br/>"
                         f"<b>🎉 Upcoming Birthday Alert! 🎉</b><br/>"
                         f"{employee.name}'s birthday is on <b>{birthday_this_year.strftime('%d %B')}</b> "
                         f"(<i>{days_until} day{'s' if days_until != 1 else ''} left</i>).<br/><br/><br/>"
                     )
+
+                # Post in channel
                 channel.message_post(
                     body=msg,
                     message_type='comment',
                     subtype_xmlid='mail.mt_note',
                 )
+
+                # Notify each user in the group
+                for user in notify_users:
+                    if user.partner_id:
+                        self.env['mail.mail'].sudo().create({
+                            'subject': "🎂 Birthday Reminder",
+                            'body_html': msg,
+                            'email_to': user.email,
+                        }).send()
