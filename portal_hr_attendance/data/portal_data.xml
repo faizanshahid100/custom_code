@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal Data -->
+    
+    <!-- Sample Portal User Group Assignment -->
+    <record id="portal_attendance_default_config" model="ir.config_parameter">
+        <field name="key">portal_hr_attendance.auto_enable_access</field>
+        <field name="value">False</field>
+    </record>
+
+    <!-- Default Notification Template -->
+    <record id="mail_template_attendance_emergency_checkout" model="mail.template">
+        <field name="name">Emergency Checkout Notification</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="subject">Emergency Checkout Performed - {{ object.name }}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif;">
+                <div style="padding: 20px; background-color: #f9f9f9;">
+                    <h2 style="color: #875A7B;">Emergency Checkout Notification</h2>
+                    <p>Hello,</p>
+                    <p>An emergency checkout has been performed for employee <strong>{{ object.name }}</strong>.</p>
+                    <p><strong>Details:</strong></p>
+                    <ul>
+                        <li>Employee: {{ object.name }}</li>
+                        <li>Date: {{ ctx.get('checkout_time', '') }}</li>
+                        <li>Performed via: Portal Self-Service</li>
+                    </ul>
+                    <p>This action has been logged for record-keeping purposes.</p>
+                    <p>Best regards,<br/>HR Team</p>
+                </div>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Portal Menu Configuration -->
+    <record id="portal_attendance_menu_config" model="ir.config_parameter">
+        <field name="key">portal_hr_attendance.show_in_main_menu</field>
+        <field name="value">True</field>
+    </record>
+
+    <!-- Default Export Settings -->
+    <record id="portal_attendance_export_config" model="ir.config_parameter">
+        <field name="key">portal_hr_attendance.max_export_days</field>
+        <field name="value">365</field>
+    </record>
+
+    <!-- Security Settings -->
+    <record id="portal_attendance_security_config" model="ir.config_parameter">
+        <field name="key">portal_hr_attendance.emergency_checkout_hours</field>
+        <field name="value">1</field>
+    </record>
+</odoo>
