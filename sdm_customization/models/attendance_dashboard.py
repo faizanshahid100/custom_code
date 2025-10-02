@@ -1,0 +1,116 @@
+# -*- coding: utf-8 -*-
+from odoo import api, fields, models
+from datetime import datetime, date, time, timedelta
+import pytz
+
+
+class AttendanceDashboard(models.Model):
+    _name = 'attendance.dashboard'
+    _description = 'Employees missing check-in after duty start + 20 minutes'
+
+    employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
+    duty_start = fields.Datetime(string='Duty Start (UTC)', required=True)
+    threshold = fields.Datetime(string='Threshold (UTC)', required=True)
+    check_in = fields.Datetime(string='Check-In (first today)', readonly=True)
+    minutes_overdue = fields.Integer(string='Minutes Overdue', readonly=True)
+    hours_overdue = fields.Integer(string='Hours Overdue', readonly=True)
+    is_missing = fields.Boolean(string='Missing', default=False)
+
+    @api.model
+    def refresh(self):
+        """Populate attendance.dashboard with employees missing check-in for today in PST (UTC+5)."""
+        self.sudo().search([]).unlink()  # clear previous
+
+        # current UTC time
+        utc_now = datetime.now()
+
+        # get employees with defined duty start time
+        employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0)])
+
+        for emp in employees:
+            # convert float hours to hh:mm
+            hour_float = float(emp.hour_start_from or 0.0)
+            hours = int(hour_float)
+            minutes = int(round((hour_float - hours) * 60))
+
+            # duty start in PST (UTC+5)
+            pst_today = utc_now + timedelta(hours=5)
+            duty_time_pst = datetime.combine(pst_today.date(), time(hours, minutes))
+
+            # threshold time in PST (20 min after duty start)
+            threshold_pst = duty_time_pst + timedelta(minutes=20)
+
+            # convert duty + threshold back to UTC
+            duty_time_utc = duty_time_pst - timedelta(hours=5)
+            threshold_time_utc = threshold_pst - timedelta(hours=5)
+
+            # only check if threshold already passed
+            if utc_now < threshold_time_utc:
+                continue
+
+            # check if employee checked in anytime today
+            if emp.country_id.name == 'Pakistan':
+                checkin_domain = datetime.combine(utc_now.date(), time.min)-timedelta(hours=5)
+            elif emp.country_id.name == 'Philippines':
+                checkin_domain = datetime.combine(utc_now.date(), time.min)-timedelta(hours=8)
+            else:
+                checkin_domain = utc_now
+
+            attendance = self.env['hr.attendance'].sudo().search([
+                ('employee_id', '=', emp.id),
+                ('check_in', '>=', checkin_domain),
+            ], order='check_in asc', limit=1)
+
+            if attendance:
+                # already checked in (even if before duty time) → skip missing record
+                continue
+
+            if not attendance:
+                minutes_overdue = int((utc_now - threshold_time_utc).total_seconds() // 60)
+
+                # create dashboard entry
+                self.sudo().create({
+                    'employee_id': emp.id,
+                    'duty_start': fields.Datetime.to_string(duty_time_utc),
+                    'threshold': fields.Datetime.to_string(threshold_time_utc),
+                    'check_in': False,
+                    'minutes_overdue': minutes_overdue,
+                    'hours_overdue': minutes_overdue // 60,
+                    'is_missing': True,
+                })
+                # User's TimeZone
+                utc_float = (emp.hour_start_from - 5)
+                hours = int(utc_float)
+                minutes = int(round((utc_float - hours) * 60))
+
+                user_tz = emp.user_id.tz or "UTC"   # Get user's timezone, default to 'UTC' if not set
+                user_timezone = pytz.timezone(user_tz)
+                utc_duty_time = datetime.combine(fields.Date.today(), time(hours, minutes))
+                threshold_utc_duty_time = datetime.combine(fields.Date.today(), time(hours, minutes+20))
+                current_time = pytz.utc.localize(utc_duty_time).astimezone(user_timezone).time()
+                threshold_current_time = pytz.utc.localize(threshold_utc_duty_time).astimezone(user_timezone).time()
+                formatted_current_time = current_time.strftime("%I:%M %p")
+                threshold_formatted_current_time = threshold_current_time.strftime("%I:%M %p")
+
+
+                # send email notification to employee
+                if emp.work_email:
+                    mail_values = {
+                        'subject': f"Missing Check-in Alert: {emp.name}",
+                        'body_html': f"""
+                                <p>Dear {emp.name},</p>
+                                <p>Our records show that you have not checked in for your duty today.</p>
+                                <p><b>Duty Start Time:</b> {formatted_current_time}<br/>
+                                   <b>Allowed Threshold:</b> {threshold_formatted_current_time}<br/>
+                                   <b>Status:</b> Missing Check-in</p>
+                                <p>Please ensure timely check-in.</p>
+                            """,
+                        'email_to': emp.work_email,
+                    }
+                    self.env['mail.mail'].sudo().create(mail_values).send()
+
+        return True
+
+    def action_manual_refresh(self):
+        """Button to refresh from UI for testing"""
+        return self.env['attendance.dashboard'].refresh()

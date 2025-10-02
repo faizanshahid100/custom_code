@@ -8,8 +8,8 @@
             <field name="inherit_id" ref="hr_attendance.view_employee_form_inherit_hr_attendance"/>
             <field name="arch" type="xml">
                 <field name="id" position="after">
-                    <field name="hour_start_from" string="Hour Start From" t-options="{'widget': 'time'}"/>
-                    <field name="total_working_hour" string="Total Working Hour" t-options="{'widget': 'time'}"/>
+                    <field name="hour_start_from" string="Hour Start From" widget="float_time"/>
+                    <field name="total_working_hour" string="Total Working Hour" widget="float_time"/>
                     <field name="employment_type" required="1"/>
                     <field name="working_hours_type" required="1"/>
                 </field>
