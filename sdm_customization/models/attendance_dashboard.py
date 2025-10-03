@@ -21,9 +21,9 @@ class AttendanceDashboard(models.Model):
         """Populate attendance.dashboard with employees missing check-in for today in PST (UTC+5)."""
         self.sudo().search([]).unlink()  # clear previous
 
-        utc_now = datetime.utcnow()
+        utc_now = datetime.now()
 
-        employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0)])
+        employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0), ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH'])])
 
         for emp in employees:
             # convert float to hh:mm
@@ -62,9 +62,6 @@ class AttendanceDashboard(models.Model):
 
             # overdue calculation
             minutes_overdue = int((utc_now - threshold_time_utc).total_seconds() // 60)
-
-            color = "#ff0000"
-            text_color = "white"
                 # ensure dashboard record
             self.sudo().create({
                 'employee_id': emp.id,
@@ -83,6 +80,7 @@ class AttendanceDashboard(models.Model):
             user_tz = emp.user_id.tz or "UTC"
             user_timezone = pytz.timezone(user_tz)
 
+            print(emp.name)
             utc_duty_time = datetime.combine(fields.Date.today(), time(tz_hours, tz_minutes))
             threshold_utc_duty_time = utc_duty_time + timedelta(minutes=20)
 
