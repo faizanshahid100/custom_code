@@ -1,25 +1,9 @@
 <odoo>
     <!-- Main Menu -->
     <menuitem id="menu_sdm_root"
-          name="SDM"
-          action="prime_sol_custom.action_hr_employee_feedback"
-          web_icon="sdm_customization,static/description/ahmad_yar.png"/>
+              name="SDM"
+              groups="sdm_customization.group_sdm"
+              action="prime_sol_custom.action_hr_employee_feedback"
+              web_icon="sdm_customization,static/description/ahmad_yar.png"/>
 
-    <!--    &lt;!&ndash; Example Sub-Menus under SDM &ndash;&gt;-->
-    <!--    <menuitem id="menu_sdm_reporting"-->
-    <!--              name="Reporting"-->
-    <!--              parent="menu_sdm_root"-->
-    <!--              sequence="20"/>-->
-
-    <!--    <menuitem id="menu_sdm_configuration"-->
-    <!--              name="Configuration"-->
-    <!--              parent="menu_sdm_root"-->
-    <!--              sequence="30"/>-->
-
-    <!--    &lt;!&ndash; Example Action-linked Sub-Menu &ndash;&gt;-->
-    <!--    <menuitem id="menu_sdm_example_action"-->
-    <!--              name="Overtime Report"-->
-    <!--              parent="menu_sdm_reporting"-->
-    <!--              action="action_approval_overtime_report"-->
-    <!--              sequence="40"/>-->
 </odoo>

@@ -1,0 +1,7 @@
+<odoo>
+    <!-- Main SDM Group -->
+    <record id="group_sdm" model="res.groups">
+        <field name="name">Service Delivery manager</field>
+        <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+    </record>
+</odoo>

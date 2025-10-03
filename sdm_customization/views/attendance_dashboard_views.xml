@@ -7,7 +7,7 @@
                 <field name="employee_id"/>
                 <field name="duty_start"/>
                 <field name="threshold"/>
-                <field name="minutes_overdue"/>
+                <field name="minutes_overdue" widget="html"/>
                 <field name="hours_overdue"/>
             </tree>
         </field>
