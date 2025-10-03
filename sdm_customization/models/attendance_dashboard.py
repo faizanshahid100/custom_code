@@ -74,7 +74,7 @@ class AttendanceDashboard(models.Model):
             })
 
             # prepare duty times in employee timezone
-            utc_float = (emp.hour_start_from - 5)
+            utc_float = (emp.hour_start_from)
             tz_hours = int(utc_float)
             tz_minutes = int(round((utc_float - tz_hours) * 60))
             user_tz = emp.user_id.tz or "UTC"
