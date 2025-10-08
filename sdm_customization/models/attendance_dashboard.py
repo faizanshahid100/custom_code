@@ -9,8 +9,8 @@ class AttendanceDashboard(models.Model):
     _description = 'Employees missing check-in after duty start + 20 minutes'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
-    duty_start = fields.Datetime(string='Duty Start (UTC)', required=True)
-    threshold = fields.Datetime(string='Threshold (UTC)', required=True)
+    duty_start = fields.Datetime(string='Duty Start', required=True)
+    threshold = fields.Datetime(string='Threshold', required=True)
     check_in = fields.Datetime(string='Check-In (first today)', readonly=True)
     minutes_overdue = fields.Char(string='Minutes Overdue', readonly=True)
     hours_overdue = fields.Integer(string='Hours Overdue', readonly=True)
@@ -22,10 +22,32 @@ class AttendanceDashboard(models.Model):
         self.sudo().search([]).unlink()  # clear previous
 
         utc_now = datetime.now()
+        today = fields.Date.today()
 
         employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0), ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH'])])
 
         for emp in employees:
+            # 🔹 NEW: Skip employee if on approved leave today
+            leave = self.env['hr.leave'].sudo().search([
+                ('employee_id', '=', emp.id),
+                ('state', '=', 'validate'),
+                ('request_date_from', '<=', today),
+                ('request_date_to', '>=', today),
+            ], limit=1)
+            # is today gazetted day
+            gazetted_holidays = emp.sudo().gazetted_holiday_id.holiday_dates
+
+            if leave or today.strftime("%d-%m-%Y") in gazetted_holidays:
+                continue  # Skip — on leave
+            # 🔹 NEW: Skip employee if today is their weekly off (based on resource calendar)
+            calendar = emp.resource_calendar_id
+            if calendar:
+                # get weekday of today (0=Monday, 6=Sunday)
+                weekday = today.weekday()
+                working_intervals = calendar.attendance_ids.filtered(lambda att: int(att.dayofweek) == weekday)
+                if not working_intervals:
+                    continue  # Skip — no working hours today (off day)
+
             # convert float to hh:mm
             hour_float = float(emp.hour_start_from or 0.0)
             hours = int(hour_float)
@@ -88,7 +110,8 @@ class AttendanceDashboard(models.Model):
             threshold_local = pytz.utc.localize(threshold_utc_duty_time).astimezone(user_timezone).strftime("%I:%M %p")
 
             # employee reminder every 20 min overdue
-            if emp.work_email and minutes_overdue % 20 >= 1:
+            # if emp.work_email and minutes_overdue % 20 >= 1:
+            if emp.work_email and minutes_overdue > 20 and minutes_overdue < 65 and minutes_overdue % 20 >= 1:
                 mail_values = {
                     'subject': f"Reminder: Missing Check-in Alert for {emp.name}",
                     'body_html': f"""
@@ -104,7 +127,8 @@ class AttendanceDashboard(models.Model):
                 self.env['mail.mail'].sudo().create(mail_values).send()
 
             # SDM group reminder every 60 min overdue
-            if minutes_overdue % 60 >= 1:
+            # if minutes_overdue % 60 >= 1:
+            if minutes_overdue > 60 and minutes_overdue < 126 and minutes_overdue % 60 >= 1:
                 group = self.env.ref("prime_sol_custom.group_sdm", raise_if_not_found=False)
                 if group and group.users:
                     group_emails = ",".join(u.email for u in group.users if u.email)
