@@ -1,0 +1,9 @@
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_sdm_root"
+              name="SDM"
+              groups="sdm_customization.group_sdm"
+              action="prime_sol_custom.action_hr_employee_feedback"
+              web_icon="sdm_customization,static/description/ahmad_yar.png"/>
+
+</odoo>
