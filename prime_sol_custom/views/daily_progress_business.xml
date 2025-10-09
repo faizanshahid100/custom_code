@@ -1,0 +1,67 @@
+<odoo>
+    <record id="view_daily_progress_business_form" model="ir.ui.view">
+        <field name="name">daily.progress.business.form</field>
+        <field name="model">daily.progress.business</field>
+        <field name="arch" type="xml">
+            <form string="Daily Progress Business" create="true" edit="true">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="resource_user_id" required="1"/>
+                            <field name="date_of_project" required="1"/>
+                            <field name="finance_area" required="1"/>
+                        </group>
+                        <group>
+                            <field name="week_of_year" readonly="1"/>
+                            <field name="year_of_kpi" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Financial Planning & Analysis -->
+                        <page string="Financial Planning &amp; Analysis" attrs="{'invisible': [('finance_area', '!=', 'fpna')]}">
+                            <group>
+                                <field name="project"/>
+                                <field name="is_deadline_met"/>
+                                <field name="is_week_meeting"/>
+                                <field name="comments"/>
+                                <field name="manager_comment"/>
+                            </group>
+                        </page>
+
+                        <!-- Accounts Payable -->
+                        <page string="Accounts Payable" attrs="{'invisible': [('finance_area', '!=', 'ap')]}">
+                            <group>
+                                <field name="invoice_count"/>
+                                <field name="pending_approval_count"/>
+                                <field name="closed_ticket_count"/>
+                            </group>
+                        </page>
+
+                        <!-- Accounts Receivable -->
+                        <page string="Accounts Receivable" attrs="{'invisible': [('finance_area', '!=', 'ar')]}">
+                            <group>
+                                <field name="number_of_calls"/>
+                                <field name="bad_debt"/>
+                                <field name="recovery_of_bad_debt"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_daily_progress_business" model="ir.actions.act_window">
+        <field name="name">Project Daily Progress Business</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">daily.progress.business</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_project_daily_progress_business"
+              name="Daily Progress Business"
+              parent="project.menu_main_pm"
+              action="action_project_daily_progress_business"
+              sequence="24"/>
+</odoo>
