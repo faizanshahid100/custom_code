@@ -19,7 +19,7 @@ class DailyProgress(models.Model):
         ('fpna', 'Financial Planning & Analysis'),
         ('ap', 'Accounts Payable'),
         ('ar', 'Accounts Receivable'),
-    ], string="Finance Area", required=True)
+    ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
     is_deadline_met = fields.Boolean(string='Deadline Met?')
@@ -31,7 +31,7 @@ class DailyProgress(models.Model):
         ('neutral', 'Neutral'),
         ('not_satisfied', 'Not Satisfied'),
         ('extremely_not_satisfied', 'Extremely Not Satisfied'),
-    ], string="Manager Comment")
+    ], default='extremely_satisfied', string="Manager Comment")
 
     # Accounts Payable
     invoice_count = fields.Integer(string="Invoices")
