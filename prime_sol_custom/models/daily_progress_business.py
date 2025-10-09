@@ -34,7 +34,7 @@ class DailyProgress(models.Model):
     ], default='extremely_satisfied', string="Manager Comment")
 
     # Accounts Payable
-    invoice_count = fields.Integer(string="Invoices")
+    invoice_count = fields.Integer(string="No. of Invoices")
     pending_approval_count = fields.Integer(string="Pending Approvals")
     closed_ticket_count = fields.Integer(string="Tickets Closed")
 
