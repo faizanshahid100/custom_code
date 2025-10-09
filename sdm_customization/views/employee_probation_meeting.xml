@@ -1,0 +1,66 @@
+<odoo>
+    <record id="view_employee_probation_meeting_tree" model="ir.ui.view">
+        <field name="name">employee.probation.meeting.tree</field>
+        <field name="model">employee.probation.meeting</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Probation Meetings">
+                <field name="employee_id"/>
+                <field name="date_meeting"/>
+                <field name="probation_type"/>
+                <field name="meeting_status"/>
+                <field name="reason"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_employee_probation_meeting_form" model="ir.ui.view">
+        <field name="name">employee.probation.meeting.form</field>
+        <field name="model">employee.probation.meeting</field>
+        <field name="arch" type="xml">
+            <form string="Employee Probation Meeting">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date_meeting"/>
+                            <field name="probation_type"/>
+                        </group>
+                        <group>
+                            <field name="meeting_status"/>
+                            <field name="reason" attrs="{'invisible': [('meeting_status', '=', 'green')]}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Meeting Questions">
+                            <group>
+                                <field name="q1_experience"/>
+                                <field name="q2_alignment"/>
+                                <field name="q3_attendance_kpi"/>
+                                <field name="q4_guidance"/>
+                                <field name="q5_hubstaff"/>
+                                <field name="q6_challenges"/>
+                                <field name="q7_daily_tasks"/>
+                            </group>
+                        </page>
+
+                        <page string="Send Reason Email" attrs="{'invisible': [('meeting_status', '=', 'green')]}">
+                            <group>
+                                <field name="selected_employee_ids" widget="many2many_tags"/>
+                                <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
+                                        class="btn-primary" icon="fa-envelope"/>
+                                <br/>
+                                <field name="is_mail_sent" widget="boolean_toggle" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_employee_probation_meeting" model="ir.actions.act_window">
+        <field name="name">Employee Probation Meetings</field>
+        <field name="res_model">employee.probation.meeting</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
