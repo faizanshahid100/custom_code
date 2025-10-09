@@ -41,6 +41,7 @@
                         <!-- Accounts Receivable -->
                         <page string="Accounts Receivable" attrs="{'invisible': [('finance_area', '!=', 'ar')]}">
                             <group>
+                                <field name="invoice_count"/>
                                 <field name="number_of_calls"/>
                                 <field name="bad_debt"/>
                                 <field name="recovery_of_bad_debt"/>
