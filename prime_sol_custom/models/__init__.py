@@ -1,4 +1,5 @@
 from . import daily_progress
+from . import daily_progress_business
 from . import weekly_report
 from . import res_users
 from . import hr_attendence

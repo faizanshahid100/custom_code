@@ -17,6 +17,7 @@
         'security/groups.xml',
         'views/res_users.xml',
         'views/daily_progress.xml',
+        'views/daily_progress_business.xml',
         'views/weekly_report.xml',
         'views/hr_employee.xml',
         'views/hr_attendance_ext.xml',

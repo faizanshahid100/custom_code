@@ -124,7 +124,7 @@ class AttendanceDashboard(models.Model):
                     """,
                     'email_to': emp.work_email,
                 }
-                self.env['mail.mail'].sudo().create(mail_values).send()
+                # self.env['mail.mail'].sudo().create(mail_values).send()
 
             # SDM group reminder every 60 min overdue
             # if minutes_overdue % 60 >= 1:
@@ -145,7 +145,7 @@ class AttendanceDashboard(models.Model):
                             'email_to': group_emails,
                             'email_cc': emp.work_email or "",
                         }
-                        self.env['mail.mail'].sudo().create(mail_values).send()
+                        # self.env['mail.mail'].sudo().create(mail_values).send()
 
         return True
 

@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_daily_progress,daily.progress,model_daily_progress,,1,1,1,1
+access_daily_progress_business,daily.progress.business,model_daily_progress_business,,1,1,1,1
 access_weekly_progress,weekly.progress,model_weekly_progress,,1,1,1,1
 access_employee_feedback_internal_user,Employee Feedback User,model_hr_employee_feedback,base.group_user,1,0,0,0
 access_employee_feedback_manager,Employee Feedback Manager,model_hr_employee_feedback,prime_sol_custom.group_employee_feedback_manager,1,1,1,1
