@@ -34,11 +34,29 @@ class EmployeeProbationMeeting(models.Model):
     q7_daily_tasks = fields.Text(string="7. What's your daily tasks and how many team members you have?")
 
     selected_employee_ids = fields.Many2many(
-        "hr.employee", string="Send Mail To",
+        "hr.employee",
+        "employee_meeting_mail_rel",
+        "meeting_id",
+        "employee_id",
+        string="Send Mail To",
         help="Select employees who will receive the reason email if meeting status is Red or Yellow."
     )
     is_mail_sent = fields.Boolean(string="Mail Sent", readonly=True, tracking=True)
 
+    action_taken_comment = fields.Char(string='Action Taken')
+    action_employee_ids = fields.Many2many(
+        "hr.employee",
+        "employee_meeting_action_mail_rel",
+        "meeting_id",
+        "employee_id",
+        string="Send Action Mail To",
+        help="Employees who will receive the action taken update email."
+    )
+    is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
+
+    # ----------------------------
+    # Send Reason Mail
+    # ----------------------------
     def action_send_reason_mail(self):
         """Send email with reason, employee name, date, and record link to selected employees"""
         for record in self:
@@ -90,3 +108,43 @@ class EmployeeProbationMeeting(models.Model):
             # ✅ Mark checkbox if at least one email was sent
             if mail_sent:
                 record.is_mail_sent = True
+
+        # ----------------------------
+        # Send Action Mail
+        # ----------------------------
+    def action_send_action_mail(self):
+        for record in self:
+            if not record.action_taken_comment:
+                raise UserError("Please write the action taken before sending the email.")
+            if not record.action_employee_ids:
+                raise UserError("Please select employees to send this update to.")
+
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            record_url = f"{base_url}/web#id={record.id}&model=employee.probation.meeting&view_type=form"
+
+            subject = f"Action Taken Update for {record.employee_id.name}'s Probation Meeting"
+            body = f"""
+                <div style="font-family:Arial, sans-serif; line-height:1.6;">
+                    <h3 style="color:#004080;">Probation Meeting Action Update</h3>
+                    <p><b>Employee:</b> {record.employee_id.name}</p>
+                    <p><b>Date:</b> {record.date_meeting.strftime('%d-%m-%Y')}</p>
+                    <p><b>Action Taken:</b> {record.action_taken_comment}</p>
+                    <p>You can view this meeting record in Odoo:
+                        <a href="{record_url}" target="_blank">View Record</a>
+                    </p>
+                </div>
+            """
+
+            mail_sent = False
+            for emp in record.action_employee_ids:
+                if not emp.work_email:
+                    continue
+                self.env['mail.mail'].sudo().create({
+                    'subject': subject,
+                    'body_html': body,
+                    'email_to': emp.work_email,
+                }).send()
+                mail_sent = True
+
+            if mail_sent:
+                record.is_action_mail_sent = True

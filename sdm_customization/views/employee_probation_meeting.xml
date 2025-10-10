@@ -7,7 +7,10 @@
                 <field name="employee_id"/>
                 <field name="date_meeting"/>
                 <field name="probation_type"/>
-                <field name="meeting_status"/>
+                <field name="meeting_status" widget="badge"
+                       decoration-danger="meeting_status == 'red'"
+                       decoration-warning="meeting_status == 'yellow'"
+                       decoration-success="meeting_status == 'green'"/>
                 <field name="reason"/>
             </tree>
         </field>
@@ -53,11 +56,53 @@
                                 <field name="is_mail_sent" widget="boolean_toggle" readonly="1"/>
                             </group>
                         </page>
+
+                        <page string="Action Taken" attrs="{'invisible': [('is_mail_sent', '=', False)]}">
+                            <group>
+                                <field name="action_taken_comment"/>
+                                <field name="action_employee_ids" widget="many2many_tags"/>
+                                <button name="action_send_action_mail" type="object" string="Send Action Mail"
+                                        class="btn-primary" icon="fa-paper-plane"/>
+                                <br/>
+                                <field name="is_action_mail_sent" widget="boolean_toggle" readonly="1"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
         </field>
     </record>
+
+    <record id="view_employee_probation_meeting_search" model="ir.ui.view">
+        <field name="name">employee.probation.meeting.search</field>
+        <field name="model">employee.probation.meeting</field>
+        <field name="arch" type="xml">
+            <search string="Search Probation Meetings">
+                <field name="employee_id"/>
+                <field name="probation_type"/>
+                <field name="meeting_status"/>
+                <field name="date_meeting"/>
+
+                <filter string="Red Status" name="filter_red" domain="[('meeting_status','=','red')]"/>
+                <filter string="Yellow Status" name="filter_yellow" domain="[('meeting_status','=','yellow')]"/>
+                <filter string="Green Status" name="filter_green" domain="[('meeting_status','=','green')]"/>
+
+                <separator/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_by_employee" context="{'group_by':'employee_id'}"/>
+                    <filter string="Probation Type" name="group_by_probation_type"
+                            context="{'group_by':'probation_type'}"/>
+                    <filter string="Meeting Status" name="group_by_meeting_status"
+                            context="{'group_by':'meeting_status'}"/>
+                    <!-- group by month (uses date_meeting:month) -->
+                    <filter string="Meeting Month" name="group_by_meeting_month"
+                            context="{'group_by':'date_meeting:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="action_employee_probation_meeting" model="ir.actions.act_window">
         <field name="name">Employee Probation Meetings</field>
         <field name="res_model">employee.probation.meeting</field>
