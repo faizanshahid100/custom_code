@@ -25,30 +25,44 @@
                     <group>
                         <group>
                             <field name="employee_id"/>
-                            <field name="date_meeting"/>
-                            <field name="probation_type"/>
+                            <field name="meeting_status"/>
                         </group>
                         <group>
-                            <field name="meeting_status"/>
-                            <field name="reason" attrs="{'invisible': [('meeting_status', '=', 'green')]}"/>
+                            <field name="date_meeting"/>
+                            <field name="probation_type"/>
                         </group>
                     </group>
 
                     <notebook>
                         <page string="Meeting Questions">
                             <group>
-                                <field name="q1_experience"/>
-                                <field name="q2_alignment"/>
-                                <field name="q3_attendance_kpi"/>
-                                <field name="q4_guidance"/>
-                                <field name="q5_hubstaff"/>
-                                <field name="q6_challenges"/>
-                                <field name="q7_daily_tasks"/>
+                                <group>
+                                    <field name="q1_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q1_experience"/>
+                                    <field name="q2_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q2_alignment"/>
+                                    <field name="q3_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q3_attendance_kpi"/>
+                                    <field name="q4_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q4_guidance"/>
+                                </group>
+                                <group>
+                                    <field name="q5_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q5_hubstaff"/>
+                                    <field name="q6_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q6_challenges"/>
+                                    <field name="q7_rating" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q7_daily_tasks"/>
+                                </group>
                             </group>
                         </page>
 
                         <page string="Send Reason Email" attrs="{'invisible': [('meeting_status', '=', 'green')]}">
                             <group>
+                                <field name="reason"
+                                       attrs="{'invisible': [('meeting_status', '=', 'green')], 'required': [('meeting_status', '!=', 'green')]}"/>
+                                <field name="assignee_id"
+                                       attrs="{'invisible': [('meeting_status', '=', 'green')], 'required': [('meeting_status', '!=', 'green')]}"/>
                                 <field name="selected_employee_ids" widget="many2many_tags"/>
                                 <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
                                         class="btn-primary" icon="fa-envelope"/>
@@ -69,6 +83,12 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"
+                           options="{'post_refresh': 'recipients'}"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

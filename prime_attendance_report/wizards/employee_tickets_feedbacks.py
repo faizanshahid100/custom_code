@@ -330,7 +330,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
         # Create records in weekly.ticket.report
         for employee in employees:
-            weekly_tickets = employee.d_ticket_resolved * 5
+            weekly_tickets = employee.d_ticket_resolved * 5 if employee.working_hours_type == 'peak' else 3
             vals = {
                 'employee_id': employee.id,
                 'employment_type': employee.employment_type,
