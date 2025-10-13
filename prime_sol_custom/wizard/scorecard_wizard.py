@@ -63,19 +63,19 @@ class ScorecardWizard(models.TransientModel):
 
     def action_confirm(self):
         # Optional: Clear existing summaries
-        self.env['score.card'].search([]).unlink()
+        self.env['score.card'].sudo().search([]).unlink()
 
         if self.department_id and self.partner_id:
-            employees = self.env['hr.employee'].search([]).filtered(
+            employees = self.env['hr.employee'].sudo().search([]).filtered(
                 lambda l: l.contractor.id == self.partner_id.id and l.department_id.id == self.department_id.id)
         elif not self.department_id and self.partner_id:
-            employees = self.env['hr.employee'].search([]).filtered(
+            employees = self.env['hr.employee'].sudo().search([]).filtered(
                 lambda l: l.contractor.id == self.partner_id.id)
         elif self.department_id and not self.partner_id:
-            employees = self.env['hr.employee'].search([]).filtered(
+            employees = self.env['hr.employee'].sudo().search([]).filtered(
                 lambda l: l.department_id.id == self.department_id.id)
         elif not self.department_id and not self.partner_id:
-            employees = self.env['hr.employee'].search([])
+            employees = self.env['hr.employee'].sudo().search([])
 
         if not employees:
             raise ValidationError('No employee record exist.')
@@ -109,7 +109,7 @@ class ScorecardWizard(models.TransientModel):
             start = fields.Datetime.to_datetime(effective_start_date)
             end = fields.Datetime.to_datetime(self.date_to) + timedelta(days=1, seconds=-1)
 
-            survey_results = self.env['survey.user_input'].search([
+            survey_results = self.env['survey.user_input'].sudo().search([
                 ('state', '=', 'done'),
                 ('test_entry', '=', False),
                 ('employee_id', '=', employee.id),
@@ -133,7 +133,7 @@ class ScorecardWizard(models.TransientModel):
                 survey = 0
             ####### Attendance ########
             # Employee Present Days
-            employee_attendance = self.env['hr.attendance'].search(
+            employee_attendance = self.env['hr.attendance'].sudo().search(
                 [('employee_id', '=', employee.id), ('check_in', '>=', effective_start_date),
                  ('check_in', '<=', self.date_to)])
             # Leave Days
@@ -162,7 +162,7 @@ class ScorecardWizard(models.TransientModel):
                                        1) if work_days else 1
 
             ####### KPI ########
-            progress_records = self.env['daily.progress'].search([
+            progress_records = self.env['daily.progress'].sudo().search([
                 ('resource_user_id.employee_id', '=', employee.id),
                 ('date_of_project', '>=', effective_start_date),
                 ('date_of_project', '<=', self.date_to)
@@ -187,7 +187,7 @@ class ScorecardWizard(models.TransientModel):
                 kpi = 1
 
             ####### Weekly Meetings ########
-            meetings_set = self.env['meeting.tracker'].search([
+            meetings_set = self.env['meeting.tracker'].sudo().search([
                 ('date', '>=', effective_start_date),
                 ('date', '<=', self.date_to)
             ])
