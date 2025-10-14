@@ -196,8 +196,13 @@ class EmployeeTicketsFeedback(models.TransientModel):
         ])
 
         progress_map = defaultdict(lambda: defaultdict(int))
+        comments_map = defaultdict(list)
+
         for progress in progresses:
             emp_id = progress.resource_user_id.employee_id.id
+            if progress.manager_comment:
+                comments_map[emp_id].append(progress.manager_comment.strip())
+
             for index, (start, end) in enumerate(week_ranges):
                 if start <= progress.date_of_project <= end:
                     progress_map[emp_id][index + 1] += progress.avg_resolved_ticket
@@ -263,6 +268,9 @@ class EmployeeTicketsFeedback(models.TransientModel):
                         if resolved_tickets_total >= all_tickets_total else
                         f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{resolved_tickets_total} / {all_tickets_total}</b></div>"
                     )
+            # ✅ Combine all comments for this employee
+            combined_comments = "\n".join(comments_map[employee.id]) if comments_map[employee.id] else ""
+            vals['comments'] = combined_comments
 
             self.env['weekly.ticket.report'].sudo().create(vals)
 

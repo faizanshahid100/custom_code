@@ -32,6 +32,8 @@ class DailyProgress(models.Model):
                                                  string="Daily Target Billable Hours %")
     daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended",
                                                 string="Daily Target Call Attended")
+    working_hours_type = fields.Selection(related="resource_user_id.employee_id.working_hours_type",
+                                                string="Working Hours Type")
 
     # for required fields or not
     # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
@@ -40,6 +42,7 @@ class DailyProgress(models.Model):
     # is_required_csat_new = fields.Boolean('Is CSAT % Required?')
     is_required_billable_hours = fields.Boolean('No Billable Hours Today')
     is_required_no_calls_duration = fields.Boolean('No Call Received Today')
+    manager_comment = fields.Char('Manager Comment')
 
     @api.constrains('date_of_project', 'resource_user_id')
     def _check_unique_date_and_user(self):
