@@ -21,6 +21,7 @@ class WeeklyTicketReport(models.Model):
         default='permanent')
     working_hours_type = fields.Selection([('peak', 'Peak Hours'), ('off', 'Off Hours')], string="Working Hours Type",
                                           default='peak')
+    comments = fields.Text('Comments')
 
     # Week fields for 6 months (26 weeks)
     week_1 = fields.Char(string='W 1', default=' ')

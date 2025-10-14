@@ -8,13 +8,14 @@
                     <field name="employee_id"/>
                     <field name="contractor"/>
                     <field name="level"/>
-                    <field name="employment_type"/>
-                    <field name="working_hours_type"/>
+                    <field name="employment_type" optional="hide"/>
+                    <field name="working_hours_type" optional="hide"/>
                     <field name="job_position" optional="hide"/>
                     <field name="department" optional="hide"/>
                     <field name="contractor_manager" optional="hide"/>
                     <field name="manager" optional="hide"/>
                     <field name="gender" optional="hide"/>
+                    <field name="comments"/>
                     <!-- Week fields -->
                     <field name="week_1" widget="html"/>
                     <field name="week_2" widget="html"/>

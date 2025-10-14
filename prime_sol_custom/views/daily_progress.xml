@@ -62,6 +62,7 @@
 <!--                            <field name="is_required_csat_new" attrs="{'invisible': [('csat_new', '!=', 0)]}"/>-->
 <!--                            <field name="is_required_billable_hours" attrs="{'invisible': [('billable_hours', '!=', 0)]}"/>-->
                             <field name="is_required_no_calls_duration" attrs="{'invisible': [('no_calls_duration', '!=', 0)]}"/>
+                            <field name="manager_comment"/>
                         </group>
                     </group>
                     <notebook>
@@ -73,6 +74,7 @@
                             </group>
                             <group>
                                 <field name="daily_target_call_attended"/>
+                                <field name="working_hours_type"/>
                             </group>
                         </group>
                     </page>
