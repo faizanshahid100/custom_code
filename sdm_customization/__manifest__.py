@@ -1,5 +1,5 @@
 {
-    'name': 'Attendance Dashboard (Missing Check-in)',
+    'name': 'Service Delivery Management Development',
     'version': '1.0',
     'depends': ['hr', 'hr_attendance'],
     'data': [
@@ -7,6 +7,7 @@
         'security/ir.model.access.csv',
         'views/attendance_dashboard_views.xml',
         'data/ir_cron_attendance_dashboard.xml',
+        'views/employee_probation_meeting.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

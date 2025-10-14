@@ -20,6 +20,6 @@
         <field name="view_id" ref="attendance_dashboard_tree"/>
     </record>
 
-    <menuitem id="menu_attendance_dashboard_root" name="Attendance Dashboard"
+    <menuitem id="menu_attendance_dashboard_root" name="Attendance Dashboard" groups="sdm_customization.group_sdm"
               parent="hr_attendance.menu_hr_attendance_root" action="action_attendance_dashboard"/>
 </odoo>

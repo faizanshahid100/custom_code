@@ -3,7 +3,11 @@
     <menuitem id="menu_sdm_root"
               name="SDM"
               groups="sdm_customization.group_sdm"
-              action="prime_sol_custom.action_hr_employee_feedback"
               web_icon="sdm_customization,static/description/ahmad_yar.png"/>
+    <menuitem id="menu_employee_probation_meeting_root"
+              name="Probation Meetings"
+              parent="sdm_customization.menu_sdm_root"
+              sequence="10"
+              action="sdm_customization.action_employee_probation_meeting"/>
 
 </odoo>
