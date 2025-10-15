@@ -43,6 +43,10 @@
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
+        <record id="prime_group_managers" model="res.groups">
+            <field name="name">Prime Managers</field>
+            <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+        </record>
 
         <!--        Record Rules-->
         <record id="score_card_user_see_own" model="ir.rule">
