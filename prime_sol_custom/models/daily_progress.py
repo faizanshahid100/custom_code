@@ -253,6 +253,9 @@ class DailyProgress(models.Model):
                         <td style="border: 1px solid #ddd; padding: 6px;">{emp.name}</td>
                         <td style="border: 1px solid #ddd; padding: 6px;">{emp.department_id.name or ''}</td>
                         <td style="border: 1px solid #ddd; padding: 6px;">{emp.job_id.name or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.joining_date or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.employment_type.capitalize() or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.working_hours_type.capitalize()+' Hours' or ''}</td>
                         <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{kpi_status}</td>
                         <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{attendance_status}</td>
                     </tr>
@@ -270,6 +273,9 @@ class DailyProgress(models.Model):
                                     <th style="border: 1px solid #ddd; padding: 8px;">Employee</th>
                                     <th style="border: 1px solid #ddd; padding: 8px;">Department</th>
                                     <th style="border: 1px solid #ddd; padding: 8px;">Designation</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Joining Date</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Employment Type</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Working Hours Type</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">KPI Submitted</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">Attendance Marked</th>
                                 </tr>
