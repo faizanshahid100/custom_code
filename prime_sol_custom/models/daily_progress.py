@@ -2,7 +2,8 @@ import math
 import logging
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from datetime import date
+from datetime import datetime, date, timedelta
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class DailyProgress(models.Model):
     daily_target_call_attended = fields.Integer(related="resource_user_id.employee_id.d_no_of_call_attended",
                                                 string="Daily Target Call Attended")
     working_hours_type = fields.Selection(related="resource_user_id.employee_id.working_hours_type",
-                                                string="Working Hours Type")
+                                          string="Working Hours Type")
 
     # for required fields or not
     # is_required_ticket_assigned_new = fields.Boolean('Is Tasks / Tickets Assigned Required?')
@@ -197,3 +198,105 @@ class DailyProgress(models.Model):
             else:
                 record.week_of_year = ""
                 record.year_of_kpi = ""
+
+    @api.model
+    def action_send_missing_kpi_report(self):
+        """Send daily report for employees missing KPI or attendance yesterday."""
+        yesterday = date.today() - timedelta(days=1)
+
+        # Fetch employees (exclude those with off working hours)
+        employees = self.env['hr.employee'].sudo().search([
+            ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH'])
+        ])
+
+        # Get all Daily Progress (KPI) and Attendance records for yesterday
+        progress_records = self.env['daily.progress'].sudo().search([
+            ('date_of_project', '=', yesterday)
+        ])
+        # attendance_records = self.env['hr.attendance'].sudo().search([
+        #     ('check_in', '>=', yesterday),
+        #     ('check_in', '<', yesterday + timedelta(days=1))
+        # ])
+        # Define timezones
+        tz_pk = pytz.timezone('Asia/Karachi')  # UTC+5
+        tz_ph = pytz.timezone('Asia/Manila')  # UTC+8
+        utc = pytz.UTC
+
+        # Convert yesterday's range to UTC equivalents for PK & PH
+        pk_start_utc = tz_pk.localize(datetime.combine(yesterday, datetime.min.time())).astimezone(utc)
+        pk_end_utc = tz_pk.localize(datetime.combine(yesterday, datetime.max.time())).astimezone(utc)
+
+        ph_start_utc = tz_ph.localize(datetime.combine(yesterday, datetime.min.time())).astimezone(utc)
+        ph_end_utc = tz_ph.localize(datetime.combine(yesterday, datetime.max.time())).astimezone(utc)
+
+        # Merge both ranges to cover all relevant time windows (min start, max end)
+        attendance_start_utc = min(pk_start_utc, ph_start_utc)
+        attendance_end_utc = max(pk_end_utc, ph_end_utc)
+
+        attendance_records = self.env['hr.attendance'].sudo().search([
+            ('check_in', '>=', attendance_start_utc),
+            ('check_in', '<=', attendance_end_utc),
+        ])
+
+        # Build sets for faster lookup
+        progress_emp_ids = set(progress_records.mapped('resource_user_id.employee_id.id'))
+        attendance_emp_ids = set(attendance_records.mapped('employee_id.id'))
+
+        # Prepare HTML rows for report
+        html_rows = ""
+        for emp in employees:
+            kpi_status = "✅" if emp.id in progress_emp_ids else "<span style='color:red;'>❌</span>"
+            attendance_status = "✅" if emp.id in attendance_emp_ids else "<span style='color:red;'>❌</span>"
+            if emp.id not in progress_emp_ids or emp.id not in attendance_emp_ids:
+                html_rows += f"""
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.name}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.department_id.name or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.job_id.name or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.joining_date or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.employment_type.capitalize() or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px;">{emp.working_hours_type.capitalize()+' Hours' or ''}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{kpi_status}</td>
+                        <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{attendance_status}</td>
+                    </tr>
+                """
+
+        if not html_rows:
+            return
+
+        body = f"""
+                    <div style="font-family:Arial, sans-serif; line-height:1.6;">
+                        <h3 style="color:#004080;">⚠ Missing KPI or Attendance Report — {yesterday.strftime('%d-%b-%Y')}</h3>
+                        <table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+                            <thead style="background-color: #004080; color: white;">
+                                <tr>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Employee</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Department</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Designation</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Joining Date</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Employment Type</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px;">Working Hours Type</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">KPI Submitted</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">Attendance Marked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {html_rows}
+                            </tbody>
+                        </table>
+                        <br/>
+                        <p style="color:#555;">--<br/>This is an automated report from <strong>Odoo HR System</strong>.</p>
+                    </div>
+                """
+
+        # Get manager group and emails
+        managers_group = self.env.ref('prime_sol_custom.prime_group_managers')
+        manager_emails = ','.join(managers_group.users.mapped('partner_id.email'))
+
+        if manager_emails:
+            mail_values = {
+                'subject': f"Missing KPI / Attendance Report - {yesterday.strftime('%d-%b-%Y')}",
+                'body_html': body,
+                'email_to': manager_emails,
+            }
+            self.env['mail.mail'].sudo().create(mail_values).send()

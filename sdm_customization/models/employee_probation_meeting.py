@@ -10,6 +10,10 @@ class EmployeeProbationMeeting(models.Model):
     _rec_name = "employee_id"
 
     employee_id = fields.Many2one("hr.employee", string="Employee", required=True)
+    state = fields.Selection([
+        ('inprogress', 'In Progress'),
+        ('completed', 'Completed'),
+    ], string='Task Status', default='inprogress', tracking=True)
     date_meeting = fields.Date(string="Meeting Date", default=lambda self: date.today(), required=True)
     probation_type = fields.Selection([
         ("pre", "Pre-Probation"),
@@ -96,6 +100,14 @@ class EmployeeProbationMeeting(models.Model):
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
 
+    def action_resolve(self):
+        """Mark record as Completed"""
+        self.write({'state': 'completed'})
+
+    def action_set_inprogress(self):
+        """Revert to In Progress"""
+        self.write({'state': 'inprogress'})
+
     # ----------------------------
     # Send Reason Mail
     # ----------------------------
@@ -139,8 +151,17 @@ class EmployeeProbationMeeting(models.Model):
                 </div>
             """
 
-            # Build CC list (comma-separated)
-            cc_emails = ','.join(emp.work_email for emp in record.selected_employee_ids if emp.work_email)
+            # Build CC list from selected employees
+            cc_emails = [emp.work_email for emp in record.selected_employee_ids if emp.work_email]
+
+            # Add default CC for users in the "Managers" security group
+            manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
+            if manager_group:
+                manager_users = manager_group.users.filtered(lambda u: u.partner_id.email)
+                cc_emails.extend([u.partner_id.email for u in manager_users])
+
+            # Remove duplicates and join into comma-separated string
+            cc_emails = ','.join(set(cc_emails))
 
             # Prepare mail
             mail_values = {
@@ -179,13 +200,26 @@ class EmployeeProbationMeeting(models.Model):
             """
 
             mail_sent = False
+
+            # Get all manager emails (default CC)
+            manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
+            manager_emails = []
+            if manager_group:
+                manager_emails = [u.partner_id.email for u in manager_group.users if u.partner_id.email]
+
             for emp in record.action_employee_ids:
                 if not emp.work_email:
                     continue
+
+                # Build CC list (avoid duplicates)
+                cc_emails = ','.join(set(manager_emails) - {emp.work_email})
+
+                # Create and send mail
                 self.env['mail.mail'].sudo().create({
                     'subject': subject,
                     'body_html': body,
                     'email_to': emp.work_email,
+                    'email_cc': cc_emails,
                 }).send()
                 mail_sent = True
 
