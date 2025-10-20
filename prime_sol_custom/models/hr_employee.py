@@ -144,6 +144,7 @@ class HrEmployee(models.Model):
 
     @api.constrains('hour_start_from')
     def _check_hour_start_from(self):
+        # check time validation
         for record in self:
             if record.hour_start_from < 0 or record.hour_start_from > 23:
                 raise ValidationError("Hour Start From must be between 0 and 23.")
