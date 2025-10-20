@@ -2,12 +2,14 @@
     <!-- Main Menu -->
     <menuitem id="menu_sdm_root"
               name="SDM"
-              groups="sdm_customization.group_sdm"
-              web_icon="sdm_customization,static/description/ahmad_yar.png"/>
+              groups="sdm_customization.group_sdm"/>
     <menuitem id="menu_employee_probation_meeting_root"
               name="Probation Meetings"
               parent="sdm_customization.menu_sdm_root"
               sequence="10"
               action="sdm_customization.action_employee_probation_meeting"/>
+
+    <menuitem id="menu_employee_pulse_root" name="Pulse Profile" parent="sdm_customization.menu_sdm_root"/>
+    <menuitem id="menu_employee_pulse_profile" name="Profiles" parent="menu_employee_pulse_root" action="sdm_customization.action_employee_pulse_profile"/>
 
 </odoo>

@@ -3,6 +3,7 @@ from email.policy import default
 from PIL.ImageChops import offset
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
+from odoo.exceptions import ValidationError
 
 
 class HrEmployee(models.Model):
@@ -140,3 +141,11 @@ class HrEmployee(models.Model):
                             'body_html': msg,
                             'email_to': user.email,
                         }).send()
+
+    @api.constrains('hour_start_from')
+    def _check_hour_start_from(self):
+        # check time validation
+        for record in self:
+            if record.hour_start_from < 0 or record.hour_start_from > 23:
+                raise ValidationError("Hour Start From must be between 0 and 23.")
+

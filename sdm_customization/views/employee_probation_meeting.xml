@@ -44,6 +44,7 @@
                         <group>
                             <field name="date_meeting"/>
                             <field name="probation_type"/>
+                            <field name="employee_pulse_id" readonly="1" force_save="1"/>
                         </group>
                     </group>
 
@@ -67,6 +68,7 @@
                                     <field name="q6_challenges"/>
                                     <field name="q7_rating" widget="radio" options="{'horizontal': true}"/>
                                     <field name="q7_daily_tasks"/>
+                                    <field name="is_audit" groups="sdm_customization.group_sdm"/>
                                 </group>
                             </group>
                         </page>

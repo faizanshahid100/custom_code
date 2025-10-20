@@ -8,6 +8,8 @@
         'views/attendance_dashboard_views.xml',
         'data/ir_cron_attendance_dashboard.xml',
         'views/employee_probation_meeting.xml',
+        'views/employee_pulse_profile.xml',
+        'views/hr_employee_ext.xml',
         'views/menuitems.xml',
     ],
     'installable': True,

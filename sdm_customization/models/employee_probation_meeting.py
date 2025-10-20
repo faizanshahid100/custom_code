@@ -28,6 +28,7 @@ class EmployeeProbationMeeting(models.Model):
 
     reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green", tracking=True)
     assignee_id = fields.Many2one('hr.employee', string='Task Assign To', tracking=True)
+    employee_pulse_id = fields.Many2one('employee.pulse.profile', string='Employee Pulse')
 
     # Questions
     q1_rating = fields.Selection([
@@ -87,6 +88,8 @@ class EmployeeProbationMeeting(models.Model):
         string="CC Mail To",
         help="Select employees who will receive the reason email if meeting status is Red or Yellow."
     )
+    is_audit = fields.Boolean('Is Audit', default=False)
+
     is_mail_sent = fields.Boolean(string="Mail Sent", readonly=True, tracking=True)
 
     action_taken_comment = fields.Char(string='Action Taken', tracking=True)
@@ -107,6 +110,16 @@ class EmployeeProbationMeeting(models.Model):
     def action_set_inprogress(self):
         """Revert to In Progress"""
         self.write({'state': 'inprogress'})
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        """
+        Sets the pulse profile linked to the selected employee.
+        """
+        if self.employee_id:
+            self.employee_pulse_id = self.employee_id.employee_pulse_id.id
+        else:
+            self.employee_pulse_id = False
 
     # ----------------------------
     # Send Reason Mail
