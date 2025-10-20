@@ -60,6 +60,17 @@ class DailyProgress(models.Model):
 
     @api.model
     def create(self, vals):
+        # 🔒 Restrict creation of records older than 14 days (unless in kpi_managers group)
+        project_date = vals.get('date_of_project')
+        if project_date:
+            if isinstance(project_date, str):
+                project_date = fields.Date.from_string(project_date)
+            if (date.today() - project_date).days > 14:
+                if not self.env.user.has_group('your_module.kpi_managers'):
+                    raise ValidationError(
+                        "You can only create a record within 14 days of the project date. "
+                        "Please contact a KPI Manager to proceed."
+                    )
         record = super(DailyProgress, self).create(vals)
         if record.resource_user_id:
             employee = record.resource_user_id.employee_id
@@ -92,6 +103,18 @@ class DailyProgress(models.Model):
         return record
 
     def write(self, vals):
+        for record in self:
+            # 🔒 Restrict editing of records older than 14 days (unless in kpi_managers group)
+            project_date = vals.get('date_of_project', record.date_of_project)
+            if isinstance(project_date, str):
+                project_date = fields.Date.from_string(project_date)
+            if (date.today() - project_date).days > 14:
+                if not self.env.user.has_group('your_module.kpi_managers'):
+                    raise ValidationError(
+                        "You can only edit a record within 14 days of the project date. "
+                        "Please contact a KPI Manager to proceed."
+                    )
+
         res = super(DailyProgress, self).write(vals)
         for record in self:
             user_id = self.env['res.users'].browse(vals.get('resource_user_id')) or record.resource_user_id

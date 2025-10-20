@@ -21,7 +21,7 @@ from odoo.osv import expression
 _logger = logging.getLogger(__name__)
 
 
-class HolidaysRequestExt(models.Model):
+class HrLeaveExt(models.Model):
     _inherit = 'hr.leave'
 
     # def action_validate(self):
@@ -128,3 +128,22 @@ class HolidaysRequestExt(models.Model):
             elif leave_type == 'bereavement leaves':
                 if leave.number_of_days_display > 3:
                     raise ValidationError(_("Bereavement Leaves cannot exceed 3 days."))
+
+    def action_approve(self):
+        res = super(HrLeaveExt, self).action_approve()
+
+        for leave in self:
+            leave._send_approval_notification_email()
+
+        return res
+
+    def _send_approval_notification_email(self):
+        template = self.env.ref('prime_sol_custom.leave_approval_email_template', raise_if_not_found=False)
+        recipient_email = 'myle.gruet@primesystemsolutions.com'
+
+        if not template:
+            raise UserError("Email template 'leave_approval_email_template' not found.")
+
+        # Force send to the static email
+        template.email_to = recipient_email
+        template.send_mail(self.id, force_send=True)

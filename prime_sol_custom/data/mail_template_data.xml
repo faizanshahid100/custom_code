@@ -9,8 +9,12 @@
             <field name="email_cc">muhammad.hamza@primesystemsolutions.com, hiba.waleed@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div>
-                    <p>Dear <span t-esc="object.employee_id.name"/></p>
-                    <p>I hope you are doing well. This is a reminder that your attendance for yesterday is missing. Please ensure to update your attendance record at your earliest convenience.</p>
+                    <p>Dear
+                        <span t-esc="object.employee_id.name"/>
+                    </p>
+                    <p>I hope you are doing well. This is a reminder that your attendance for yesterday is missing.
+                        Please ensure to update your attendance record at your earliest convenience.
+                    </p>
                     <p>Thank you for your attention to this matter.</p>
                     <p>Best regards,</p>
                     <p>Your HR Team</p>
@@ -27,8 +31,12 @@
             <field name="email_cc">muhammad.hamza@primesystemsolutions.com, hiba.waleed@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div>
-                    <p>Dear <span t-esc="object.name"/></p>
-                    <p>I hope you are doing well. This is a reminder that your attendance for yesterday is missing. Please ensure to update your attendance record at your earliest convenience.</p>
+                    <p>Dear
+                        <span t-esc="object.name"/>
+                    </p>
+                    <p>I hope you are doing well. This is a reminder that your attendance for yesterday is missing.
+                        Please ensure to update your attendance record at your earliest convenience.
+                    </p>
                     <p>Thank you for your attention to this matter.</p>
                     <p>Best regards,</p>
                     <p>Your HR Team</p>
@@ -47,19 +55,37 @@
                 <div style="margin: 0px; padding: 0px;">
                     <div style="margin: 0px; padding: 0px;">
                         <p>
-                            Dear <span t-esc="object.name"/>,
+                            Dear<span t-esc="object.name"/>,
                             <br/>
                             I hope this message finds you well.
                             <br/>
-                            This is a friendly reminder to fill out your weekly KPI updates on Odoo. Kindly make sure to submit your updates by the end of the day.
+                            This is a friendly reminder to fill out your weekly KPI updates on Odoo. Kindly make sure to
+                            submit your updates by the end of the day.
                             <br/>
-                            Your timely input is crucial for tracking our progress and achieving our goals. If you have any questions or need assistance, feel free to reach out.
+                            Your timely input is crucial for tracking our progress and achieving our goals. If you have
+                            any questions or need assistance, feel free to reach out.
                             <br/>
                             Thank you!
                         </p>
                     </div>
                 </div>
             </field>
+        </record>
+
+        <record id="leave_approval_email_template" model="mail.template">
+            <field name="name">Leave Approval Notification</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="subject">Leave Approved: {{object.employee_id.name}}</field>
+            <field name="email_from">hr@primesystemsolutions.com</field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com</field>
+            <field name="body_html" type="html">
+                <p>Hello,</p>
+                <p>The leave request for <strong> <span t-esc="object.employee_id.name"/> </strong> has been <strong>approved</strong>.</p>
+                <p><strong>Type:</strong> <span t-esc="object.holiday_status_id.name"/><br/>
+                   <strong>From:</strong> <span t-esc="object.request_date_from"/> <br/>
+                   <strong>To:</strong> <span t-esc="object.request_date_from"/><span t-esc="object.request_date_to"/></p>
+            </field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <!--        <record id="action_compute_weekly_progress" model="ir.actions.server">-->
