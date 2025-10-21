@@ -66,7 +66,7 @@ class DailyProgress(models.Model):
             if isinstance(project_date, str):
                 project_date = fields.Date.from_string(project_date)
             if (date.today() - project_date).days > 14:
-                if not self.env.user.has_group('your_module.kpi_managers'):
+                if not self.env.user.has_group('prime_sol_custom.kpi_managers'):
                     raise ValidationError(
                         "You can only create a record within 14 days of the project date. "
                         "Please contact a KPI Manager to proceed."
@@ -109,7 +109,7 @@ class DailyProgress(models.Model):
             if isinstance(project_date, str):
                 project_date = fields.Date.from_string(project_date)
             if (date.today() - project_date).days > 14:
-                if not self.env.user.has_group('your_module.kpi_managers'):
+                if not self.env.user.has_group('prime_sol_custom.kpi_managers'):
                     raise ValidationError(
                         "You can only edit a record within 14 days of the project date. "
                         "Please contact a KPI Manager to proceed."
