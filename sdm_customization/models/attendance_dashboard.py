@@ -102,7 +102,6 @@ class AttendanceDashboard(models.Model):
             user_tz = emp.user_id.tz or "UTC"
             user_timezone = pytz.timezone(user_tz)
 
-            print(emp.name)
             utc_duty_time = datetime.combine(fields.Date.today(), time(tz_hours, tz_minutes))
             threshold_utc_duty_time = utc_duty_time + timedelta(minutes=20)
 
