@@ -248,15 +248,18 @@ class HREmployeeInherit(models.Model):
 
             # Prepare extra recipients if Philippines
             extra_cc = ''
-            if emp.country_id and emp.country_id.name == 'Philippines':
-                extra_cc = ',sharo.domingo@primesystemsolutions.com'
-            if emp.department_id.name in ['Tech PK', 'Tech PH']:
-                extra_cc += ',adnan@primesystemsolutions.com'
-            elif emp.department_id.name in ['Business PK', 'Business PH']:
-                extra_cc += ',daniyal.ahmed@primesystemsolutions.com'
+            # if emp.country_id and emp.country_id.name == 'Philippines':
+            #     extra_cc = 'sharo.domingo@primesystemsolutions.com'
+            # if emp.department_id.name in ['Tech PK', 'Tech PH']:
+            #     extra_cc += ',adnan@primesystemsolutions.com'
+            # elif emp.department_id.name in ['Business PK', 'Business PH']:
+            #     extra_cc += ',daniyal.ahmed@primesystemsolutions.com'
             # Send mail with dynamic CC
+            # template_values = {
+            #     'email_cc': f"{template.email_cc},{extra_cc}" if extra_cc else template.email_cc
+            # }
             template_values = {
-                'email_cc': f"{template.email_cc}{extra_cc}" if extra_cc else template.email_cc
+                'email_cc': template.email_cc
             }
             template.with_context(**template_values).send_mail(emp.id, force_send=True)
 
