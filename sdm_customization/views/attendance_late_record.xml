@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_employee_late_record_tree" model="ir.ui.view">
+        <field name="name">employee.late.record.tree</field>
+        <field name="model">attendance.late.record</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Late Records" default_order="date desc">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="minutes_overdue"/>
+                <field name="remarks"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_late_record_form" model="ir.ui.view">
+        <field name="name">employee.late.record.form</field>
+        <field name="model">attendance.late.record</field>
+        <field name="arch" type="xml">
+            <form string="Employee Late Record">
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                        <field name="employee_id"/>
+                        <field name="minutes_overdue"/>
+                        <field name="remarks"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Action -->
+    <record id="action_employee_late_record" model="ir.actions.act_window">
+        <field name="name">Employee Late Records</field>
+        <field name="res_model">attendance.late.record</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No late records found!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item under Attendance or Custom Menu -->
+    <menuitem id="menu_employee_late_root"
+              name="Employee Late Records"
+              parent="hr_attendance.menu_hr_attendance_root"
+              action="action_employee_late_record"
+              sequence="30"/>
+</odoo>

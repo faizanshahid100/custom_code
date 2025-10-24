@@ -9,6 +9,7 @@
         'data/ir_cron_attendance_dashboard.xml',
         'views/employee_probation_meeting.xml',
         'views/employee_pulse_profile.xml',
+        'views/attendance_late_record.xml',
         'views/hr_employee_ext.xml',
         'views/menuitems.xml',
     ],
