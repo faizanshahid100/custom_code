@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from email.policy import default
+
 from odoo import api, fields, models
 from datetime import datetime, date, time, timedelta
 import pytz
@@ -6,6 +8,7 @@ import pytz
 
 class AttendanceDashboard(models.Model):
     _name = 'attendance.dashboard'
+    _rec_name = 'employee_id'
     _description = 'Employees missing check-in after duty start + 20 minutes'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
@@ -14,6 +17,12 @@ class AttendanceDashboard(models.Model):
     check_in = fields.Datetime(string='Check-In (first today)', readonly=True)
     minutes_overdue = fields.Char(string='Minutes Overdue', readonly=True)
     hours_overdue = fields.Integer(string='Hours Overdue', readonly=True)
+    is_connect_sdm = fields.Boolean('Is SDM Connect', default=False)
+    remarks = fields.Char('Remarks')
+    current_instances = fields.Integer(
+        string='This Month Instances',
+        compute='_compute_current_instances',
+    )
     is_missing = fields.Boolean(string='Missing', default=False)
 
     @api.model
@@ -95,7 +104,6 @@ class AttendanceDashboard(models.Model):
                 'employee_id': emp.id,
                 'date': today,
                 'minutes_overdue': minutes_overdue,
-                'remarks': late_record.remarks if late_record else None,
             }
 
             if late_record:
@@ -168,6 +176,46 @@ class AttendanceDashboard(models.Model):
 
         return True
 
+    def write(self, vals):
+        """If remarks are updated, sync to attendance.late.record (handles multi-record updates)"""
+        res = super(AttendanceDashboard, self).write(vals)
+
+        if 'remarks' in vals:
+            today = fields.Date.today()
+            for record in self:
+                late_record = self.env['attendance.late.record'].sudo().search([
+                    ('employee_id', '=', record.employee_id.id),
+                    ('date', '=', today)
+                ], limit=1)
+                if late_record:
+                    record.is_connect_sdm = True
+                    # Safely append or update remarks individually
+                    old_remarks = late_record.remarks or ''
+                    new_remark = vals.get('remarks') or ''
+                    if old_remarks.strip():
+                        updated_remarks = f"{old_remarks},\n{new_remark}"
+                    else:
+                        updated_remarks = new_remark
+                    late_record.sudo().write({'remarks': updated_remarks, 'is_connect_sdm':True})
+
+        return res
+
+    def _compute_current_instances(self):
+        """Compute total late records for the current month of the employee."""
+        for record in self:
+            if record.employee_id:
+                today = fields.Date.today()
+                month_start = today.replace(day=1)
+                late_count = self.env['attendance.late.record'].sudo().search_count([
+                    ('employee_id', '=', record.employee_id.id),
+                    ('date', '>=', month_start),
+                    ('date', '<=', today)
+                ])
+                record.current_instances = late_count
+            else:
+                record.current_instances = 0
+
     def action_manual_refresh(self):
         """Button to refresh from UI for testing"""
         return self.env['attendance.dashboard'].refresh()
+

@@ -3,12 +3,14 @@
         <field name="name">attendance.dashboard.tree</field>
         <field name="model">attendance.dashboard</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="bottom" default_order="minutes_overdue desc">
                 <field name="employee_id"/>
                 <field name="duty_start"/>
                 <field name="threshold"/>
                 <field name="minutes_overdue" widget="html"/>
-                <field name="hours_overdue"/>
+                <field name="is_connect_sdm" widget="boolean_toggle" readonly="1"/>
+                <field name="remarks"/>
+                <field name="current_instances" readonly="1"/>
             </tree>
         </field>
     </record>
