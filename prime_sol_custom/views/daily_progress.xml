@@ -13,7 +13,7 @@
         <field name="name">Daily Progress: user access</field>
         <field name="model_id" ref="model_daily_progress"/>
         <field name="domain_force">[('resource_user_id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('prime_sol_custom.prime_group_managers'))]"/>
     </record>
 
     <record id="view_daily_progress_tree" model="ir.ui.view">

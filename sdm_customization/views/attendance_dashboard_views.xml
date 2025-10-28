@@ -3,12 +3,14 @@
         <field name="name">attendance.dashboard.tree</field>
         <field name="model">attendance.dashboard</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="bottom" default_order="minutes_overdue desc">
                 <field name="employee_id"/>
                 <field name="duty_start"/>
                 <field name="threshold"/>
                 <field name="minutes_overdue" widget="html"/>
-                <field name="hours_overdue"/>
+                <field name="is_connect_sdm" widget="boolean_toggle" readonly="1"/>
+                <field name="remarks"/>
+                <field name="current_instances" readonly="1"/>
             </tree>
         </field>
     </record>
@@ -16,7 +18,7 @@
     <record model="ir.actions.act_window" id="action_attendance_dashboard">
         <field name="name">Attendance Dashboard</field>
         <field name="res_model">attendance.dashboard</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
         <field name="view_id" ref="attendance_dashboard_tree"/>
     </record>
 
