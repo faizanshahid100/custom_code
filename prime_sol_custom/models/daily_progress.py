@@ -226,10 +226,12 @@ class DailyProgress(models.Model):
     def action_send_missing_kpi_report(self):
         """Send daily report for employees missing KPI or attendance yesterday."""
         yesterday = date.today() - timedelta(days=1)
+        cutoff_date = date.today() - timedelta(days=14)
 
         # Fetch relevant employees (Tech + Business, PK + PH)
         employees = self.env['hr.employee'].sudo().search([
-            ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH'])
+            ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH']),
+            ('joining_date', '<=', cutoff_date)
         ])
 
         # Define timezones
