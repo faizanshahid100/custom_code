@@ -8,7 +8,7 @@
                 <field name="duty_start"/>
                 <field name="threshold"/>
                 <field name="minutes_overdue" widget="html"/>
-                <field name="is_connect_sdm" widget="boolean_toggle" readonly="1"/>
+                <field name="is_connect_sdm" widget="boolean_toggle" readonly="0"/>
                 <field name="remarks"/>
                 <field name="current_instances" readonly="1"/>
             </tree>

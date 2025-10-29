@@ -1,5 +1,5 @@
-from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 from datetime import date
 
 
@@ -10,6 +10,9 @@ class EmployeeProbationMeeting(models.Model):
     _rec_name = "employee_id"
 
     employee_id = fields.Many2one("hr.employee", string="Employee", required=True)
+    employee_joining_date = fields.Date(related="employee_id.joining_date", string="Joining Date", store=True)
+    employee_probation_end_date = fields.Date(related="employee_id.confirmation_date", string="Probation End Date",
+                                              store=True)
     state = fields.Selection([
         ('inprogress', 'In Progress'),
         ('completed', 'Completed'),
@@ -18,19 +21,32 @@ class EmployeeProbationMeeting(models.Model):
     probation_type = fields.Selection([
         ("pre", "Pre-Probation"),
         ("post", "Post-Probation"),
-    ], string="Probation Type", default='pre', required=True)
+    ], string="Probation Type", required=True)
 
     meeting_status = fields.Selection([
         ("green", "Green"),
         ("yellow", "Yellow"),
         ("red", "Red"),
     ], string="Meeting Status", required=True, tracking=True)
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Medium'),
+        ('2', 'High'),
+        ('3', 'Very High'),
+    ], string="Task Priority", default='1')
 
-    reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green", tracking=True)
+    reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green",
+                         tracking=True)
+    task_assign_line_ids = fields.One2many(
+        "task.assign.lines",
+        "meeting_id",
+        string="Task Assignment Lines"
+    )
+
     assignee_id = fields.Many2one('hr.employee', string='Task Assign To', tracking=True)
     employee_pulse_id = fields.Many2one('employee.pulse.profile', string='Employee Pulse')
 
-    # Questions
+    # Pre-Probation Questions
     q1_rating = fields.Selection([
         ('satisfied', 'Satisfied'),
         ('neutral', 'Neutral'),
@@ -80,6 +96,41 @@ class EmployeeProbationMeeting(models.Model):
     ], string="7. What's your daily tasks and how many team members you have?")
     q7_daily_tasks = fields.Char(string="Q7 Explanation")
 
+    # Post-Probation Question
+    q1_rating_post = fields.Selection([
+        ('good', 'Good'),
+        ('average', 'Average'),
+        ('poor', 'Poor'),
+    ], string="1. How are things going overall with Prime?")
+    q1_experience_post = fields.Char(string="Q1 Explanation")
+
+    q2_rating_post = fields.Selection([
+        ('excellent', 'Excellent'),
+        ('satisfactory', 'Satisfactory'),
+        ('needs_improvement', 'Needs Improvement'),
+    ], string="2. How is your work progress and experience on the client side?")
+    q2_experience_post = fields.Char(string="Q2 Explanation")
+
+    q3_rating_post = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ], string="3. Have you faced any challenges recently that may be affecting your performance or work quality?")
+    q3_experience_post = fields.Char(string="Q3 Explanation")
+
+    q4_rating_post = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ],
+        string="4. Are you experiencing any issues with your system, laptop, or headgear that require attention from the IT team?")
+    q4_experience_post = fields.Char(string="Q4 Explanation")
+
+    q5_rating_post = fields.Selection([
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ],
+        string="5. Do you have any concerns, queries, or feedback that you would like to share regarding your role or responsibilities?")
+    q5_experience_post = fields.Char(string="Q5 Explanation")
+
     selected_employee_ids = fields.Many2many(
         "hr.employee",
         "employee_meeting_mail_rel",
@@ -89,6 +140,7 @@ class EmployeeProbationMeeting(models.Model):
         help="Select employees who will receive the reason email if meeting status is Red or Yellow."
     )
     is_audit = fields.Boolean('Is Audit', default=False)
+    comment = fields.Text('Overall Comments')
 
     is_mail_sent = fields.Boolean(string="Mail Sent", readonly=True, tracking=True)
 
@@ -113,46 +165,54 @@ class EmployeeProbationMeeting(models.Model):
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
-        """
-        Sets the pulse profile linked to the selected employee.
-        """
-        if self.employee_id:
-            self.employee_pulse_id = self.employee_id.employee_pulse_id.id
-        else:
-            self.employee_pulse_id = False
+        """Update related fields and probation type when employee changes"""
+        for rec in self:
+            employee = rec.employee_id
+            if not employee:
+                rec.employee_pulse_id = False
+                rec.probation_type = False
+                return
+
+            # Set pulse profile
+            rec.employee_pulse_id = employee.employee_pulse_id.id if employee.employee_pulse_id else False
+
+            # Validate confirmation date
+            if not employee.confirmation_date:
+                raise ValidationError(
+                    _("Confirmation date for %s is not mentioned in the Employee form.") % employee.name)
+
+            # Determine probation type
+            rec.probation_type = 'pre' if date.today() < employee.confirmation_date else 'post'
 
     # ----------------------------
     # Send Reason Mail
     # ----------------------------
     def action_send_reason_mail(self):
+        # TODO (Inprogress)
         """Send email with reason, employee name, date, and record link to assignee (To:) and selected employees (CC:)"""
-        for record in self:
-            if record.meeting_status not in ['yellow', 'red']:
-                raise UserError("You can only send emails for Red or Yellow meetings.")
+        for record in self.task_assign_line_ids:
             if not record.reason:
                 raise UserError("Please mention a reason before sending the email.")
-            if not record.assignee_id or not record.assignee_id.work_email:
+            if not record.to_employee_ids or not any(emp.work_email for emp in record.to_employee_ids):
                 raise UserError("Please assign an employee (with a work email) as the task assignee.")
-            if not record.selected_employee_ids:
-                raise UserError("Please select employees to CC in the email.")
 
             # Get base URL for record link
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             record_url = f"{base_url}/web#id={record.id}&model=employee.probation.meeting&view_type=form"
 
             # Email subject and body
-            subject = f"Probation Meeting Update for {record.employee_id.name}"
+            subject = f"Probation Meeting Update for {self.employee_id.name}"
             body = f"""
                 <div style="font-family:Arial, sans-serif; line-height:1.6;">
                     <h3 style="color:#004080;">Probation Meeting Summary</h3>
-                    <p>Hi <b>{record.assignee_id.name}</b>,</p>
+                    <p>Hi <b>{", ".join(record.to_employee_ids.mapped("name"))}</b>,</p>
                     <p>You have been assigned the following probation review task:</p>
-                    <p><b>Employee:</b> {record.employee_id.name}</p>
-                    <p><b>Meeting Date:</b> {record.date_meeting.strftime('%d-%m-%Y')}</p>
-                    <p><b>Probation Type:</b> {record.probation_type.replace('_', ' ').title()} Probation</p>
+                    <p><b>Employee:</b> {self.employee_id.name}</p>
+                    <p><b>Meeting Date:</b> {self.date_meeting.strftime('%d-%m-%Y')}</p>
+                    <p><b>Probation Type:</b> {self.probation_type.replace('_', ' ').title()} Probation</p>
                     <p><b>Meeting Status:</b>
-                        <span style="color:{'green' if record.meeting_status == 'green' else 'orange' if record.meeting_status == 'yellow' else 'red'};">
-                            {record.meeting_status.capitalize()}
+                        <span style="color:{'green' if self.meeting_status == 'green' else 'orange' if self.meeting_status == 'yellow' else 'red'};">
+                            {self.meeting_status.capitalize()}
                         </span>
                     </p>
                     <p><b>Reason:</b> {record.reason}</p>
@@ -165,7 +225,8 @@ class EmployeeProbationMeeting(models.Model):
             """
 
             # Build CC list from selected employees
-            cc_emails = [emp.work_email for emp in record.selected_employee_ids if emp.work_email]
+            to_emails = [emp.work_email for emp in record.to_employee_ids if emp.work_email]
+            cc_emails = [emp.work_email for emp in record.cc_employee_ids if emp.work_email]
 
             # Add default CC for users in the "Managers" security group
             manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
@@ -174,20 +235,20 @@ class EmployeeProbationMeeting(models.Model):
                 cc_emails.extend([u.partner_id.email for u in manager_users])
 
             # Remove duplicates and join into comma-separated string
+            to_emails = ','.join(set(to_emails))
             cc_emails = ','.join(set(cc_emails))
 
             # Prepare mail
             mail_values = {
                 'subject': subject,
                 'body_html': body,
-                'email_to': record.assignee_id.work_email,
+                'email_to': to_emails,
                 'email_cc': cc_emails,
             }
 
             # Send email
             self.env['mail.mail'].sudo().create(mail_values).send()
-            record.is_mail_sent = True
-
+            self.is_mail_sent = True
 
     def action_send_action_mail(self):
         for record in self:
@@ -238,3 +299,38 @@ class EmployeeProbationMeeting(models.Model):
 
             if mail_sent:
                 record.is_action_mail_sent = True
+
+
+class TaskAssignLines(models.Model):
+    _name = "task.assign.lines"
+    _description = "Task Assignment Lines"
+
+    meeting_id = fields.Many2one(
+        "employee.probation.meeting",
+        string="Probation Meeting",
+        ondelete="cascade"
+    )
+
+
+    reason = fields.Text('Reason Details')
+    to_employee_ids = fields.Many2many(
+        "hr.employee",
+        "task_assign_to_rel",
+        "task_id",
+        "employee_id",
+        string="To"
+    )
+
+    cc_employee_ids = fields.Many2many(
+        "hr.employee",
+        "task_assign_cc_rel",
+        "task_id",
+        "employee_id",
+        string="CC"
+    )
+
+    assign_date = fields.Date('Assign date')
+    employee_task_confirmed = fields.Boolean(string="Employee Confirmed")
+    sdm_task_confirmed = fields.Boolean(string="SDM Confirmed")
+
+    confirmed_date = fields.Date(string="Confirmation Date", default=fields.Date.today)

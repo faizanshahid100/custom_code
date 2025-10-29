@@ -120,6 +120,8 @@ class AttendanceDashboard(models.Model):
                 'check_in': False,
                 'minutes_overdue': f"<div style='background-color: #ff0000; color: white; padding: 3px;text-align: center;border: 2px solid #000;'><b>{minutes_overdue}</b></div>",
                 'hours_overdue': minutes_overdue // 60,
+                'is_connect_sdm' : late_record.is_connect_sdm,
+                'remarks' : late_record.remarks,
                 'is_missing': True,
             })
 
@@ -177,26 +179,41 @@ class AttendanceDashboard(models.Model):
         return True
 
     def write(self, vals):
-        """If remarks are updated, sync to attendance.late.record (handles multi-record updates)"""
+        """Sync remarks and is_connect_sdm to attendance.late.record when updated (handles multi-record updates)."""
         res = super(AttendanceDashboard, self).write(vals)
 
-        if 'remarks' in vals:
-            today = fields.Date.today()
+        today = fields.Date.today()
+        sync_fields = {'remarks', 'is_connect_sdm'}
+
+        # Only run if relevant fields are updated
+        if any(f in vals for f in sync_fields):
             for record in self:
                 late_record = self.env['attendance.late.record'].sudo().search([
                     ('employee_id', '=', record.employee_id.id),
                     ('date', '=', today)
                 ], limit=1)
-                if late_record:
-                    record.is_connect_sdm = True
-                    # Safely append or update remarks individually
-                    old_remarks = late_record.remarks or ''
+
+                if not late_record:
+                    continue
+
+                updates = {}
+
+                # Sync remarks
+                if 'remarks' in vals:
                     new_remark = vals.get('remarks') or ''
-                    if old_remarks.strip():
-                        updated_remarks = f"{old_remarks},\n{new_remark}"
-                    else:
-                        updated_remarks = new_remark
-                    late_record.sudo().write({'remarks': updated_remarks, 'is_connect_sdm':True})
+                    old_remark = late_record.remarks or ''
+                    updates['remarks'] = new_remark if old_remark.strip() else new_remark
+                    updates['is_connect_sdm'] = True
+                    self.is_connect_sdm = True
+
+                # Sync is_connect_sdm
+                if 'is_connect_sdm' in vals:
+                    updates['is_connect_sdm'] = vals['is_connect_sdm']
+                else:
+                    # If remarks are updated, also set is_connect_sdm True
+                    updates['is_connect_sdm'] = True
+
+                late_record.sudo().write(updates)
 
         return res
 

@@ -31,46 +31,92 @@
                             groups="sdm_customization.group_sdm"
                             attrs="{'invisible': [('state', '=', 'completed')]}"/>
                     <button name="action_set_inprogress" type="object" string="Set In Progress"
-                        class="btn-secondary"
+                            class="btn-secondary"
                             groups="sdm_customization.group_sdm"
-                        attrs="{'invisible': [('state', '=', 'inprogress')]}"/>
+                            attrs="{'invisible': [('state', '=', 'inprogress')]}"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
                             <field name="employee_id"/>
                             <field name="meeting_status"/>
+                            <field name="priority" widget="priority"/>
                         </group>
                         <group>
                             <field name="date_meeting"/>
                             <field name="probation_type"/>
+                            <field name="employee_joining_date"/>
+                            <field name="employee_probation_end_date"/>
                             <field name="employee_pulse_id" readonly="1" force_save="1"/>
                         </group>
                     </group>
 
                     <notebook>
                         <page string="Meeting Questions">
-                            <group>
+                            <!--                            Pre Probation-->
+                            <group attrs="{'invisible': [('probation_type', '!=', 'pre')]}">
                                 <group>
+                                    <!--                                    Pre-Probation Question-->
                                     <field name="q1_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q1_experience"/>
+                                    <field name="q1_experience" placeholder="Explain your answer..."/>
                                     <field name="q2_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q2_alignment"/>
+                                    <field name="q2_alignment" placeholder="Explain your answer..."/>
                                     <field name="q3_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q3_attendance_kpi"/>
+                                    <field name="q3_attendance_kpi" placeholder="Explain your answer..."/>
                                     <field name="q4_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q4_guidance"/>
+                                    <field name="q4_guidance" placeholder="Explain your answer..."/>
                                 </group>
                                 <group>
+                                    <!--                                    Pre-Probation Question-->
                                     <field name="q5_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q5_hubstaff"/>
+                                    <field name="q5_hubstaff" placeholder="Explain your answer..."/>
                                     <field name="q6_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q6_challenges"/>
+                                    <field name="q6_challenges" placeholder="Explain your answer..."/>
                                     <field name="q7_rating" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="q7_daily_tasks"/>
+                                    <field name="q7_daily_tasks" placeholder="Explain your answer..."/>
                                     <field name="is_audit" groups="sdm_customization.group_sdm"/>
                                 </group>
                             </group>
+                            <!--                            Post Probation-->
+                            <group attrs="{'invisible': [('probation_type', '!=', 'post')]}">
+                                <group>
+                                    <!--                                    Post-Probation Question-->
+                                    <field name="q1_rating_post" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q1_experience_post" placeholder="Explain your answer..."/>
+                                    <field name="q2_rating_post" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q2_experience_post" placeholder="Explain your answer..."/>
+                                    <field name="q3_rating_post" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q3_experience_post" placeholder="Explain your answer..."/>
+                                </group>
+                                <group>
+                                    <!--                                    Post-Probation Question-->
+                                    <field name="q4_rating_post" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q4_experience_post" placeholder="Explain your answer..."/>
+                                    <field name="q5_rating_post" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="q5_experience_post" placeholder="Explain your answer..."/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="comment"/>
+                            </group>
+                        </page>
+
+                        <page string="Task Assignments">
+                            <field name="task_assign_line_ids">
+                                <tree editable="bottom">
+                                    <field name="reason"/>
+                                    <field name="to_employee_ids" widget="many2many_tags"/>
+                                    <field name="cc_employee_ids" widget="many2many_tags"/>
+                                    <field name="assign_date"/>
+                                    <field name="employee_task_confirmed"/>
+                                    <field name="sdm_task_confirmed"/>
+                                    <field name="confirmed_date"/>
+                                </tree>
+                            </field>
+                            <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
+                                        class="btn-primary" icon="fa-envelope"/>
+                                <br/>
+                                <field name="is_mail_sent" widget="boolean_toggle" invisible="1"/>
                         </page>
 
                         <page string="Send Reason Email">
@@ -78,10 +124,6 @@
                                 <field name="reason"/>
                                 <field name="assignee_id"/>
                                 <field name="selected_employee_ids" widget="many2many_tags"/>
-                                <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
-                                        class="btn-primary" icon="fa-envelope"/>
-                                <br/>
-                                <field name="is_mail_sent" widget="boolean_toggle" invisible="1"/>
                             </group>
                         </page>
 
