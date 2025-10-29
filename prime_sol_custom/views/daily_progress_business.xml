@@ -19,7 +19,8 @@
 
                     <notebook>
                         <!-- Financial Planning & Analysis -->
-                        <page string="Financial Planning &amp; Analysis" attrs="{'invisible': [('finance_area', '!=', 'fpna')]}">
+                        <page string="Financial Planning &amp; Analysis"
+                              attrs="{'invisible': [('finance_area', '!=', 'fpna')]}">
                             <group>
                                 <field name="project"/>
                                 <field name="is_deadline_met"/>
@@ -47,7 +48,165 @@
                                 <field name="recovery_of_bad_debt"/>
                             </group>
                         </page>
+
+                        <!-- Senior Accountant -->
+                        <page string="Senior Accountant" attrs="{'invisible': [('finance_area', '!=', 'sa')]}">
+                            <group string="Senior Accountant Tasks">
+                                <!-- =============================== -->
+                                <!-- Senior Accountant Tasks Table -->
+                                <!-- =============================== -->
+<!--                                <separator string="Senior Accountant Tasks" colspan="4"/>-->
+                                <div style="overflow-x: auto; margin-bottom: 20px; width: 200%;">
+                                    <table class="o_group o_inner_group"
+                                           style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
+                                        <thead style="background-color:#f6f6f6;">
+                                            <tr>
+                                                <th style="border:1px solid #ddd; padding:6px; text-align:left; width:40%;">
+                                                    Task
+                                                </th>
+                                                <th style="border:1px solid #ddd; padding:6px; width:30%;">Deadline</th>
+                                                <th style="border:1px solid #ddd; padding:6px; width:30%;">Deadline
+                                                    Met?
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="text-align:left;">Accrued Expenses</td>
+                                                <td>3rd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_accrued_expenses" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Decommissioning</td>
+                                                <td>-2 Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_decommissioning" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Leases</td>
+                                                <td>1st Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_leases" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Other Current Assets</td>
+                                                <td>3rd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_other_current_assets" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Prepaid Expenses</td>
+                                                <td>3rd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_prepaid_expenses" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Third Party Borrowing</td>
+                                                <td>2nd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_third_party_borrowing" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">ARO</td>
+                                                <td>-1 Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_aro" widget="boolean_toggle"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </group>
+
+                            <group string="Asset Schedules">
+
+                                <!-- =============================== -->
+                                <!-- Asset Schedules Table -->
+                                <!-- =============================== -->
+<!--                                <separator string="Asset Schedules" colspan="4"/>-->
+                                <div style="overflow-x: auto; width: 200%;">
+                                    <table class="o_group o_inner_group"
+                                           style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
+                                        <thead style="background-color:#f6f6f6;">
+                                            <tr>
+                                                <th style="border:1px solid #ddd; padding:6px; text-align:left;">Task
+                                                </th>
+                                                <th style="border:1px solid #ddd; padding:6px;">Deadline</th>
+                                                <th style="border:1px solid #ddd; padding:6px;">Deadline Met?</th>
+                                                <th style="border:1px solid #ddd; padding:6px;">Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="text-align:left;">Depreciation Schedules</td>
+                                                <td>2nd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_depreciation_schedules" widget="boolean_toggle"/>
+                                                </td>
+                                                <td>
+                                                    <field name="depreciation_schedules"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Net Assets Schedules</td>
+                                                <td>15th Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_net_assets_schedules" widget="boolean_toggle"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Intangible Assets Schedules</td>
+                                                <td>2nd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_intangible_assets_schedules"
+                                                           widget="boolean_toggle"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Intercompany A/R &amp; A/P Schedules</td>
+                                                <td>10th Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_intercompany_ar_ap_schedule"
+                                                           widget="boolean_toggle"/>
+                                                </td>
+                                                <td>
+                                                    <field name="intercompany_ar_ap_schedule"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:left;">Cash Reconciliation</td>
+                                                <td>3rd Business Day</td>
+                                                <td style="text-align:center;">
+                                                    <field name="is_cash_reconcile" widget="boolean_toggle"/>
+                                                </td>
+                                                <td>
+                                                    <field name="cash_reconcile"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+                        </page>
                     </notebook>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <group>
+                        <!--                        <group>-->
+                        <field name="description"/>
+                        <!--                        </group>-->
+                    </group>
                 </sheet>
             </form>
         </field>

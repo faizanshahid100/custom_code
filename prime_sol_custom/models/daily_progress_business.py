@@ -19,6 +19,7 @@ class DailyProgress(models.Model):
         ('fpna', 'Financial Planning & Analysis'),
         ('ap', 'Accounts Payable'),
         ('ar', 'Accounts Receivable'),
+        ('sa', 'Senior Accountant'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -47,6 +48,27 @@ class DailyProgress(models.Model):
 
     week_of_year = fields.Char(string="Week of the Year", compute="_compute_week_of_year", store=True)
     year_of_kpi = fields.Char(string="KPI Year")
+
+    # Senior Accountant
+    is_accrued_expenses = fields.Boolean(string='Accrued Expenses      | 3rd Business Day')
+    is_decommissioning = fields.Boolean(string='Decommissioning       | -2 Business Day')
+    is_leases = fields.Boolean(string='Leases                | 1st Business Day')
+    is_other_current_assets = fields.Boolean(string='Other Current Assets  | 3rd Business Day')
+    is_prepaid_expenses = fields.Boolean(string='Prepaid Expenses      | 3rd Business Day')
+    is_third_party_borrowing = fields.Boolean(string='Third Party Borrowing | 2nd Business Day')
+    is_aro = fields.Boolean(string='ARO | -1 Business Day')
+
+    is_depreciation_schedules = fields.Boolean(string='Depreciation Schedules (Please insert Description box below) | 2nd Business Day')
+    depreciation_schedules = fields.Char(string='Depreciation Schedules Description | 2nd Business Day')
+    is_net_assets_schedules = fields.Boolean(string='Net Assets Schedules | 15th Business Day')
+    is_intangible_assets_schedules = fields.Boolean(string='Intangible Assets Schedules | 2nd Business Day')
+    is_intercompany_ar_ap_schedule = fields.Boolean(string='Intercompany A/R & A/P Schedules (Please insert Description box below) | 10th Business Day')
+    intercompany_ar_ap_schedule = fields.Char(string='Intercompany A/R & A/P Schedules Description | 10th Business Day')
+    is_cash_reconcile = fields.Boolean(string='Cash Reconciliation (Please insert Description box below) | 3rd Business Day')
+    cash_reconcile = fields.Char(string='Cash Reconciliation Description | 3rd Business Day')
+
+    description = fields.Html(string='Description')
+
 
     @api.constrains('date_of_project', 'resource_user_id')
     def _check_unique_date_and_user(self):
