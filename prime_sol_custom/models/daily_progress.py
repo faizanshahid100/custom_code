@@ -313,6 +313,7 @@ class DailyProgress(models.Model):
                     <td style="border: 1px solid #ddd; padding: 6px;">{emp.joining_date or ''}</td>
                     <td style="border: 1px solid #ddd; padding: 6px;">{(emp.employment_type or '').capitalize()}</td>
                     <td style="border: 1px solid #ddd; padding: 6px;">{(emp.working_hours_type or '').capitalize()}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">{(emp.kpi_measurement or '').capitalize()}</td>
                     <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{kpi_status}</td>
                     <td style="border: 1px solid #ddd; padding: 6px; text-align:center;">{attendance_status}</td>
                 </tr>
@@ -333,6 +334,7 @@ class DailyProgress(models.Model):
                             <th style="border: 1px solid #ddd; padding: 8px;">Joining Date</th>
                             <th style="border: 1px solid #ddd; padding: 8px;">Employment Type</th>
                             <th style="border: 1px solid #ddd; padding: 8px;">Working Hours Type</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">KPI Measurement</th>
                             <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">KPI Submitted</th>
                             <th style="border: 1px solid #ddd; padding: 8px; text-align:center;">Attendance Marked</th>
                         </tr>
