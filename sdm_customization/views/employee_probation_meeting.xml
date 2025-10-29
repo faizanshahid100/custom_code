@@ -108,24 +108,24 @@
                                     <field name="to_employee_ids" widget="many2many_tags"/>
                                     <field name="cc_employee_ids" widget="many2many_tags"/>
                                     <field name="assign_date"/>
-                                    <field name="employee_task_confirmed"/>
-                                    <field name="sdm_task_confirmed"/>
+                                    <field name="employee_task_confirmed" widget="boolean_toggle"/>
+                                    <field name="sdm_task_confirmed" widget="boolean_toggle" groups="sdm_customization.group_sdm"/>
                                     <field name="confirmed_date"/>
                                 </tree>
                             </field>
                             <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
-                                        class="btn-primary" icon="fa-envelope"/>
+                                        class="btn-primary" icon="fa-envelope" groups="sdm_customization.group_sdm"/>
                                 <br/>
-                                <field name="is_mail_sent" widget="boolean_toggle" invisible="1"/>
+                                <field name="is_mail_sent" widget="boolean_toggle" invisible="0"/>
                         </page>
 
-                        <page string="Send Reason Email">
-                            <group>
-                                <field name="reason"/>
-                                <field name="assignee_id"/>
-                                <field name="selected_employee_ids" widget="many2many_tags"/>
-                            </group>
-                        </page>
+<!--                        <page string="Send Reason Email">-->
+<!--                            <group>-->
+<!--                                <field name="reason"/>-->
+<!--                                <field name="assignee_id"/>-->
+<!--                                <field name="selected_employee_ids" widget="many2many_tags"/>-->
+<!--                            </group>-->
+<!--                        </page>-->
 
                         <page string="Action Taken" attrs="{'invisible': [('is_mail_sent', '=', False)]}">
                             <group>

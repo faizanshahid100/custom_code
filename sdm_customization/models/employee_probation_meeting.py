@@ -142,7 +142,7 @@ class EmployeeProbationMeeting(models.Model):
     is_audit = fields.Boolean('Is Audit', default=False)
     comment = fields.Text('Overall Comments')
 
-    is_mail_sent = fields.Boolean(string="Mail Sent", readonly=True, tracking=True)
+    is_mail_sent = fields.Boolean(string="Mail Sent", tracking=True)
 
     action_taken_comment = fields.Char(string='Action Taken', tracking=True)
     action_employee_ids = fields.Many2many(
@@ -184,13 +184,20 @@ class EmployeeProbationMeeting(models.Model):
             # Determine probation type
             rec.probation_type = 'pre' if date.today() < employee.confirmation_date else 'post'
 
+    @api.onchange('task_assign_line_ids')
+    def _onchange_task_assign_line_ids(self):
+        if all(self.task_assign_line_ids.mapped('sdm_task_confirmed')):
+            self.state = 'completed'
+        else:
+            self.state = 'inprogress'
+
     # ----------------------------
     # Send Reason Mail
     # ----------------------------
     def action_send_reason_mail(self):
         # TODO (Inprogress)
         """Send email with reason, employee name, date, and record link to assignee (To:) and selected employees (CC:)"""
-        for record in self.task_assign_line_ids:
+        for record in self.task_assign_line_ids.filtered(lambda l: not l.sdm_task_confirmed):
             if not record.reason:
                 raise UserError("Please mention a reason before sending the email.")
             if not record.to_employee_ids or not any(emp.work_email for emp in record.to_employee_ids):
@@ -303,6 +310,7 @@ class EmployeeProbationMeeting(models.Model):
 
 class TaskAssignLines(models.Model):
     _name = "task.assign.lines"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Task Assignment Lines"
 
     meeting_id = fields.Many2one(
@@ -312,13 +320,13 @@ class TaskAssignLines(models.Model):
     )
 
 
-    reason = fields.Text('Reason Details')
+    reason = fields.Text('Reason Details', tracking=True)
     to_employee_ids = fields.Many2many(
         "hr.employee",
         "task_assign_to_rel",
         "task_id",
         "employee_id",
-        string="To"
+        string="To", tracking=True
     )
 
     cc_employee_ids = fields.Many2many(
@@ -326,11 +334,17 @@ class TaskAssignLines(models.Model):
         "task_assign_cc_rel",
         "task_id",
         "employee_id",
-        string="CC"
+        string="CC", tracking=True
     )
 
-    assign_date = fields.Date('Assign date')
-    employee_task_confirmed = fields.Boolean(string="Employee Confirmed")
-    sdm_task_confirmed = fields.Boolean(string="SDM Confirmed")
+    assign_date = fields.Date('Assign date', default=lambda self: date.today(), tracking=True)
+    employee_task_confirmed = fields.Boolean(string="Employee Confirmed", tracking=True)
+    sdm_task_confirmed = fields.Boolean(string="SDM Confirmed", tracking=True)
 
-    confirmed_date = fields.Date(string="Confirmation Date", default=fields.Date.today)
+    confirmed_date = fields.Date(string="Confirmation Date", default=fields.Date.today, tracking=True)
+
+    @api.onchange('sdm_task_confirmed')
+    def _onchange_sdm_task_confirmed(self):
+        for rec in self:
+            if rec.sdm_task_confirmed:
+                rec.confirmed_date = fields.Date.today()
