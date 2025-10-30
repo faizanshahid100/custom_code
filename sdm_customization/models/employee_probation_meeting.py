@@ -16,7 +16,7 @@ class EmployeeProbationMeeting(models.Model):
     state = fields.Selection([
         ('inprogress', 'In Progress'),
         ('completed', 'Completed'),
-    ], string='Task Status', default='inprogress', tracking=True)
+    ], string='Status', default='inprogress', tracking=True)
     date_meeting = fields.Date(string="Meeting Date", default=lambda self: date.today(), required=True)
     probation_type = fields.Selection([
         ("pre", "Pre-Probation"),
@@ -27,13 +27,7 @@ class EmployeeProbationMeeting(models.Model):
         ("green", "Green"),
         ("yellow", "Yellow"),
         ("red", "Red"),
-    ], string="Meeting Status", required=True, tracking=True)
-    priority = fields.Selection([
-        ('0', 'Low'),
-        ('1', 'Medium'),
-        ('2', 'High'),
-        ('3', 'Very High'),
-    ], string="Task Priority", default='1')
+    ], string="Employee Status", required=True, tracking=True)
 
     reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green",
                          tracking=True)
@@ -142,7 +136,7 @@ class EmployeeProbationMeeting(models.Model):
     is_audit = fields.Boolean('Is Audit', default=False)
     comment = fields.Text('Overall Comments')
 
-    is_mail_sent = fields.Boolean(string="Mail Sent", readonly=True, tracking=True)
+    is_mail_sent = fields.Boolean(string="Mail Sent", tracking=True)
 
     action_taken_comment = fields.Char(string='Action Taken', tracking=True)
     action_employee_ids = fields.Many2many(
@@ -154,14 +148,6 @@ class EmployeeProbationMeeting(models.Model):
         help="Employees who will receive the action taken update email."
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
-
-    def action_resolve(self):
-        """Mark record as Completed"""
-        self.write({'state': 'completed'})
-
-    def action_set_inprogress(self):
-        """Revert to In Progress"""
-        self.write({'state': 'inprogress'})
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
@@ -184,13 +170,20 @@ class EmployeeProbationMeeting(models.Model):
             # Determine probation type
             rec.probation_type = 'pre' if date.today() < employee.confirmation_date else 'post'
 
+    @api.onchange('task_assign_line_ids')
+    def _onchange_task_assign_line_ids(self):
+        if all(self.task_assign_line_ids.mapped('sdm_task_confirmed')):
+            self.state = 'completed'
+        else:
+            self.state = 'inprogress'
+
     # ----------------------------
     # Send Reason Mail
     # ----------------------------
     def action_send_reason_mail(self):
         # TODO (Inprogress)
         """Send email with reason, employee name, date, and record link to assignee (To:) and selected employees (CC:)"""
-        for record in self.task_assign_line_ids:
+        for record in self.task_assign_line_ids.filtered(lambda l: not l.sdm_task_confirmed):
             if not record.reason:
                 raise UserError("Please mention a reason before sending the email.")
             if not record.to_employee_ids or not any(emp.work_email for emp in record.to_employee_ids):
@@ -210,12 +203,8 @@ class EmployeeProbationMeeting(models.Model):
                     <p><b>Employee:</b> {self.employee_id.name}</p>
                     <p><b>Meeting Date:</b> {self.date_meeting.strftime('%d-%m-%Y')}</p>
                     <p><b>Probation Type:</b> {self.probation_type.replace('_', ' ').title()} Probation</p>
-                    <p><b>Meeting Status:</b>
-                        <span style="color:{'green' if self.meeting_status == 'green' else 'orange' if self.meeting_status == 'yellow' else 'red'};">
-                            {self.meeting_status.capitalize()}
-                        </span>
-                    </p>
                     <p><b>Reason:</b> {record.reason}</p>
+                    <p><b>Priority:</b> {'⭐' * int(record.priority)}</p>
                     <p>You can view the full meeting record here:
                         <a href="{record_url}" target="_blank">View in Odoo</a>
                     </p>
@@ -248,61 +237,11 @@ class EmployeeProbationMeeting(models.Model):
 
             # Send email
             self.env['mail.mail'].sudo().create(mail_values).send()
-            self.is_mail_sent = True
-
-    def action_send_action_mail(self):
-        for record in self:
-            if not record.action_taken_comment:
-                raise UserError("Please write the action taken before sending the email.")
-            if not record.action_employee_ids:
-                raise UserError("Please select employees to send this update to.")
-
-            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            record_url = f"{base_url}/web#id={record.id}&model=employee.probation.meeting&view_type=form"
-
-            subject = f"Action Taken Update for {record.employee_id.name}'s Probation Meeting"
-            body = f"""
-                <div style="font-family:Arial, sans-serif; line-height:1.6;">
-                    <h3 style="color:#004080;">Probation Meeting Action Update</h3>
-                    <p><b>Employee:</b> {record.employee_id.name}</p>
-                    <p><b>Date:</b> {record.date_meeting.strftime('%d-%m-%Y')}</p>
-                    <p><b>Action Taken:</b> {record.action_taken_comment}</p>
-                    <p>You can view this meeting record in Odoo:
-                        <a href="{record_url}" target="_blank">View Record</a>
-                    </p>
-                </div>
-            """
-
-            mail_sent = False
-
-            # Get all manager emails (default CC)
-            manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
-            manager_emails = []
-            if manager_group:
-                manager_emails = [u.partner_id.email for u in manager_group.users if u.partner_id.email]
-
-            for emp in record.action_employee_ids:
-                if not emp.work_email:
-                    continue
-
-                # Build CC list (avoid duplicates)
-                cc_emails = ','.join(set(manager_emails) - {emp.work_email})
-
-                # Create and send mail
-                self.env['mail.mail'].sudo().create({
-                    'subject': subject,
-                    'body_html': body,
-                    'email_to': emp.work_email,
-                    'email_cc': cc_emails,
-                }).send()
-                mail_sent = True
-
-            if mail_sent:
-                record.is_action_mail_sent = True
-
+        self.is_mail_sent = True
 
 class TaskAssignLines(models.Model):
     _name = "task.assign.lines"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = "Task Assignment Lines"
 
     meeting_id = fields.Many2one(
@@ -312,13 +251,15 @@ class TaskAssignLines(models.Model):
     )
 
 
-    reason = fields.Text('Reason Details')
+    reason = fields.Text('Reason Details', tracking=True)
+    action_taken_comment = fields.Text('Action Taken', tracking=True)
     to_employee_ids = fields.Many2many(
         "hr.employee",
         "task_assign_to_rel",
         "task_id",
         "employee_id",
-        string="To"
+        help='Only SDM Group member can see this',
+        string="To", tracking=True
     )
 
     cc_employee_ids = fields.Many2many(
@@ -326,11 +267,73 @@ class TaskAssignLines(models.Model):
         "task_assign_cc_rel",
         "task_id",
         "employee_id",
-        string="CC"
+        help='Only SDM Group member can see this',
+        string="CC", tracking=True
     )
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Medium'),
+        ('2', 'High'),
+        ('3', 'Very High'),
+    ], string="Task Priority", default='1')
 
-    assign_date = fields.Date('Assign date')
-    employee_task_confirmed = fields.Boolean(string="Employee Confirmed")
-    sdm_task_confirmed = fields.Boolean(string="SDM Confirmed")
+    assign_date = fields.Date('Assign date', default=lambda self: date.today(), tracking=True)
+    employee_task_confirmed = fields.Boolean(string="Employee Confirmed", tracking=True)
+    sdm_task_confirmed = fields.Boolean(string="SDM Confirmed", help='Only SDM Group member can see this', tracking=True)
 
-    confirmed_date = fields.Date(string="Confirmation Date", default=fields.Date.today)
+    confirmed_date = fields.Date(string="Confirmation Date", default=fields.Date.today, tracking=True)
+
+    @api.onchange('sdm_task_confirmed')
+    def _onchange_sdm_task_confirmed(self):
+        for rec in self:
+            if rec.sdm_task_confirmed:
+                rec.confirmed_date = fields.Date.today()
+
+    def action_send_action_mail(self):
+        for record in self:
+            if not record.employee_task_confirmed:
+                raise UserError("Please mark 'Employee Confirmed' before sending the email.")
+
+            if not record.meeting_id:
+                raise UserError("No meeting linked with this task line.")
+
+            # ✅ Safe to generate real record URL now
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            record_url = f"{base_url}/web#id={record.meeting_id.id}&model=employee.probation.meeting&view_type=form"
+
+            subject = f"Action Taken Update for {record.meeting_id.employee_id.name}'s Probation Meeting"
+            body = f"""
+                <div style="font-family:Arial, sans-serif; line-height:1.6;">
+                    <h3 style="color:#004080;">Probation Meeting Action Update</h3>
+                    <p><b>Task Completed:</b> ✅</p>
+                    <p><b>Employee:</b> {record.meeting_id.employee_id.name}</p>
+                    <p><b>Date:</b> {record.meeting_id.date_meeting.strftime('%d-%m-%Y')}</p>
+                    <p><b>Action Taken:</b> {record.action_taken_comment or 'Resolved'}</p>
+                    <p>You can view this meeting record in Odoo:
+                        <a href="{record_url}" target="_blank">View Record</a>
+                    </p>
+                </div>
+            """
+
+            # Manager group
+            manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
+            if not manager_group:
+                raise UserError("Manager group not found: prime_sol_custom.prime_group_managers")
+
+            manager_emails = [u.partner_id.email for u in manager_group.users if u.partner_id.email]
+            if not manager_emails:
+                raise UserError("No manager emails found in the manager group.")
+
+            to_emails = ','.join(set(manager_emails))
+
+            # ✅ Send email safely after record is saved
+            self.env['mail.mail'].sudo().create({
+                'subject': subject,
+                'body_html': body,
+                'email_to': to_emails,
+            }).send()
+
+            record.confirmed_date = fields.Date.today()
+
+        return True
+
