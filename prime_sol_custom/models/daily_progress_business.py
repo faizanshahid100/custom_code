@@ -20,6 +20,9 @@ class DailyProgress(models.Model):
         ('ap', 'Accounts Payable'),
         ('ar', 'Accounts Receivable'),
         ('sa', 'Senior Accountant'),
+        ('cas', 'Corporate Accounting Supervisor'),
+        ('aps', 'Associate Procurement Specialist'),
+        ('ps', 'Procurement Specialist'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -50,22 +53,81 @@ class DailyProgress(models.Model):
     year_of_kpi = fields.Char(string="KPI Year")
 
     # Senior Accountant
-    is_accrued_expenses = fields.Boolean(string='Accrued Expenses      | 3rd Business Day')
-    is_decommissioning = fields.Boolean(string='Decommissioning       | -2 Business Day')
-    is_leases = fields.Boolean(string='Leases                | 1st Business Day')
-    is_other_current_assets = fields.Boolean(string='Other Current Assets  | 3rd Business Day')
-    is_prepaid_expenses = fields.Boolean(string='Prepaid Expenses      | 3rd Business Day')
-    is_third_party_borrowing = fields.Boolean(string='Third Party Borrowing | 2nd Business Day')
-    is_aro = fields.Boolean(string='ARO | -1 Business Day')
+    yes_no_selection = [
+        ('yes', 'Yes'),
+        ('no', 'No'),
+    ]
 
-    is_depreciation_schedules = fields.Boolean(string='Depreciation Schedules (Please insert Description box below) | 2nd Business Day')
-    depreciation_schedules = fields.Char(string='Depreciation Schedules Description | 2nd Business Day')
-    is_net_assets_schedules = fields.Boolean(string='Net Assets Schedules | 15th Business Day')
-    is_intangible_assets_schedules = fields.Boolean(string='Intangible Assets Schedules | 2nd Business Day')
-    is_intercompany_ar_ap_schedule = fields.Boolean(string='Intercompany A/R & A/P Schedules (Please insert Description box below) | 10th Business Day')
-    intercompany_ar_ap_schedule = fields.Char(string='Intercompany A/R & A/P Schedules Description | 10th Business Day')
-    is_cash_reconcile = fields.Boolean(string='Cash Reconciliation (Please insert Description box below) | 3rd Business Day')
-    cash_reconcile = fields.Char(string='Cash Reconciliation Description | 3rd Business Day')
+    is_accrued_expenses = fields.Selection(
+        yes_no_selection, string='Accrued Expenses | 3rd Business Day', default='no'
+    )
+    is_decommissioning = fields.Selection(
+        yes_no_selection, string='Decommissioning | -2 Business Day', default='no'
+    )
+    is_leases = fields.Selection(
+        yes_no_selection, string='Leases | 1st Business Day', default='no'
+    )
+    is_other_current_assets = fields.Selection(
+        yes_no_selection, string='Other Current Assets | 3rd Business Day', default='no'
+    )
+    is_prepaid_expenses = fields.Selection(
+        yes_no_selection, string='Prepaid Expenses | 3rd Business Day', default='no'
+    )
+    is_third_party_borrowing = fields.Selection(
+        yes_no_selection, string='Third Party Borrowing | 2nd Business Day', default='no'
+    )
+    is_aro = fields.Selection(
+        yes_no_selection, string='ARO | -1 Business Day', default='no'
+    )
+
+    is_depreciation_schedules = fields.Selection(
+        yes_no_selection, string='Depreciation Schedules | 2nd Business Day', default='no'
+    )
+    depreciation_schedules = fields.Char(
+        string='Depreciation Schedules Description | 2nd Business Day'
+    )
+    is_net_assets_schedules = fields.Selection(
+        yes_no_selection, string='Net Assets Schedules | 15th Business Day', default='no'
+    )
+    is_intangible_assets_schedules = fields.Selection(
+        yes_no_selection, string='Intangible Assets Schedules | 2nd Business Day', default='no'
+    )
+    is_intercompany_ar_ap_schedule = fields.Selection(
+        yes_no_selection, string='Intercompany A/R & A/P Schedules | 10th Business Day', default='no'
+    )
+    intercompany_ar_ap_schedule = fields.Char(
+        string='Intercompany A/R & A/P Schedules Description | 10th Business Day'
+    )
+    is_cash_reconcile = fields.Selection(
+        yes_no_selection, string='Cash Reconciliation | 3rd Business Day', default='no'
+    )
+    cash_reconcile = fields.Char(
+        string='Cash Reconciliation Description | 3rd Business Day'
+    )
+
+
+    # Corporate Accounting Supervisor
+    is_po_in_fom = fields.Selection(
+        yes_no_selection, string='Update all the POs in FOM sheet', default='no'
+    )
+    is_je_in_netsuite = fields.Selection(
+        yes_no_selection, string='Upload all the inventory JEs in Netsuite as per FOM sheet', default='no'
+    )
+    is_summary_sheet_of_je = fields.Selection(
+        yes_no_selection, string='Update the summary sheet of JEs.', default='no'
+    )
+    is_preparation_inventory_reconciliation = fields.Selection(
+        yes_no_selection, string='Preparation of on-site inventory reconciliation', default='no'
+    )
+    is_preparation_warehouse_reconciliation = fields.Selection(
+        yes_no_selection, string='Preparation of warehouse inventory reconciliation', default='no'
+    )
+
+    # Associate Procurement Specialist and Procurement Specialist
+    number_of_tickets = fields.Integer(string="Tickets assigned per week")
+    number_of_opportunities = fields.Integer(string="Number of Opportunities per week")
+    number_of_opportunities_won = fields.Integer(string="Number of Opportunities won per week")
+
 
     description = fields.Html(string='Description')
 

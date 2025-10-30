@@ -49,163 +49,297 @@
                             </group>
                         </page>
 
-                        <!-- Senior Accountant -->
+                        <!-- Senior Accountant Page -->
                         <page string="Senior Accountant" attrs="{'invisible': [('finance_area', '!=', 'sa')]}">
-                            <group string="Senior Accountant Tasks">
-                                <!-- =============================== -->
-                                <!-- Senior Accountant Tasks Table -->
-                                <!-- =============================== -->
-<!--                                <separator string="Senior Accountant Tasks" colspan="4"/>-->
-                                <div style="overflow-x: auto; margin-bottom: 20px; width: 200%;">
-                                    <table class="o_group o_inner_group"
-                                           style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
-                                        <thead style="background-color:#f6f6f6;">
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
                                             <tr>
-                                                <th style="border:1px solid #ddd; padding:6px; text-align:left; width:40%;">
-                                                    Task
-                                                </th>
-                                                <th style="border:1px solid #ddd; padding:6px; width:30%;">Deadline</th>
-                                                <th style="border:1px solid #ddd; padding:6px; width:30%;">Deadline
-                                                    Met?
-                                                </th>
+                                                <th style="width:40%;">Task</th>
+                                                <th style="width:30%;">Deadline</th>
+                                                <th style="width:30%;">Deadline Met?</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td style="text-align:left;">Accrued Expenses</td>
+                                                <td>Accrued Expenses</td>
                                                 <td>3rd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_accrued_expenses" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_accrued_expenses" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Decommissioning</td>
+                                                <td>Decommissioning</td>
                                                 <td>-2 Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_decommissioning" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_decommissioning" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Leases</td>
+                                                <td>Leases</td>
                                                 <td>1st Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_leases" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_leases" widget="radio" class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Other Current Assets</td>
+                                                <td>Other Current Assets</td>
                                                 <td>3rd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_other_current_assets" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_other_current_assets" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Prepaid Expenses</td>
+                                                <td>Prepaid Expenses</td>
                                                 <td>3rd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_prepaid_expenses" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_prepaid_expenses" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Third Party Borrowing</td>
+                                                <td>Third Party Borrowing</td>
                                                 <td>2nd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_third_party_borrowing" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_third_party_borrowing" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">ARO</td>
+                                                <td>ARO</td>
                                                 <td>-1 Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_aro" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_aro" widget="radio" class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Net Assets Schedules</td>
+                                                <td>15th Business Day</td>
+                                                <td>
+                                                    <field name="is_net_assets_schedules" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Intangible Assets Schedules</td>
+                                                <td>2nd Business Day</td>
+                                                <td>
+                                                    <field name="is_intangible_assets_schedules" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-
                             </group>
 
-                            <group string="Asset Schedules">
-
-                                <!-- =============================== -->
-                                <!-- Asset Schedules Table -->
-                                <!-- =============================== -->
-<!--                                <separator string="Asset Schedules" colspan="4"/>-->
-                                <div style="overflow-x: auto; width: 200%;">
-                                    <table class="o_group o_inner_group"
-                                           style="width:100%; border-collapse:collapse; text-align:center; font-size:13px;">
-                                        <thead style="background-color:#f6f6f6;">
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
                                             <tr>
-                                                <th style="border:1px solid #ddd; padding:6px; text-align:left;">Task
-                                                </th>
-                                                <th style="border:1px solid #ddd; padding:6px;">Deadline</th>
-                                                <th style="border:1px solid #ddd; padding:6px;">Deadline Met?</th>
-                                                <th style="border:1px solid #ddd; padding:6px;">Description</th>
+                                                <th>Task</th>
+                                                <th>Deadline</th>
+                                                <th>Deadline Met?</th>
+                                                <th>Description</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td style="text-align:left;">Depreciation Schedules</td>
-                                                <td>2nd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_depreciation_schedules" widget="boolean_toggle"/>
+                                                <td>Depreciation Schedules</td>
+                                                <td>4th Business Day</td>
+                                                <td>
+                                                    <field name="is_depreciation_schedules" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                                 <td>
-                                                    <field name="depreciation_schedules"/>
+                                                    <field name="depreciation_schedules"
+                                                           placeholder="Add description..."/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Net Assets Schedules</td>
-                                                <td>15th Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_net_assets_schedules" widget="boolean_toggle"/>
-                                                </td>
-                                                <td/>
-                                            </tr>
-                                            <tr>
-                                                <td style="text-align:left;">Intangible Assets Schedules</td>
-                                                <td>2nd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_intangible_assets_schedules"
-                                                           widget="boolean_toggle"/>
-                                                </td>
-                                                <td/>
-                                            </tr>
-                                            <tr>
-                                                <td style="text-align:left;">Intercompany A/R &amp; A/P Schedules</td>
+                                                <td>Intercompany A/R &amp; A/P Schedules</td>
                                                 <td>10th Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_intercompany_ar_ap_schedule"
-                                                           widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_intercompany_ar_ap_schedule" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                                 <td>
-                                                    <field name="intercompany_ar_ap_schedule"/>
+                                                    <field name="intercompany_ar_ap_schedule"
+                                                           placeholder="Add description..."/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="text-align:left;">Cash Reconciliation</td>
+                                                <td>Cash Reconciliation</td>
                                                 <td>3rd Business Day</td>
-                                                <td style="text-align:center;">
-                                                    <field name="is_cash_reconcile" widget="boolean_toggle"/>
+                                                <td>
+                                                    <field name="is_cash_reconcile" widget="radio"
+                                                           class="o_horizontal_radio"/>
                                                 </td>
                                                 <td>
-                                                    <field name="cash_reconcile"/>
+                                                    <field name="cash_reconcile" placeholder="Add description..."/>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                            </group>
+
+                        </page>
+
+                        <!-- Corporate Accounting Supervisor -->
+                        <page string="Corporate Accounting Supervisor" attrs="{'invisible': [('finance_area', '!=', 'cas')]}">
+
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:40%;">Task</th>
+                                                <th style="width:30%;">Deadline</th>
+                                                <th style="width:30%;">Deadline Met?</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Update all the POs in FOM sheet</td>
+                                                <td>-1 Business Day</td>
+                                                <td>
+                                                    <field name="is_po_in_fom" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Upload all the inventory JEs in Netsuite as per FOM sheet</td>
+                                                <td>5th Business Day</td>
+                                                <td>
+                                                    <field name="is_je_in_netsuite" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Update the summary sheet of JEs</td>
+                                                <td>5th Business Day</td>
+                                                <td>
+                                                    <field name="is_summary_sheet_of_je" widget="radio" class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Preparation of on-site inventory reconciliation.</td>
+                                                <td>10th Business Day</td>
+                                                <td>
+                                                    <field name="is_preparation_inventory_reconciliation" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Preparation of warehouse inventory reconciliation</td>
+                                                <td>10th Business Day</td>
+                                                <td>
+                                                    <field name="is_preparation_warehouse_reconciliation" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                        </page>
+
+                        <!-- Associate Procurement Specialist -->
+                        <page string="Associate Procurement Specialist" attrs="{'invisible': [('finance_area', '!=', 'aps')]}">
+                            <group>
+                                <field name="number_of_tickets"/>
+                                <field name="number_of_opportunities"/>
+                                <field name="number_of_opportunities_won"/>
                             </group>
                         </page>
+
+                        <!-- Procurement Specialist-->
+                        <page string="Procurement Specialist" attrs="{'invisible': [('finance_area', '!=', 'ps')]}">
+                            <group>
+                                <field name="number_of_tickets"/>
+                                <field name="number_of_opportunities"/>
+                                <field name="number_of_opportunities_won"/>
+                            </group>
+                        </page>
+
                     </notebook>
                     <br/>
                     <br/>
                     <br/>
                     <group>
-                        <!--                        <group>-->
-                        <field name="description"/>
-                        <!--                        </group>-->
+                        <field name="description" placeholder="Type '/' for commands"/>
                     </group>
                 </sheet>
             </form>
