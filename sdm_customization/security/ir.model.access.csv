@@ -3,5 +3,5 @@ access_attendance_dashboard,attendance.dashboard,model_attendance_dashboard,base
 access_employee_probation_meeting,access_employee_probation_meeting,model_employee_probation_meeting,,1,1,1,1
 access_employee_pulse_profile,access_employee.pulse.profile,sdm_customization.model_employee_pulse_profile,,1,1,1,1
 access_attendance_late_record,access_attendance.late.record,sdm_customization.model_attendance_late_record,,1,0,0,0
-access_task_assign_lines,access.task.assign.lines,model_task_assign_lines,,1,1,1,1
+access_task_assign_lines,access.task.assign.lines,model_task_assign_lines,,1,1,1,0
 
