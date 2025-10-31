@@ -26,6 +26,14 @@
             <form string="Employee Probation Meeting">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="inprogress,completed"/>
+                    <button name="action_resolve" type="object" string="Resolved"
+                            class="oe_highlight"
+                            groups="sdm_customization.group_sdm"
+                            attrs="{'invisible': [('state', '=', 'completed')]}"/>
+<!--                    <button name="action_set_inprogress" type="object" string="Set In Progress"-->
+<!--                            class="btn-secondary"-->
+<!--                            groups="sdm_customization.group_sdm"-->
+<!--                            attrs="{'invisible': [('state', '=', 'inprogress')]}"/>-->
                 </header>
                 <sheet>
                     <group>

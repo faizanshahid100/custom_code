@@ -16,7 +16,7 @@ class EmployeeProbationMeeting(models.Model):
     state = fields.Selection([
         ('inprogress', 'In Progress'),
         ('completed', 'Completed'),
-    ], string='Status', default='inprogress', tracking=True)
+    ], string='Status', default='completed', tracking=True)
     date_meeting = fields.Date(string="Meeting Date", default=lambda self: date.today(), required=True)
     probation_type = fields.Selection([
         ("pre", "Pre-Probation"),
@@ -149,6 +149,14 @@ class EmployeeProbationMeeting(models.Model):
         help="Employees who will receive the action taken update email."
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
+
+    def action_resolve(self):
+        """Mark record as Completed"""
+        self.write({'state': 'completed'})
+
+    # def action_set_inprogress(self):
+    #     """Revert to In Progress"""
+    #     self.write({'state': 'inprogress'})
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
