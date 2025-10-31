@@ -6,6 +6,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'views/attendance_dashboard_views.xml',
+        'data/department_master_data.xml',
         'data/ir_cron_attendance_dashboard.xml',
         'views/employee_probation_meeting.xml',
         'views/employee_pulse_profile.xml',

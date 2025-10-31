@@ -11,6 +11,7 @@
                        decoration-danger="meeting_status == 'red'"
                        decoration-warning="meeting_status == 'yellow'"
                        decoration-success="meeting_status == 'green'"/>
+                <field name="department_master_ids" widget="many2many_tags"/>
                 <field name="state" widget="badge"
                        decoration-danger="state == 'inprogress'"
                        decoration-success="state == 'completed'"/>
@@ -31,13 +32,14 @@
                         <group>
                             <field name="employee_id"/>
                             <field name="meeting_status"/>
+                            <field name="employee_joining_date"/>
+                            <field name="employee_probation_end_date"/>
+                            <field name="employee_pulse_id" readonly="1" force_save="1"/>
                         </group>
                         <group>
                             <field name="date_meeting"/>
                             <field name="probation_type"/>
-                            <field name="employee_joining_date"/>
-                            <field name="employee_probation_end_date"/>
-                            <field name="employee_pulse_id" readonly="1" force_save="1"/>
+                            <field name="department_master_ids" widget="many2many_tags" options="{'no_create': True, 'no_edit': True}"/>
                         </group>
                     </group>
 

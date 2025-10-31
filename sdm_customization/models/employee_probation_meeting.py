@@ -28,6 +28,7 @@ class EmployeeProbationMeeting(models.Model):
         ("yellow", "Yellow"),
         ("red", "Red"),
     ], string="Employee Status", required=True, tracking=True)
+    department_master_ids = fields.Many2many('department.master', string='Assign Department')
 
     reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green",
                          tracking=True)
