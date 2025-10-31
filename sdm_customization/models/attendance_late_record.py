@@ -7,7 +7,7 @@ class AttendanceLateRecord(models.Model):
     _rec_name = 'employee_id'
     _description = 'Daily Late Attendance Record'
 
-    employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
+    employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
     date = fields.Date(string='Date', required=True, default=fields.Date.context_today)
     minutes_overdue = fields.Integer(string='Total Late Minutes', readonly=True)
     is_connect_sdm = fields.Boolean('Is SDM Connect', default=False)

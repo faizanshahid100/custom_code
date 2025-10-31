@@ -11,7 +11,7 @@ class AttendanceDashboard(models.Model):
     _rec_name = 'employee_id'
     _description = 'Employees missing check-in after duty start + 20 minutes'
 
-    employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
+    employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
     duty_start = fields.Datetime(string='Duty Start', required=True)
     threshold = fields.Datetime(string='Threshold', required=True)
     check_in = fields.Datetime(string='Check-In (first today)', readonly=True)
