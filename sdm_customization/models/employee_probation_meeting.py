@@ -9,7 +9,7 @@ class EmployeeProbationMeeting(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _rec_name = "employee_id"
 
-    employee_id = fields.Many2one("hr.employee", string="Employee", required=True)
+    employee_id = fields.Many2one("hr.employee", string="Employee Name", required=True)
     employee_joining_date = fields.Date(related="employee_id.joining_date", string="Joining Date", store=True)
     employee_probation_end_date = fields.Date(related="employee_id.confirmation_date", string="Probation End Date",
                                               store=True)

@@ -1,4 +1,16 @@
 <odoo>
+    <!-- Tree View -->
+    <record id="view_employee_pulse_profile_tree" model="ir.ui.view">
+        <field name="name">employee.pulse.profile.tree</field>
+        <field name="model">employee.pulse.profile</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Pulse Profiles">
+                <field name="employee_id"/>
+                <field name="comment"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Form View -->
     <record id="view_employee_pulse_profile_form" model="ir.ui.view">
         <field name="name">employee.pulse.profile.form</field>
         <field name="model">employee.pulse.profile</field>
@@ -6,7 +18,12 @@
             <form string="Employee Pulse Profile">
                 <sheet>
                     <group>
-                        <field name="employee_id" readonly="1"/>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="comment"/>
+                        </group>
                     </group>
                     <notebook>
                         <page string="Pre-Probation">
