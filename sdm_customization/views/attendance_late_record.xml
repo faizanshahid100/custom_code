@@ -27,10 +27,4 @@
         </field>
     </record>
 
-    <!-- Menu Item under Attendance or Custom Menu -->
-    <menuitem id="menu_employee_late_root"
-              name="Employee Late Records"
-              parent="hr_attendance.menu_hr_attendance_root"
-              action="action_employee_late_record"
-              sequence="30"/>
 </odoo>
