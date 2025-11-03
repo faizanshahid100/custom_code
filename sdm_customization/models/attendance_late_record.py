@@ -92,8 +92,8 @@ class AttendanceLateRecord(models.Model):
             mail_values = {
                 'subject': subject,
                 'body_html': body,
-                'email_to': ','.join(managers.mapped('email')),
-                'email_from': 'hr@primesystemsolutions.com',
+                'email_to' : ','.join(managers.mapped('email')),
+                'email_from': 'sdm@primesystemsolutions.com',
             }
             self.env['mail.mail'].create(mail_values).send()
 

@@ -240,6 +240,7 @@ class EmployeeProbationMeeting(models.Model):
             mail_values = {
                 'subject': subject,
                 'body_html': body,
+                'email_from': 'sdm@primesystemsolutions.com',
                 'email_to': to_emails,
                 'email_cc': cc_emails,
             }
@@ -339,6 +340,7 @@ class TaskAssignLines(models.Model):
             self.env['mail.mail'].sudo().create({
                 'subject': subject,
                 'body_html': body,
+                'email_from': 'sdm@primesystemsolutions.com',
                 'email_to': to_emails,
             }).send()
 
