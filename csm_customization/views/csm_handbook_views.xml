@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_csm_handbook_tree" model="ir.ui.view">
+        <field name="name">csm.handbook.tree</field>
+        <field name="model">csm.handbook</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="manager_id"/>
+                <field name="month"/>
+                <field name="gar"/>
+                <field name="current_meeting_frequency"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_csm_handbook_form" model="ir.ui.view">
+        <field name="name">csm.handbook.form</field>
+        <field name="model">csm.handbook</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="customer_id"/>
+                            <field name="manager_id"/>
+                            <field name="manager_email"/>
+                            <field name="month"/>
+                        </group>
+                        <group>
+                            <field name="suggested_meeting_frequency"/>
+                            <field name="current_meeting_frequency"/>
+                            <field name="client_attend_call"/>
+                            <field name="business_tech"/>
+                            <field name="gar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="gar_comment"/>
+                    </group>
+                    <notebook>
+                        <page string="Action Steps">
+                            <field name="action_amber_red"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_csm_handbook_search" model="ir.ui.view">
+        <field name="name">csm.handbook.search</field>
+        <field name="model">csm.handbook</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="manager_id"/>
+                <filter string="Green" name="green" domain="[('gar', '=', 'green')]"/>
+                <filter string="Amber" name="amber" domain="[('gar', '=', 'amber')]"/>
+                <filter string="Red" name="red" domain="[('gar', '=', 'red')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Manager" name="group_manager" context="{'group_by': 'manager_id'}"/>
+                    <filter string="Customer" name="group_customer" context="{'group_by': 'customer_id'}"/>
+                    <filter string="GAR" name="group_gar" context="{'group_by': 'gar'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_csm_handbook" model="ir.actions.act_window">
+        <field name="name">CSM Handbook</field>
+        <field name="res_model">csm.handbook</field>
+        <field name="view_mode">tree,form</field>
+<!--        <field name="help" type="html">-->
+<!--            <p class="o_view_nocontent_smiling_face">-->
+<!--                Create your first CSM Handbook entry-->
+<!--            </p>-->
+<!--        </field>-->
+    </record>
+
+    <!-- Menu -->
+<!--    <menuitem id="menu_csm_handbook_root" name="CSM Handbook" sequence="10"/>-->
+<!--    <menuitem id="menu_csm_handbook" name="Handbook" parent="menu_csm_handbook_root" action="action_csm_handbook" sequence="10"/>-->
+</odoo>

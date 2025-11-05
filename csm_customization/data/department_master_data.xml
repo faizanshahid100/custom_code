@@ -1,0 +1,22 @@
+<odoo>
+    <!-- Department Records -->
+    <record id="department_finance" model="department.master">
+        <field name="name">Finance</field>
+    </record>
+
+    <record id="department_hr" model="department.master">
+        <field name="name">Human Resource</field>
+    </record>
+
+    <record id="department_it" model="department.master">
+        <field name="name">IT</field>
+    </record>
+
+    <record id="department_sdm" model="department.master">
+        <field name="name">SDM</field>
+    </record>
+
+    <record id="department_csm" model="department.master">
+        <field name="name">CSM</field>
+    </record>
+</odoo>
