@@ -1,4 +1,16 @@
 <odoo>
+    <record id="view_daily_progress_business_tree" model="ir.ui.view">
+        <field name="name">daily.progress.business.tree</field>
+        <field name="model">daily.progress.business</field>
+        <field name="arch" type="xml">
+            <tree string="Daily Progress Business" create="true" edit="true">
+                <field name="resource_user_id"/>
+                <field name="date_of_project"/>
+                <field name="finance_area"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="view_daily_progress_business_form" model="ir.ui.view">
         <field name="name">daily.progress.business.form</field>
         <field name="model">daily.progress.business</field>

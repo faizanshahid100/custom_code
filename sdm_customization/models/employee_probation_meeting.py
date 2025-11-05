@@ -9,14 +9,14 @@ class EmployeeProbationMeeting(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _rec_name = "employee_id"
 
-    employee_id = fields.Many2one("hr.employee", string="Employee", required=True)
+    employee_id = fields.Many2one("hr.employee", string="Employee Name", required=True)
     employee_joining_date = fields.Date(related="employee_id.joining_date", string="Joining Date", store=True)
     employee_probation_end_date = fields.Date(related="employee_id.confirmation_date", string="Probation End Date",
                                               store=True)
     state = fields.Selection([
         ('inprogress', 'In Progress'),
         ('completed', 'Completed'),
-    ], string='Status', default='inprogress', tracking=True)
+    ], string='Status', default='completed', tracking=True)
     date_meeting = fields.Date(string="Meeting Date", default=lambda self: date.today(), required=True)
     probation_type = fields.Selection([
         ("pre", "Pre-Probation"),
@@ -28,6 +28,7 @@ class EmployeeProbationMeeting(models.Model):
         ("yellow", "Yellow"),
         ("red", "Red"),
     ], string="Employee Status", required=True, tracking=True)
+    department_master_ids = fields.Many2many('department.master', string='Assign Department')
 
     reason = fields.Text(string="Reason (If Yellow/Red)", help="Specify reason for concern if status is not Green",
                          tracking=True)
@@ -149,6 +150,14 @@ class EmployeeProbationMeeting(models.Model):
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
 
+    def action_resolve(self):
+        """Mark record as Completed"""
+        self.write({'state': 'completed'})
+
+    # def action_set_inprogress(self):
+    #     """Revert to In Progress"""
+    #     self.write({'state': 'inprogress'})
+
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         """Update related fields and probation type when employee changes"""
@@ -231,6 +240,7 @@ class EmployeeProbationMeeting(models.Model):
             mail_values = {
                 'subject': subject,
                 'body_html': body,
+                'email_from': 'sdm@primesystemsolutions.com',
                 'email_to': to_emails,
                 'email_cc': cc_emails,
             }
@@ -330,6 +340,7 @@ class TaskAssignLines(models.Model):
             self.env['mail.mail'].sudo().create({
                 'subject': subject,
                 'body_html': body,
+                'email_from': 'sdm@primesystemsolutions.com',
                 'email_to': to_emails,
             }).send()
 

@@ -51,8 +51,5 @@
         <field name='res_model'>score.weightage</field>
         <field name='view_mode'>tree,form</field>
     </record>
-    <menuitem id='menu_score_management' name='Score-Card Management' parent='hr.menu_human_resources_configuration' groups="prime_sol_custom.group_score_card_admin"
-              sequence='5'/>
-    <menuitem id='menu_score_weightage' name='Score Weightage' parent='menu_score_management' sequence='10'
-              action="action_score_weightage"/>
+
 </odoo>

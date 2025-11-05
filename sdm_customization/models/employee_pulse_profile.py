@@ -5,7 +5,8 @@ class EmployeePulseProfile(models.Model):
     _rec_name = 'employee_id'
     _description = 'Employee Pulse Profile'
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, ondelete="cascade", readonly=True)
+    employee_id = fields.Many2one('hr.employee', string="Employee Name", required=True, ondelete="cascade")
+    comment = fields.Char('Comment')
 
     pre_probation_meeting_ids = fields.One2many(
         'employee.probation.meeting',

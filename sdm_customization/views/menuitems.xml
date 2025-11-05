@@ -2,14 +2,68 @@
     <!-- Main Menu -->
     <menuitem id="menu_sdm_root"
               name="SDM"
+              web_icon="sdm_customization,static/description/service_delivery.png"
               groups="sdm_customization.group_sdm"/>
+    <!--    Root Menus-->
+    <menuitem id="menu_employee_pulse_meeting_root"
+              name="Employee Pulse Meetings"
+              parent="sdm_customization.menu_sdm_root"
+              sequence="10"/>
+    <menuitem id="menu_attendance_dashboard_root"
+              name="Attendance Dashboard"
+              parent="sdm_customization.menu_sdm_root"
+              sequence="20"/>
+    <menuitem
+            id="scorecard_wizard_wizard"
+            parent="sdm_customization.menu_sdm_root"
+            name="Score Card"
+            action="prime_sol_custom.action_scorecard_wizard"
+            sequence="30"/>
+    <menuitem
+            id="menu_sdm_reporting"
+            parent="sdm_customization.menu_sdm_root"
+            name="Reporting"
+            sequence="40"/>
+    <menuitem id="menu_sdm_configurations_root"
+              name="Configurations"
+              parent="sdm_customization.menu_sdm_root"
+              sequence="100"/>
+
+
+    <!--            Sub-Menues-->
     <menuitem id="menu_employee_probation_meeting_root"
               name="Probation Meetings"
-              parent="sdm_customization.menu_sdm_root"
+              parent="sdm_customization.menu_employee_pulse_meeting_root"
               sequence="10"
               action="sdm_customization.action_employee_probation_meeting"/>
+    <menuitem id="menu_late_attendance_root" name="Late Attendances" groups="sdm_customization.group_sdm"
+              parent="sdm_customization.menu_attendance_dashboard_root" sequence="10"
+              action="action_attendance_dashboard"/>
+    <menuitem id="menu_employee_late_root"
+              name="Employee Late Records"
+              parent="sdm_customization.menu_attendance_dashboard_root"
+              action="action_employee_late_record"
+              sequence="20"/>
+    <menuitem id='menu_score_management' name='Score-Card Management'
+              parent='sdm_customization.menu_sdm_configurations_root' groups="prime_sol_custom.group_score_card_admin"
+              sequence='5'/>
+    <menuitem id='menu_score_weightage' name='Score Weightage' parent='menu_score_management' sequence='10'
+              action="prime_sol_custom.action_score_weightage"/>
+    <menuitem id="menu_tickets_feedbacks" parent="sdm_customization.menu_sdm_reporting"
+              name="Employee Weekly Tickets/Feedbacks"
+              action="prime_attendance_report.wizard_action_tickets_feedbacks"
+              sequence="20"/>
+    <menuitem
+            id="client_survey_menu_id"
+            parent="sdm_customization.menu_sdm_reporting"
+            name="Client Survey"
+            action="prime_sol_custom.action_client_survey_wizard"
+            sequence="40"/>
 
-    <menuitem id="menu_employee_pulse_root" name="Pulse Profile" parent="sdm_customization.menu_sdm_root"/>
-    <menuitem id="menu_employee_pulse_profile" name="Profiles" parent="menu_employee_pulse_root" action="sdm_customization.action_employee_pulse_profile"/>
+
+    <menuitem id="menu_employee_pulse_root" name="Pulse Profile"
+              parent="sdm_customization.menu_employee_pulse_meeting_root"/>
+    <menuitem id="menu_employee_pulse_profile" name="Profiles" parent="menu_employee_pulse_root"
+              action="sdm_customization.action_employee_pulse_profile"/>
 
 </odoo>

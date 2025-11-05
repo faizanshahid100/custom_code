@@ -11,7 +11,7 @@ class AttendanceDashboard(models.Model):
     _rec_name = 'employee_id'
     _description = 'Employees missing check-in after duty start + 20 minutes'
 
-    employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
+    employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
     duty_start = fields.Datetime(string='Duty Start', required=True)
     threshold = fields.Datetime(string='Threshold', required=True)
     check_in = fields.Datetime(string='Check-In (first today)', readonly=True)
@@ -151,9 +151,10 @@ class AttendanceDashboard(models.Model):
                            <b>Minutes Overdue:</b> {minutes_overdue}</p>
                         <p>Please check in immediately.</p>
                     """,
+                    'email_from': 'sdm@primesystemsolutions.com',
                     'email_to': emp.work_email,
                 }
-                # self.env['mail.mail'].sudo().create(mail_values).send()
+                self.env['mail.mail'].sudo().create(mail_values).send()
 
             # SDM group reminder every 60 min overdue
             # if minutes_overdue % 60 >= 1:
@@ -171,6 +172,7 @@ class AttendanceDashboard(models.Model):
                                    <b>Allowed Threshold:</b> {threshold_local}<br/>
                                    <b>Overdue:</b> {minutes_overdue} minutes</p>
                             """,
+                            'email_from': 'sdm@primesystemsolutions.com',
                             'email_to': group_emails,
                             'email_cc': emp.work_email or "",
                         }
