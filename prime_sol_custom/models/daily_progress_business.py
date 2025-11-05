@@ -20,9 +20,11 @@ class DailyProgress(models.Model):
         ('ap', 'Accounts Payable'),
         ('ar', 'Accounts Receivable'),
         ('sa', 'Senior Accountant'),
+        ('sae', 'Senior Accountant Edria'),
         ('cas', 'Corporate Accounting Supervisor'),
         ('aps', 'Associate Procurement Specialist'),
         ('ps', 'Procurement Specialist'),
+        ('tas', 'Talent Acquisition Specialist'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -130,6 +132,47 @@ class DailyProgress(models.Model):
 
 
     description = fields.Html(string='Description')
+
+    # Senior Accountant Edria
+    is_posting_on_ramp = fields.Selection(
+        yes_no_selection, string='Finish posting on RAMP before AP close', default='no'
+    )
+    is_accrual_post = fields.Selection(
+        yes_no_selection, string='The post accrual should be before the 10th. Normally they target to complete financials on/before the 10.', default='no'
+    )
+    is_prepaid_expenses_floqast = fields.Selection(
+        yes_no_selection, string='prepaid expenses -post current month transactions to floqast before 10th', default='no'
+    )
+    is_ma_transaction_post = fields.Selection(
+        yes_no_selection, string='M&A Transactions posting - same 10th of the month', default='no'
+    )
+    is_recon_fixed_asset = fields.Selection(
+        yes_no_selection, string='Recon Fixed Asset - same 10th of the month', default='no'
+    )
+    is_post_bills_before_ap = fields.Selection(
+        yes_no_selection, string='Bills - Post bills before AP closes (temporary helping Usman)', default='no'
+    )
+
+    # Talent Acquisition Specialist
+    positions_assigned = fields.Integer(string='Positions Assigned')
+    number_of_positions = fields.Integer(string='Number of Positions')
+    application_review = fields.Integer(string='Application Review')
+    sourcing = fields.Integer(string='Sourcing')
+    candidate_screening = fields.Integer(string='Candidate Screening')
+    scheduling = fields.Integer(string='Scheduling')
+    is_weekly_check_in = fields.Selection(
+        yes_no_selection, string='Weekly Check-in', default='no'
+    )
+    intake_calls = fields.Integer(string='Intake Calls')
+    is_weekly_market_insights_meeting = fields.Selection(
+        yes_no_selection, string='Weekly market insights meeting', default='no'
+    )
+    is_li_talent_insights_meeting = fields.Selection(
+        yes_no_selection, string='LI Talent insights meeting', default='no'
+    )
+    is_quarterly_report_presented = fields.Selection(
+        yes_no_selection, string='Quarterly Report Presented (To be filled in each Quarter)', default='no'
+    )
 
 
     @api.constrains('date_of_project', 'resource_user_id')
