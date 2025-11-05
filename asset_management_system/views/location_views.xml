@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_asset_management_location_tree" model="ir.ui.view">
+        <field name="name">asset.management.location.tree</field>
+        <field name="model">asset.management.location</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_asset_management_location_form" model="ir.ui.view">
+        <field name="name">asset.management.location.form</field>
+        <field name="model">asset.management.location</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"
+                           options="{'post_refresh': 'recipients'}"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_management_location" model="ir.actions.act_window">
+        <field name="name">Locations</field>
+        <field name="res_model">asset.management.location</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

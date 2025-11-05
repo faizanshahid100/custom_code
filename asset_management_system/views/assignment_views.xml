@@ -1,0 +1,71 @@
+<odoo>
+    <record id="view_asset_management_assignment_tree" model="ir.ui.view">
+        <field name="name">asset.management.assignment.tree</field>
+        <field name="model">asset.management.assignment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="assignee_employee_id"/>
+                <field name="location_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_asset_management_assignment_form" model="ir.ui.view">
+        <field name="name">asset.management.assignment.form</field>
+        <field name="model">asset.management.assignment</field>
+        <field name="arch" type="xml">
+            <form string="Asset Assignment">
+                <header>
+                    <button name="action_set_in_store" type="object" string="In Store" class="oe_highlight"
+                            states="in_running,in_repair,scraped"/>
+                    <button name="action_set_in_running" type="object" string="In Running" class="oe_highlight" states="in_store"/>
+                    <button name="action_set_in_repair" type="object" string="In Repair" class="oe_highlight" states="in_store"/>
+                    <button name="action_set_scraped" type="object" string="Scraped" class="oe_highlight"
+                            states="in_store"/>
+                    <field name="state" widget="statusbar" statusbar_visible="in_store,in_running,in_repair,scraped"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <group>
+                            <field name="date"/>
+                            <field name="employee_id"/>
+                        </group>
+                        <group>
+                            <field name="assignee_employee_id"/>
+                            <field name="location_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Assets">
+                            <field name="asset_line_ids">
+                                <tree editable="bottom">
+                                    <field name="asset_id" domain="[('is_allotted', '!=', True)]"/>
+                                    <field name="serial_no"/>
+                                    <field name="model_name"/>
+                                    <field name="processor"/>
+                                    <field name="ram"/>
+                                    <field name="storage"/>
+                                    <field name="condition_rating"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"
+                           options="{'post_refresh': 'recipients'}"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="action_asset_management_assignment" model="ir.actions.act_window">
+        <field name="name">Assignments</field>
+        <field name="res_model">asset.management.assignment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
