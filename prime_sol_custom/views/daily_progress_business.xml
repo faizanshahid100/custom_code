@@ -291,7 +291,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Post accrual should be before the 10th.</td>
+                                                <td>Post accrual before the 10th.</td>
                                                 <td>10th Business Day</td>
                                                 <td>
                                                     <field name="is_accrual_post" widget="radio"
@@ -325,7 +325,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Bills - Post bills before AP closes (temporary helping Usman)</td>
+                                                <td>Bills - Post bills before AP closes</td>
                                                 <td>5th Business Day</td>
                                                 <td>
                                                     <field name="is_post_bills_before_ap" widget="radio"
@@ -537,14 +537,14 @@
                                             <tr>
                                                 <td>Weekly market insights meeting</td>
                                                 <td>
-                                                    <field name="is_weekly_check_in" widget="radio"
+                                                    <field name="is_weekly_market_insights_meeting" widget="radio"
                                                            class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>LI Talent insights meeting</td>
                                                 <td>
-                                                    <field name="is_weekly_check_in" widget="radio"
+                                                    <field name="is_li_talent_insights_meeting" widget="radio"
                                                            class="o_horizontal_radio"/>
                                                 </td>
                                             </tr>
@@ -578,16 +578,254 @@
 
                         </page>
 
+                        <!-- Billing Specialist -->
+                        <page string="Billing Specialist" attrs="{'invisible': [('finance_area', '!=', 'bs')]}">
+                            <group>
+                                <field name="number_of_invoice"/>
+                                <field name="number_of_tickets_resolved"/>
+                                <field name="recovery_of_disputes"/>
+                            </group>
+                        </page>
+
+                        <!-- Senior Talent Acquisition Specialist -->
+                        <page string="Senior Talent Acquisition Specialist"
+                              attrs="{'invisible': [('finance_area', '!=', 'stas')]}">
+
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+
+<!--                            <group string="Positions Assigned">-->
+<!--                                <field name="positions_assigned"/>-->
+<!--                                <field name="number_of_positions"/>-->
+<!--                                <field name="application_review"/>-->
+<!--                                <field name="sourcing"/>-->
+<!--                                <field name="candidate_screening"/>-->
+<!--                                <field name="scheduling"/>-->
+<!--                            </group>-->
+
+                            <group string="Positions Assigned">
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:40%;">KPI</th>
+                                                <th style="width:30%;">Criteria</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Positions Assigned</td>
+                                                <td>
+                                                    <field name="positions_assigned"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Number of Positions</td>
+                                                <td>
+                                                    <field name="number_of_positions"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Application Review</td>
+                                                <td>
+                                                    <field name="application_review"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sourcing</td>
+                                                <td>
+                                                    <field name="sourcing"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Candidate Screening</td>
+                                                <td>
+                                                    <field name="candidate_screening"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Scheduling</td>
+                                                <td>
+                                                    <field name="scheduling"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Average time to hire (60-90 Days)</td>
+                                                <td>
+                                                    <field name="average_time_hiring" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                            <group string="Data &amp; Reporting">
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+<!--                                        <thead>-->
+<!--                                            <tr>-->
+<!--                                                <th style="width:40%;">Task</th>-->
+<!--                                                <th style="width:30%;">Yes/No</th>-->
+<!--                                            </tr>-->
+<!--                                        </thead>-->
+                                        <tbody>
+                                            <tr>
+                                                <td>Weekly market insights meeting (HRBP Meeting)</td>
+                                                <td>
+                                                    <field name="is_weekly_market_insights_meeting" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Weekly Recruiting Meeting with the Managers</td>
+                                                <td>
+                                                    <field name="is_recruiting_meeting" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                        </page>
+
+                        <!-- Senior Accountant - Lorena -->
+                        <page string="Senior Accountant - Lorena"
+                              attrs="{'invisible': [('finance_area', '!=', 'sal')]}">
+
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:40%;">KPI</th>
+                                                <th style="width:30%;">Criteria</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Number of transactions recorded this week</td>
+                                                <td>
+                                                    <field name="number_of_transactions"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>All Bank statements uploaded and Organized by 5th Business day of each month</td>
+                                                <td>
+                                                    <field name="bank_statements_uploaded" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Monthly Recon of 21 bank accounts</td>
+                                                <td>
+                                                    <field name="monthly_recons" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Daily bank transactions list updated</td>
+                                                <td>
+                                                    <field name="bank_transactions_updated" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Daily bank transactions categorized correctly</td>
+                                                <td>
+                                                    <field name="bank_transactions_categorized" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Month-end closing issues resolved timely</td>
+                                                <td>
+                                                    <field name="month_end_closing_issues_resolved" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                        </page>
+
                     </notebook>
                     <br/>
                     <br/>
                     <br/>
-                    <group attrs="{'invisible': [('finance_area', '!=', 'tas')]}">
+                    <group attrs="{'invisible': [('finance_area', 'not in', ['tas', 'stas'])]}">
                         <field name="description" string="Any Ad Hoc Tasks/Project Management assigned"
                                placeholder="Type '/' for commands"/>
                     </group>
 
-                    <group attrs="{'invisible': [('finance_area', '=', 'tas')]}">
+                    <group attrs="{'invisible': [('finance_area', 'in', ['tas', 'stas'])]}">
                         <field name="description" placeholder="Type '/' for commands"/>
                     </group>
                 </sheet>
