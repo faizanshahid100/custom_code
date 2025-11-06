@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Item under Attendances -->
+    <menuitem id="menu_connect_wise_attendance_root"
+              name="ConnectWise Attendance"
+              parent="hr_attendance.menu_hr_attendance_root"
+              sequence="10"/>
+
+    <menuitem id="menu_connect_wise_attendance" name="connect Wise Attendance" parent="menu_connect_wise_attendance_root" action="action_connect_wise_attendance" sequence="10"/>
+              
+    <!-- Import XML Menu -->
+    <menuitem id="menu_xml_import"
+              name="Import XML"
+              parent="menu_connect_wise_attendance_root"
+              action="action_xml_import_wizard"
+              sequence="20"/>
+</odoo>

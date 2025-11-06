@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_connect_wise_attendance_form" model="ir.ui.view">
+        <field name="name">connect.wise.attendance.form</field>
+        <field name="model">connect.wise.attendance</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Tags">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="employee_id"/>
+                        <field name="date"/>
+                    </group>
+                    <group string="Tags">
+                        <group>
+                            <field name="tag_urgent"/>
+                            <field name="tag_priority"/>
+                            <field name="tag_completed"/>
+                            <field name="tag_pending"/>
+                            <field name="tag_approved"/>
+                        </group>
+                        <group>
+                            <field name="tag_rejected"/>
+                            <field name="tag_review"/>
+                            <field name="tag_draft"/>
+                            <field name="tag_active"/>
+                            <field name="tag_inactive"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_connect_wise_attendance_tree" model="ir.ui.view">
+        <field name="name">connect.wise.attendance.tree</field>
+        <field name="model">connect.wise.attendance</field>
+        <field name="arch" type="xml">
+            <tree string="Attendance Tags">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="date"/>
+                <field name="tag_urgent"/>
+                <field name="tag_priority"/>
+                <field name="tag_completed"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_connect_wise_attendance" model="ir.actions.act_window">
+        <field name="name">ConnectWise Attendance</field>
+        <field name="res_model">connect.wise.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first attendance tag record!
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- XML Import Wizard Form -->
+    <record id="view_xml_import_wizard_form" model="ir.ui.view">
+        <field name="name">xml.import.wizard.form</field>
+        <field name="model">xml.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import XML File">
+                <group>
+                    <field name="xml_file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="import_xml" string="Import" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- XML Import Action -->
+    <record id="action_xml_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import XML File</field>
+        <field name="res_model">xml.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
