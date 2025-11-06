@@ -3,5 +3,7 @@
 
     <menuitem id="menu_asset_management_assignment" name="Assignments" parent="menu_asset_root" action="action_asset_management_assignment" sequence="10"/>
     <menuitem id="menu_asset_management_assets" name="Assets" parent="menu_asset_root" action="action_asset_management_asset" sequence="20"/>
-    <menuitem id="menu_asset_management_location" name="Locations" parent="menu_asset_root" action="action_asset_management_location" sequence="30"/>
+    <menuitem id="menu_asset_management_category" name="Assets Category" parent="menu_asset_root" action="action_asset_management_category" sequence="30"/>
+    <menuitem id="menu_asset_management_location" name="Locations" parent="menu_asset_root" action="action_asset_management_location" sequence="40"/>
+
 </odoo>

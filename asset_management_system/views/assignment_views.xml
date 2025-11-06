@@ -6,7 +6,7 @@
             <tree>
                 <field name="date"/>
                 <field name="employee_id"/>
-                <field name="assignee_employee_id"/>
+                <field name="assignee_user_id"/>
                 <field name="location_id"/>
             </tree>
         </field>
@@ -18,28 +18,33 @@
         <field name="arch" type="xml">
             <form string="Asset Assignment">
                 <header>
-                    <button name="action_set_in_store" type="object" string="In Store" class="oe_highlight"
+                    <button name="action_set_in_store" type="object" string="Return Assets" class="oe_highlight"
                             states="in_running"/>
-                    <button name="action_set_in_running" type="object" string="In Running" class="oe_highlight" states="in_store"/>
+                    <button name="action_set_in_running" type="object" string="Allot Assets" class="oe_highlight"
+                            states="in_store"/>
                     <field name="state" widget="statusbar" statusbar_visible="in_store,in_running,in_repair,scraped"/>
                 </header>
                 <sheet>
-                    <group>
+                    <h2>
                         <field name="name"/>
+                    </h2>
+                    <group>
                         <group>
-                            <field name="date"/>
-                            <field name="employee_id"/>
+                            <field name="date" attrs="{'readonly': [('state', '!=', 'in_store')]}"/>
+                            <field name="employee_id" attrs="{'readonly': [('state', '!=', 'in_store')]}"/>
                         </group>
                         <group>
-                            <field name="assignee_employee_id"/>
-                            <field name="location_id"/>
+                            <field name="assignee_user_id"/>
+                            <field name="location_id" attrs="{'readonly': [('state', '!=', 'in_store')]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Assets">
                             <field name="asset_line_ids" attrs="{'readonly': [('state', '!=', 'in_store')]}">
                                 <tree editable="bottom">
-                                    <field name="asset_id" domain="[('is_allotted', '!=', True), ('is_in_repair', '!=', True), ('is_in_scrap', '!=', True)]"/>
+                                    <field name="asset_category_id"/>
+                                    <field name="asset_id"
+                                           domain="[('is_allotted', '!=', True), ('is_in_repair', '!=', True), ('is_in_scrap', '!=', True), ('asset_category_id', '=', asset_category_id)]"/>
                                     <field name="serial_no"/>
                                     <field name="model_name"/>
                                     <field name="processor"/>

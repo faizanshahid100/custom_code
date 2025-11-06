@@ -7,6 +7,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
+        'views/asset_management_category_view.xml',
         'views/asset_views.xml',
         'views/location_views.xml',
         'views/assignment_views.xml',
