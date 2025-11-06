@@ -19,11 +19,8 @@
             <form string="Asset Assignment">
                 <header>
                     <button name="action_set_in_store" type="object" string="In Store" class="oe_highlight"
-                            states="in_running,in_repair,scraped"/>
+                            states="in_running"/>
                     <button name="action_set_in_running" type="object" string="In Running" class="oe_highlight" states="in_store"/>
-                    <button name="action_set_in_repair" type="object" string="In Repair" class="oe_highlight" states="in_store"/>
-                    <button name="action_set_scraped" type="object" string="Scraped" class="oe_highlight"
-                            states="in_store"/>
                     <field name="state" widget="statusbar" statusbar_visible="in_store,in_running,in_repair,scraped"/>
                 </header>
                 <sheet>
@@ -40,9 +37,9 @@
                     </group>
                     <notebook>
                         <page string="Assets">
-                            <field name="asset_line_ids">
+                            <field name="asset_line_ids" attrs="{'readonly': [('state', '!=', 'in_store')]}">
                                 <tree editable="bottom">
-                                    <field name="asset_id" domain="[('is_allotted', '!=', True)]"/>
+                                    <field name="asset_id" domain="[('is_allotted', '!=', True), ('is_in_repair', '!=', True), ('is_in_scrap', '!=', True)]"/>
                                     <field name="serial_no"/>
                                     <field name="model_name"/>
                                     <field name="processor"/>

@@ -21,6 +21,14 @@
         <field name="model">asset.management.asset</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_set_in_store" type="object" string="In Store" class="oe_highlight"
+                            states="in_repair,scraped"/>
+                    <button name="action_set_in_repair" type="object" string="In Repair" class="oe_highlight" states="in_store"/>
+                    <button name="action_set_scraped" type="object" string="Scraped" class="oe_highlight"
+                            states="in_store"/>
+                    <field name="state" widget="statusbar" statusbar_visible="in_store,in_running,in_repair,scraped"/>
+                </header>
                 <sheet>
                     <field name="sequence_no" readonly="1"/>
                     <group>
@@ -29,8 +37,10 @@
                             <field name="serial_no"/>
                             <field name="model_name"/>
                             <field name="processor"/>
-                            <field name="is_allotted" readonly="0"/>
-                            <field name="assigned_id" attrs="{'invisible': [('is_allotted', '=', False)]}"/>
+                            <field name="is_allotted" readonly="1"/>
+                            <field name="assigned_id" readonly="1"/>
+                            <field name="is_in_repair" readonly="1"/>
+                            <field name="is_in_scrap" readonly="1"/>
                         </group>
                         <group>
                             <field name="ram"/>
