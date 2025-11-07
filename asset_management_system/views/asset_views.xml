@@ -57,21 +57,21 @@
                             <field name="comments"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Usage History">
-                            <field name="asset_history_line_ids" readonly="0">
-                                <tree editable="bottom">
-                                    <field name="employee_id"/>
-                                    <field name="assign_date"/>
-                                    <field name="return_date"/>
-                                    <field name="assigned_by_id"/>
-                                    <field name="return_by_id"/>
-                                    <field name="assignment_id"/>
-                                    <field name="asset_id" invisible="1"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
+<!--                    <notebook>-->
+<!--                        <page string="Usage History">-->
+<!--                            <field name="asset_history_line_ids" readonly="0">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="employee_id"/>-->
+<!--                                    <field name="assign_date"/>-->
+<!--                                    <field name="return_date"/>-->
+<!--                                    <field name="assigned_by_id"/>-->
+<!--                                    <field name="return_by_id"/>-->
+<!--                                    <field name="assignment_id"/>-->
+<!--                                    <field name="asset_id" invisible="1"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"
