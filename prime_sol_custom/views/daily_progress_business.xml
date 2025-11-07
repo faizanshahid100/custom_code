@@ -816,6 +816,149 @@
 
                         </page>
 
+                        <!-- Lead - Accounts Payable Specialist -->
+                        <page string="Lead - Accounts Payable Specialist" attrs="{'invisible': [('finance_area', '!=', 'laps')]}">
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:25%;">Task</th>
+                                                <th style="width:25%;">Target/Expectation</th>
+                                                <th style="width:25%;">Target Achieved</th>
+                                                <th style="width:25%;">Deadline Met?</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Invoice Processing Time</td>
+                                                <td>≤ 2 business days</td>
+                                                <td/>
+                                                <td>
+                                                    <field name="invoice_processing_time" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Payment On-Time Ratio</td>
+                                                <td>≥ 95%</td>
+                                                <td>
+                                                    <field name="payment_on_time_ratio" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Vendor Reconciliation Accuracy</td>
+                                                <td>≥ 98%</td>
+                                                <td>
+                                                    <field name="vendor_reconciliation_accuracy" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Approval Turnaround Time</td>
+                                                <td>≤ 1 business day</td>
+                                                <td/>
+                                                <td>
+                                                    <field name="approval_turnaround_time" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Automation Utilization Rate</td>
+                                                <td>≥ 60%</td>
+                                                <td>
+                                                    <field name="automation_utilization_rate" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Exception/Error Rate</td>
+                                                <td>≤ 3%</td>
+                                                <td>
+                                                    <field name="exception_error_rate" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Duplicate Invoice Detection</td>
+                                                <td>≤ 1%</td>
+                                                <td>
+                                                    <field name="duplicate_invoice_detection" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Vendor Query Resolution Time</td>
+                                                <td>≤ 24 hours</td>
+                                                <td>
+                                                    <field name="vendor_query_resolution_time" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Monthly AP Reporting Accuracy</td>
+                                                <td>100% accuracy</td>
+                                                <td>
+                                                    <field name="monthly_ap_reporting_accuracy" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                            <tr>
+                                                <td>Audit Readiness</td>
+                                                <td>100% at audit time</td>
+                                                <td>
+                                                    <field name="audit_readiness" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                                <td/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                        </page>
+
                     </notebook>
                     <br/>
                     <br/>
