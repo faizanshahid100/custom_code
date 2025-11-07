@@ -816,8 +816,8 @@
 
                         </page>
 
-                        <!-- Lead - Accounts Payable Specialist -->
-                        <page string="Lead - Accounts Payable Specialist" attrs="{'invisible': [('finance_area', '!=', 'laps')]}">
+                        <!-- Lead - Accounts Payable -->
+                        <page string="Lead - Accounts Payable" attrs="{'invisible': [('finance_area', '!=', 'lap')]}">
                             <style>
                                 .sa-table th, .sa-table td {
                                 border: 1px solid #e0e0e0;
