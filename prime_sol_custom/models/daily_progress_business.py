@@ -171,12 +171,14 @@ class DailyProgress(models.Model):
     is_weekly_market_insights_meeting = fields.Selection(
         yes_no_selection, string='Weekly market insights meeting', default='no'
     )
+    weekly_follow_up = fields.Integer(string='Weekly 1:1s and Follow-up')
     is_li_talent_insights_meeting = fields.Selection(
         yes_no_selection, string='LI Talent insights meeting', default='no'
     )
     is_quarterly_report_presented = fields.Selection(
         yes_no_selection, string='Quarterly Report Presented (To be filled in each Quarter)', default='no'
     )
+    additional_meeting = fields.Integer(string='Additional Meetings')
 
     # Billing Specialist
     number_of_invoice = fields.Integer(string="Number of invoices issued per week")
