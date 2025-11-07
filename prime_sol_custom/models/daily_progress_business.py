@@ -28,7 +28,7 @@ class DailyProgress(models.Model):
         ('bs', 'Billing Specialist'),
         ('stas', 'Senior Talent Acquisition Specialist'),
         ('sal', 'Senior Accountant - Lorena'),
-        ('laps', 'Lead - Accounts Payable Specialist'),
+        ('lap', 'Lead - Accounts Payable'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -209,7 +209,7 @@ class DailyProgress(models.Model):
         yes_no_selection, string='Month-end closing issues resolved timely', default='no'
     )
 
-    # Lead - Accounts Payable Specialist
+    # Lead - Accounts Payable
     invoice_processing_time = fields.Selection(
         yes_no_selection, string='Invoice Processing Time'
     )
