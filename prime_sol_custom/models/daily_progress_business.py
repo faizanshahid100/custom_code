@@ -28,6 +28,7 @@ class DailyProgress(models.Model):
         ('bs', 'Billing Specialist'),
         ('stas', 'Senior Talent Acquisition Specialist'),
         ('sal', 'Senior Accountant - Lorena'),
+        ('laps', 'Lead - Accounts Payable Specialist'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -206,6 +207,38 @@ class DailyProgress(models.Model):
     )
     month_end_closing_issues_resolved = fields.Selection(
         yes_no_selection, string='Month-end closing issues resolved timely', default='no'
+    )
+
+    # Lead - Accounts Payable Specialist
+    invoice_processing_time = fields.Selection(
+        yes_no_selection, string='Invoice Processing Time'
+    )
+    payment_on_time_ratio = fields.Selection(
+        yes_no_selection, string='Payment On-Time Ratio'
+    )
+    vendor_reconciliation_accuracy = fields.Selection(
+        yes_no_selection, string='Vendor Reconciliation Accuracy'
+    )
+    approval_turnaround_time = fields.Selection(
+        yes_no_selection, string='Approval Turnaround Time'
+    )
+    automation_utilization_rate = fields.Selection(
+        yes_no_selection, string='Automation Utilization Rate'
+    )
+    exception_error_rate = fields.Selection(
+        yes_no_selection, string='Exception/Error Rate'
+    )
+    duplicate_invoice_detection = fields.Selection(
+        yes_no_selection, string='Duplicate Invoice Detection'
+    )
+    vendor_query_resolution_time = fields.Selection(
+        yes_no_selection, string='Vendor Query Resolution Time'
+    )
+    monthly_ap_reporting_accuracy = fields.Selection(
+        yes_no_selection, string='Monthly AP Reporting Accuracy'
+    )
+    audit_readiness = fields.Selection(
+        yes_no_selection, string='Audit Readiness'
     )
 
 
