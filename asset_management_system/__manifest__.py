@@ -5,6 +5,7 @@
     'author': 'Farooq Butt | Prime System Solutions',
     'depends': ['base', 'hr'],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'views/asset_management_category_view.xml',
