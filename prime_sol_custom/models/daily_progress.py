@@ -19,8 +19,16 @@ class DailyProgress(models.Model):
     week_of_year = fields.Char(string="Week of the Year", compute="_compute_week_of_year", store=True)
     year_of_kpi = fields.Char(string="KPI Year")
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')
-    ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned')
+    ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned--')
+
     avg_resolved_ticket = fields.Integer(string='Tasks / Tickets Resolved')
+    avg_assigned_ticket = fields.Integer(
+        string='Tasks / Tickets Assigned',
+        compute='_compute_avg_assigned_ticket',
+        store=True
+    )
+    ticket_percentage = fields.Float(string='Weekly Ticket %')
+
     avg_resolution_time = fields.Integer(string='Avg. Resolution Time (min.)')
     csat_new = fields.Float(string='CSAT %')
     billable_hours = fields.Float(string='Billable Hours %')
@@ -72,6 +80,9 @@ class DailyProgress(models.Model):
                         "Please contact a KPI Manager to proceed."
                     )
         record = super(DailyProgress, self).create(vals)
+        if record.resource_user_id and record.week_of_year:
+            record._recalculate_weekly_ticket_percentage(record.resource_user_id, record.week_of_year)
+
         if record.resource_user_id:
             employee = record.resource_user_id.employee_id
             if not employee:
@@ -362,4 +373,56 @@ class DailyProgress(models.Model):
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
 
+    @api.depends('resource_user_id')
+    def _compute_avg_assigned_ticket(self):
+        for rec in self:
+            rec.avg_assigned_ticket = (
+                rec.resource_user_id.employee_id.d_ticket_resolved
+                if rec.resource_user_id and rec.resource_user_id.employee_id
+                else 0
+            )
+
+    # @api.onchange('avg_assigned_ticket', 'avg_resolved_ticket')
+    # def _update_ticket_percentage(self):
+    #     """
+    #     When assigned/resolved tickets change, calculate weekly performance
+    #     for all records of same resource_user_id and week_of_year.
+    #     """
+    #     for rec in self:
+    #         # find all records of same user & week
+    #         records = self.env['daily.progress'].search([
+    #             ('resource_user_id', '=', rec.resource_user_id.id),
+    #             ('week_of_year', '=', rec.week_of_year)
+    #         ])
+    #
+    #         if records:
+    #             total_assigned = sum(records.mapped('avg_assigned_ticket'))
+    #             total_resolved = sum(records.mapped('avg_resolved_ticket'))
+    #
+    #             percentage = 0.0
+    #             if total_assigned > 0:
+    #                 percentage = (total_resolved / total_assigned) * 100
+    #
+    #             # update all related records
+    #             records.write({'ticket_percentage': percentage})
+
+    def _recalculate_weekly_ticket_percentage(self, resource_user_id, week_of_year):
+        """
+        Recalculate ticket percentage for all records of the given user and week_of_year.
+        Use sudo() to prevent triggering the write() method again.
+        """
+        records = self.env['daily.progress'].sudo().search([
+            ('resource_user_id', '=', resource_user_id.id),
+            ('week_of_year', '=', week_of_year)
+        ])
+        if records:
+            total_assigned = sum(records.mapped('avg_assigned_ticket'))
+            total_resolved = sum(records.mapped('avg_resolved_ticket'))
+
+            percentage = 0.0
+            if total_assigned > 0:
+                percentage = round((total_resolved / total_assigned) * 100, 2)
+
+            # Use sudo() to prevent recursion
+            records.sudo().write({'ticket_percentage': percentage})
 
