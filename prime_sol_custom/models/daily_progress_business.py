@@ -29,6 +29,7 @@ class DailyProgress(models.Model):
         ('stas', 'Senior Talent Acquisition Specialist'),
         ('sal', 'Senior Accountant - Lorena'),
         ('lap', 'Lead - Accounts Payable'),
+        ('ces', 'Community Engagement Specialist'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -242,6 +243,18 @@ class DailyProgress(models.Model):
     audit_readiness = fields.Selection(
         yes_no_selection, string='Audit Readiness'
     )
+
+    # Community Engagement Specialist
+    number_of_inquiries = fields.Integer(string="No. of Inquiries")
+    number_of_inquiries_resolved = fields.Integer(string="No. of Inquiries resolved")
+    number_invoices_generated = fields.Integer(string="No. of invoices generated")
+    training_sessions_conducted = fields.Char(string="Training Sessions Conducted")
+    number_of_task_assigned = fields.Integer(string="No. of Task Assigned")
+    number_of_task_completed = fields.Integer(string="No. of Task Completed")
+    rep_report_Generated = fields.Selection(
+        yes_no_selection, string='Rep Report Generated', default='no'
+    )
+    number_of_Vendor_Rep_Report = fields.Integer(string="Vendor Rep Report Generated")
 
 
     @api.constrains('date_of_project', 'resource_user_id')

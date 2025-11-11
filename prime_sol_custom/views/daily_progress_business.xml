@@ -969,6 +969,66 @@
 
                         </page>
 
+                        <!-- Community Engagement Specialist -->
+                        <page string="Community Engagement Specialist" attrs="{'invisible': [('finance_area', '!=', 'ces')]}">
+                            <style>
+                                .sa-table th, .sa-table td {
+                                border: 1px solid #e0e0e0;
+                                padding: 8px 10px;
+                                text-align: center;
+                                }
+                                .sa-table th {
+                                background-color: #f9fafb;
+                                color: #333;
+                                font-weight: 600;
+                                }
+                                .sa-table td:first-child {
+                                text-align: left;
+                                font-weight: 500;
+                                color: #2b2b2b;
+                                }
+                                .sa-section-title {
+                                background-color: #f0f4f8;
+                                color: #1a237e;
+                                padding: 8px 12px;
+                                border-radius: 6px;
+                                font-weight: bold;
+                                margin: 10px 0;
+                                font-size: 15px;
+                                }
+                                .o_horizontal_radio .o_radio_item {
+                                display: inline-block !important;
+                                margin-right: 12px;
+                                }
+                            </style>
+                            <group>
+                                <field name="number_of_inquiries"/>
+                                <field name="number_of_inquiries_resolved"/>
+                                <field name="number_invoices_generated"/>
+                                <field name="training_sessions_conducted"/>
+                                <field name="number_of_task_assigned"/>
+                                <field name="number_of_task_completed"/>
+                                <field name="number_of_Vendor_Rep_Report"/>
+                            </group>
+                            <group>
+                                <div class="sa-section-title"/>
+                                <div style="overflow-x: auto; margin-bottom: 20px;">
+                                    <table class="o_group o_inner_group sa-table" style="width:100%; font-size:13px;">
+                                        <tbody>
+                                            <tr>
+                                                <td>Rep Report Generated</td>
+                                                <td>
+                                                    <field name="rep_report_Generated" widget="radio"
+                                                           class="o_horizontal_radio"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </group>
+
+                        </page>
+
                     </notebook>
                     <br/>
                     <br/>
