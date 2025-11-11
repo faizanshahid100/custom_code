@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="group_asset_management_manager" model="res.groups">
+        <field name="name">Asset Management Manager</field>
+        <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+        <field name="comment">Managers can configure and manage all assets, categories, and assignments.</field>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

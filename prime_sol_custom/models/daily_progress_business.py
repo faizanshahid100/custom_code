@@ -20,9 +20,15 @@ class DailyProgress(models.Model):
         ('ap', 'Accounts Payable'),
         ('ar', 'Accounts Receivable'),
         ('sa', 'Senior Accountant'),
+        ('sae', 'Senior Accountant Edria'),
         ('cas', 'Corporate Accounting Supervisor'),
         ('aps', 'Associate Procurement Specialist'),
         ('ps', 'Procurement Specialist'),
+        ('tas', 'Talent Acquisition Specialist'),
+        ('bs', 'Billing Specialist'),
+        ('stas', 'Senior Talent Acquisition Specialist'),
+        ('sal', 'Senior Accountant - Lorena'),
+        ('lap', 'Lead - Accounts Payable'),
     ], default='fpna', string="Finance Area", required=True)
     # Financial Planning & Analysis
     project = fields.Char(string='Task/Project')
@@ -59,47 +65,47 @@ class DailyProgress(models.Model):
     ]
 
     is_accrued_expenses = fields.Selection(
-        yes_no_selection, string='Accrued Expenses | 3rd Business Day', default='no'
+        yes_no_selection, string='Accrued Expenses | 3rd Business Day'
     )
     is_decommissioning = fields.Selection(
-        yes_no_selection, string='Decommissioning | -2 Business Day', default='no'
+        yes_no_selection, string='Decommissioning | -2 Business Day'
     )
     is_leases = fields.Selection(
-        yes_no_selection, string='Leases | 1st Business Day', default='no'
+        yes_no_selection, string='Leases | 1st Business Day'
     )
     is_other_current_assets = fields.Selection(
-        yes_no_selection, string='Other Current Assets | 3rd Business Day', default='no'
+        yes_no_selection, string='Other Current Assets | 3rd Business Day'
     )
     is_prepaid_expenses = fields.Selection(
-        yes_no_selection, string='Prepaid Expenses | 3rd Business Day', default='no'
+        yes_no_selection, string='Prepaid Expenses | 3rd Business Day'
     )
     is_third_party_borrowing = fields.Selection(
-        yes_no_selection, string='Third Party Borrowing | 2nd Business Day', default='no'
+        yes_no_selection, string='Third Party Borrowing | 2nd Business Day'
     )
     is_aro = fields.Selection(
-        yes_no_selection, string='ARO | -1 Business Day', default='no'
+        yes_no_selection, string='ARO | -1 Business Day'
     )
 
     is_depreciation_schedules = fields.Selection(
-        yes_no_selection, string='Depreciation Schedules | 2nd Business Day', default='no'
+        yes_no_selection, string='Depreciation Schedules | 2nd Business Day'
     )
     depreciation_schedules = fields.Char(
         string='Depreciation Schedules Description | 2nd Business Day'
     )
     is_net_assets_schedules = fields.Selection(
-        yes_no_selection, string='Net Assets Schedules | 15th Business Day', default='no'
+        yes_no_selection, string='Net Assets Schedules | 15th Business Day'
     )
     is_intangible_assets_schedules = fields.Selection(
-        yes_no_selection, string='Intangible Assets Schedules | 2nd Business Day', default='no'
+        yes_no_selection, string='Intangible Assets Schedules | 2nd Business Day'
     )
     is_intercompany_ar_ap_schedule = fields.Selection(
-        yes_no_selection, string='Intercompany A/R & A/P Schedules | 10th Business Day', default='no'
+        yes_no_selection, string='Intercompany A/R & A/P Schedules | 10th Business Day'
     )
     intercompany_ar_ap_schedule = fields.Char(
         string='Intercompany A/R & A/P Schedules Description | 10th Business Day'
     )
     is_cash_reconcile = fields.Selection(
-        yes_no_selection, string='Cash Reconciliation | 3rd Business Day', default='no'
+        yes_no_selection, string='Cash Reconciliation | 3rd Business Day'
     )
     cash_reconcile = fields.Char(
         string='Cash Reconciliation Description | 3rd Business Day'
@@ -130,6 +136,112 @@ class DailyProgress(models.Model):
 
 
     description = fields.Html(string='Description')
+
+    # Senior Accountant Edria
+    is_posting_on_ramp = fields.Selection(
+        yes_no_selection, string='Finish posting on RAMP before AP close', default='no'
+    )
+    is_accrual_post = fields.Selection(
+        yes_no_selection, string='The post accrual should be before the 10th. Normally they target to complete financials on/before the 10.', default='no'
+    )
+    is_prepaid_expenses_floqast = fields.Selection(
+        yes_no_selection, string='prepaid expenses -post current month transactions to floqast before 10th', default='no'
+    )
+    is_ma_transaction_post = fields.Selection(
+        yes_no_selection, string='M&A Transactions posting - same 10th of the month', default='no'
+    )
+    is_recon_fixed_asset = fields.Selection(
+        yes_no_selection, string='Recon Fixed Asset - same 10th of the month', default='no'
+    )
+    is_post_bills_before_ap = fields.Selection(
+        yes_no_selection, string='Bills - Post bills before AP closes (temporary helping Usman)', default='no'
+    )
+
+    # Talent Acquisition Specialist
+    positions_assigned = fields.Integer(string='Positions Assigned')
+    number_of_positions = fields.Integer(string='Number of Positions')
+    application_review = fields.Integer(string='Application Review')
+    sourcing = fields.Integer(string='Sourcing')
+    candidate_screening = fields.Integer(string='Candidate Screening')
+    scheduling = fields.Integer(string='Scheduling')
+    is_weekly_check_in = fields.Selection(
+        yes_no_selection, string='Weekly Check-in', default='no'
+    )
+    intake_calls = fields.Integer(string='Intake Calls')
+    is_weekly_market_insights_meeting = fields.Selection(
+        yes_no_selection, string='Weekly market insights meeting', default='no'
+    )
+    weekly_follow_up = fields.Integer(string='Weekly 1:1s and Follow-up')
+    is_li_talent_insights_meeting = fields.Selection(
+        yes_no_selection, string='LI Talent insights meeting', default='no'
+    )
+    is_quarterly_report_presented = fields.Selection(
+        yes_no_selection, string='Quarterly Report Presented (To be filled in each Quarter)', default='no'
+    )
+    additional_meeting = fields.Integer(string='Additional Meetings')
+
+    # Billing Specialist
+    number_of_invoice = fields.Integer(string="Number of invoices issued per week")
+    number_of_tickets_resolved = fields.Integer(string="Number of tickets resolved per week")
+    recovery_of_disputes = fields.Integer(string="Number of disputes resolved per week")
+
+    # Senior Talent Acquisition Specialist
+    average_time_hiring = fields.Selection(
+        yes_no_selection, string='Average time to hire (60-90 Days)', default='no'
+    )
+    is_recruiting_meeting = fields.Selection(
+        yes_no_selection, string='Weekly Recruting Meeting with the Managers ', default='no'
+    )
+
+    # Senior Accountant - Lorena
+    number_of_transactions = fields.Integer(string="Number of transactions recorded this week")
+    bank_statements_uploaded = fields.Selection(
+        yes_no_selection, string='All Bank statements uploaded and Organized by 5th Business day of each month', default='no'
+    )
+    monthly_recons = fields.Selection(
+        yes_no_selection, string='Monthly Recon of 21 bank accounts', default='no'
+    )
+    bank_transactions_updated = fields.Selection(
+        yes_no_selection, string='Daily bank transactions list updated', default='no'
+    )
+    bank_transactions_categorized = fields.Selection(
+        yes_no_selection, string='Daily bank transactions categorized correctly', default='no'
+    )
+    month_end_closing_issues_resolved = fields.Selection(
+        yes_no_selection, string='Month-end closing issues resolved timely', default='no'
+    )
+
+    # Lead - Accounts Payable
+    invoice_processing_time = fields.Selection(
+        yes_no_selection, string='Invoice Processing Time'
+    )
+    payment_on_time_ratio = fields.Selection(
+        yes_no_selection, string='Payment On-Time Ratio'
+    )
+    vendor_reconciliation_accuracy = fields.Selection(
+        yes_no_selection, string='Vendor Reconciliation Accuracy'
+    )
+    approval_turnaround_time = fields.Selection(
+        yes_no_selection, string='Approval Turnaround Time'
+    )
+    automation_utilization_rate = fields.Selection(
+        yes_no_selection, string='Automation Utilization Rate'
+    )
+    exception_error_rate = fields.Selection(
+        yes_no_selection, string='Exception/Error Rate'
+    )
+    duplicate_invoice_detection = fields.Selection(
+        yes_no_selection, string='Duplicate Invoice Detection'
+    )
+    vendor_query_resolution_time = fields.Selection(
+        yes_no_selection, string='Vendor Query Resolution Time'
+    )
+    monthly_ap_reporting_accuracy = fields.Selection(
+        yes_no_selection, string='Monthly AP Reporting Accuracy'
+    )
+    audit_readiness = fields.Selection(
+        yes_no_selection, string='Audit Readiness'
+    )
 
 
     @api.constrains('date_of_project', 'resource_user_id')

@@ -1,0 +1,17 @@
+<odoo>
+    <!-- Sequence for Assets -->
+    <record id="seq_asset_management_asset" model="ir.sequence">
+        <field name="name">Asset Sequence</field>
+        <field name="code">asset.management.asset</field>
+        <field name="prefix">AST-</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Sequence for Asset Assignment -->
+    <record id="seq_asset_assignment" model="ir.sequence">
+        <field name="name">Asset Assignment Sequence</field>
+        <field name="code">asset.assignment</field>
+        <field name="prefix">ASN-</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>
