@@ -7,7 +7,7 @@ class CSMHandbook(models.Model):
 
     name = fields.Char(string='')
     manager_id = fields.Many2one('res.partner', string='Manager')
-    customer_id = fields.Many2one('res.partner', string='Customer')
+    customer_id = fields.Many2one('res.partner', string='Customer', domain=[('is_company', '=', True)])
     manager_email = fields.Char(related='manager_id.email', string='Email Address')
     suggested_meeting_frequency = fields.Selection([
         ('monthly', 'Monthly'),
