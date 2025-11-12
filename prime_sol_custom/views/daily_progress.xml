@@ -43,6 +43,7 @@
                     <group>
                         <group>
                             <field name="resource_user_id"/>
+                            <field name="department_id" invisible="1"/>
                             <field name="is_admin" invisible="1"/>
                             <field name="avg_resolved_ticket"/>
                             <field name="avg_assigned_ticket" invisible="1"/>

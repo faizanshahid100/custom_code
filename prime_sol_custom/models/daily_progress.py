@@ -15,6 +15,12 @@ class DailyProgress(models.Model):
     _rec_name = 'resource_user_id'
 
     resource_user_id = fields.Many2one('res.users', string='Resource Name *', default=lambda self: self.env.user.id)
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        compute='_compute_department_id',
+        store=True,
+    )
     date_of_project = fields.Date("Today Date", required=True, default=lambda self: date.today())
     week_of_year = fields.Char(string="Week of the Year", compute="_compute_week_of_year", store=True)
     year_of_kpi = fields.Char(string="KPI Year")
@@ -65,6 +71,13 @@ class DailyProgress(models.Model):
             if existing_record:
                 raise ValidationError(
                     "A record with the same 'Today Date' and 'Resource Name' already exists. You cannot create duplicate records for the same user on the same date.")
+
+    @api.depends('resource_user_id')
+    def _compute_department_id(self):
+        """Automatically fetch the department of the employee linked to the selected user."""
+        for record in self:
+            employee = self.env['hr.employee'].search([('user_id', '=', record.resource_user_id.id)], limit=1)
+            record.department_id = employee.department_id.id if employee else False
 
     @api.model
     def create(self, vals):
