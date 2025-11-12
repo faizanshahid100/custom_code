@@ -5,6 +5,7 @@
         <field name="arch" type="xml">
             <tree string="Employee Probation Meetings">
                 <field name="employee_id"/>
+                <field name="department_id"/>
                 <field name="date_meeting"/>
                 <field name="probation_type"/>
                 <field name="meeting_status" widget="badge"
@@ -39,6 +40,7 @@
                     <group>
                         <group>
                             <field name="employee_id"/>
+                            <field name="department_id" invisible="1"/>
                             <field name="employee_joining_date"/>
                             <field name="employee_probation_end_date"/>
                             <field name="employee_pulse_id" readonly="1" force_save="1"/>
@@ -165,6 +167,7 @@
         <field name="arch" type="xml">
             <search string="Search Probation Meetings">
                 <field name="employee_id"/>
+                <field name="department_id"/>
                 <field name="probation_type"/>
                 <field name="meeting_status"/>
                 <field name="state"/>
@@ -180,6 +183,7 @@
 
                 <group expand="0" string="Group By">
                     <filter string="Employee" name="group_by_employee" context="{'group_by':'employee_id'}"/>
+                    <filter string="Department" name="group_by_department" context="{'group_by':'department_id'}"/>
                     <filter string="Probation Type" name="group_by_probation_type"
                             context="{'group_by':'probation_type'}"/>
                     <filter string="Status" name="group_by_task_status"

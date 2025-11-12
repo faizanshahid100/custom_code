@@ -1,5 +1,7 @@
 import math
 import logging
+from itertools import count
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date, timedelta
@@ -94,7 +96,7 @@ class DailyProgress(models.Model):
                     )
         record = super(DailyProgress, self).create(vals)
         if record.resource_user_id and record.week_of_year:
-            record._recalculate_weekly_ticket_percentage(record.resource_user_id, record.week_of_year)
+            record._recalculate_weekly_ticket_percentage(record.resource_user_id, record.week_of_year, record.year_of_kpi)
 
         if record.resource_user_id:
             employee = record.resource_user_id.employee_id
@@ -395,47 +397,33 @@ class DailyProgress(models.Model):
                 else 0
             )
 
-    # @api.onchange('avg_assigned_ticket', 'avg_resolved_ticket')
-    # def _update_ticket_percentage(self):
-    #     """
-    #     When assigned/resolved tickets change, calculate weekly performance
-    #     for all records of same resource_user_id and week_of_year.
-    #     """
-    #     for rec in self:
-    #         # find all records of same user & week
-    #         records = self.env['daily.progress'].search([
-    #             ('resource_user_id', '=', rec.resource_user_id.id),
-    #             ('week_of_year', '=', rec.week_of_year)
-    #         ])
-    #
-    #         if records:
-    #             total_assigned = sum(records.mapped('avg_assigned_ticket'))
-    #             total_resolved = sum(records.mapped('avg_resolved_ticket'))
-    #
-    #             percentage = 0.0
-    #             if total_assigned > 0:
-    #                 percentage = (total_resolved / total_assigned) * 100
-    #
-    #             # update all related records
-    #             records.write({'ticket_percentage': percentage})
-
-    def _recalculate_weekly_ticket_percentage(self, resource_user_id, week_of_year):
+    def _recalculate_weekly_ticket_percentage(self, resource_user_id, week_of_year, year_of_kpi):
         """
         Recalculate ticket percentage for all records of the given user and week_of_year.
         Use sudo() to prevent triggering the write() method again.
         """
         records = self.env['daily.progress'].sudo().search([
             ('resource_user_id', '=', resource_user_id.id),
-            ('week_of_year', '=', week_of_year)
+            ('week_of_year', '=', week_of_year),
+            ('year_of_kpi', '=', year_of_kpi)
         ])
-        if records:
+        if records and records.resource_user_id.employee_id.kpi_measurement == 'kpi':
             total_assigned = sum(records.mapped('avg_assigned_ticket'))
             total_resolved = sum(records.mapped('avg_resolved_ticket'))
 
             percentage = 0.0
             if total_assigned > 0:
-                percentage = round((total_resolved / total_assigned) * 100, 2)
+                percentage = min(100, round((total_resolved / total_assigned) * 100, 2))
+            else:
+                percentage = 0
 
-            # Use sudo() to prevent recursion
             records.sudo().write({'ticket_percentage': percentage})
-
+        elif records and records.resource_user_id.employee_id.kpi_measurement == 'billable':
+            total_billable = sum(records.mapped('billable_hours'))
+            week_days = len(records.mapped('billable_hours'))
+            percentage = 0.0
+            if week_days > 0:
+                percentage = min(100, round((total_billable / week_days), 2))
+            else:
+                percentage = 0
+            records.sudo().write({'ticket_percentage': percentage})
