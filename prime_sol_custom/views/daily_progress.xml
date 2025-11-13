@@ -43,11 +43,12 @@
                     <group>
                         <group>
                             <field name="resource_user_id"/>
+                            <field name="employee_id" invisible="1"/>
+                            <field name="department_id" invisible="1"/>
                             <field name="is_admin" invisible="1"/>
-<!--                            <field name="ticket_assigned_new"/>-->
                             <field name="avg_resolved_ticket"/>
-<!--                            <field name="avg_resolution_time"/>-->
-<!--                            <field name="csat_new"/>-->
+                            <field name="avg_assigned_ticket" invisible="1"/>
+                            <field name="ticket_percentage" readonly="1"/>
                             <field name="billable_hours"/>
                             <field name="non_billable_hours"/>
                             <field name="no_calls_duration"/>

@@ -10,6 +10,12 @@ class EmployeeProbationMeeting(models.Model):
     _rec_name = "employee_id"
 
     employee_id = fields.Many2one("hr.employee", string="Employee Name", required=True)
+    department_id = fields.Many2one(
+        "hr.department",
+        string="Department",
+        compute="_compute_department_id",
+        store=True,
+    )
     employee_joining_date = fields.Date(related="employee_id.joining_date", string="Joining Date", store=True)
     employee_probation_end_date = fields.Date(related="employee_id.confirmation_date", string="Probation End Date",
                                               store=True)
@@ -157,6 +163,12 @@ class EmployeeProbationMeeting(models.Model):
     # def action_set_inprogress(self):
     #     """Revert to In Progress"""
     #     self.write({'state': 'inprogress'})
+
+    @api.depends("employee_id", "employee_id.department_id")
+    def _compute_department_id(self):
+        """Automatically fetch the department of the selected employee."""
+        for record in self:
+            record.department_id = record.employee_id.department_id.id if record.employee_id else False
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):

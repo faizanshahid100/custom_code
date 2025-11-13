@@ -3,6 +3,7 @@ from odoo import models, fields, api, _
 class EmployeeFeedback(models.Model):
     _name = 'hr.employee.feedback'
     _rec_name = 'employee_id'
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = 'Employee Feedback'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True, readonly=False)
@@ -13,6 +14,11 @@ class EmployeeFeedback(models.Model):
         ('positive', 'Positive'),
         ('negative', 'Negative')
     ], string='Feedback Type', required=True)
+    gar = fields.Selection([
+        ("green", "Green"),
+        ("yellow", "Yellow"),
+        ("red", "Red"),
+    ], string="Employee Status", default='green', required=True, tracking=True)
     outcome_suggested = fields.Text(string='Outcome Suggested', required=True)
     next_followup_date = fields.Date(string='Next Follow-up')
     feedback_status = fields.Selection([

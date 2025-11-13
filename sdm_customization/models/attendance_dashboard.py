@@ -9,7 +9,7 @@ import pytz
 class AttendanceDashboard(models.Model):
     _name = 'attendance.dashboard'
     _rec_name = 'employee_id'
-    _description = 'Employees missing check-in after duty start + 20 minutes'
+    _description = ' Late Attendance Dashboard'
 
     employee_id = fields.Many2one('hr.employee', string='Employee Name', required=True)
     duty_start = fields.Datetime(string='Duty Start', required=True)

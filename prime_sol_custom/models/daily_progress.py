@@ -1,5 +1,7 @@
 import math
 import logging
+from itertools import count
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date, timedelta
@@ -15,12 +17,27 @@ class DailyProgress(models.Model):
     _rec_name = 'resource_user_id'
 
     resource_user_id = fields.Many2one('res.users', string='Resource Name *', default=lambda self: self.env.user.id)
+    employee_id = fields.Many2one('hr.employee', string='Employee')
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        compute='_compute_employee_id_department_id',
+        store=True,
+    )
     date_of_project = fields.Date("Today Date", required=True, default=lambda self: date.today())
     week_of_year = fields.Char(string="Week of the Year", compute="_compute_week_of_year", store=True)
     year_of_kpi = fields.Char(string="KPI Year")
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')
-    ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned')
+    ticket_assigned_new = fields.Integer(string='Tasks / Tickets Assigned--')
+
     avg_resolved_ticket = fields.Integer(string='Tasks / Tickets Resolved')
+    avg_assigned_ticket = fields.Integer(
+        string='Tasks / Tickets Assigned',
+        compute='_compute_avg_assigned_ticket',
+        store=True
+    )
+    ticket_percentage = fields.Float(string='Weekly Ticket %')
+
     avg_resolution_time = fields.Integer(string='Avg. Resolution Time (min.)')
     csat_new = fields.Float(string='CSAT %')
     billable_hours = fields.Float(string='Billable Hours %')
@@ -58,6 +75,14 @@ class DailyProgress(models.Model):
                 raise ValidationError(
                     "A record with the same 'Today Date' and 'Resource Name' already exists. You cannot create duplicate records for the same user on the same date.")
 
+    @api.depends('resource_user_id')
+    def _compute_employee_id_department_id(self):
+        """Automatically fetch the department of the employee linked to the selected user."""
+        for record in self:
+            employee = self.env['hr.employee'].search([('user_id', '=', record.resource_user_id.id)], limit=1)
+            record.employee_id = employee.id if employee else False
+            record.department_id = employee.department_id.id if employee else False
+
     @api.model
     def create(self, vals):
         # 🔒 Restrict creation of records older than 14 days (unless in kpi_managers group)
@@ -72,6 +97,9 @@ class DailyProgress(models.Model):
                         "Please contact a KPI Manager to proceed."
                     )
         record = super(DailyProgress, self).create(vals)
+        if record.resource_user_id and record.week_of_year:
+            record._recalculate_weekly_ticket_percentage(record.resource_user_id, record.week_of_year, record.year_of_kpi)
+
         if record.resource_user_id:
             employee = record.resource_user_id.employee_id
             if not employee:
@@ -148,6 +176,13 @@ class DailyProgress(models.Model):
                     if missing_fields:
                         raise ValidationError(
                             "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
+
+            if any(field in vals for field in ['date_of_project', 'avg_resolved_ticket', 'billable_hours']):
+                record._recalculate_weekly_ticket_percentage(
+                    record.resource_user_id,
+                    record.week_of_year,
+                    record.year_of_kpi
+                )
 
         return res
 
@@ -362,4 +397,42 @@ class DailyProgress(models.Model):
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
 
+    @api.depends('resource_user_id')
+    def _compute_avg_assigned_ticket(self):
+        for rec in self:
+            rec.avg_assigned_ticket = (
+                rec.resource_user_id.employee_id.d_ticket_resolved
+                if rec.resource_user_id and rec.resource_user_id.employee_id
+                else 0
+            )
 
+    def _recalculate_weekly_ticket_percentage(self, resource_user_id, week_of_year, year_of_kpi):
+        """
+        Recalculate ticket percentage for all records of the given user and week_of_year.
+        Use sudo() to prevent triggering the write() method again.
+        """
+        records = self.env['daily.progress'].sudo().search([
+            ('resource_user_id', '=', resource_user_id.id),
+            ('week_of_year', '=', week_of_year),
+            ('year_of_kpi', '=', year_of_kpi)
+        ])
+        if records and records.resource_user_id.employee_id.kpi_measurement == 'kpi':
+            total_assigned = sum(records.mapped('avg_assigned_ticket'))
+            total_resolved = sum(records.mapped('avg_resolved_ticket'))
+
+            percentage = 0.0
+            if total_assigned > 0:
+                percentage = min(100, round((total_resolved / total_assigned) * 100, 2))
+            else:
+                percentage = 0
+
+            records.sudo().write({'ticket_percentage': percentage})
+        elif records and records.resource_user_id.employee_id.kpi_measurement == 'billable':
+            total_billable = sum(records.mapped('billable_hours'))
+            week_days = len(records.mapped('billable_hours'))
+            percentage = 0.0
+            if week_days > 0:
+                percentage = min(100, round((total_billable / week_days), 2))
+            else:
+                percentage = 0
+            records.sudo().write({'ticket_percentage': percentage})

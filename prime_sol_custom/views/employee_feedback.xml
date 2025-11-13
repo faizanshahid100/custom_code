@@ -9,6 +9,7 @@
                 <field name="employee_id"/>
                 <field name="client_id"/>
                 <field name="feedback_type"/>
+                <field name="gar"/>
                 <field name="feedback_status"/>
                 <field name="date_feedback"/>
                 <field name="next_followup_date"/>
@@ -30,6 +31,7 @@
                 <field name="date_feedback"/>
                 <field name="client_id"/>
                 <field name="feedback_type"/>
+                <field name="gar"/>
                 <field name="client_feedback"/>
                 <field name="outcome_suggested"/>
                 <field name="next_followup_date"/>
@@ -52,6 +54,7 @@
                             <field name="client_id"/>
                             <field name="client_feedback" widget="text"/>
                             <field name="feedback_type"/>
+                            <field name="gar"/>
                         </group>
                         <group>
                             <field name="date_feedback"/>
