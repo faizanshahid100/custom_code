@@ -8,9 +8,9 @@ class AssetManagementAsset(models.Model):
     _name = 'asset.management.asset'
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = 'IT Asset'
-    _rec_name = 'display_name'
 
     name = fields.Char(string="Asset Name", required=True, tracking=True)
+    employee_name = fields.Char('Employee Name')
     asset_category_id = fields.Many2one('asset.management.category', string='Category')
     state = fields.Selection([
         ('in_store', 'In Store'),
@@ -35,12 +35,16 @@ class AssetManagementAsset(models.Model):
     assigned_id = fields.Many2one('asset.management.assignment', string='Assigned To')
     asset_history_line_ids = fields.One2many('asset.history.line', 'asset_id', string="Assets History")
 
-    display_name = fields.Char(compute='_compute_display_name', store=True)
+    display_name = fields.Char()
 
-    @api.depends('name', 'serial_no')
-    def _compute_display_name(self):
+    def name_get(self):
+        result = []
         for rec in self:
-            rec.display_name = f"{rec.name} ({rec.serial_no})" if rec.serial_no else rec.name
+            name = rec.name
+            if rec.serial_no:
+                name = f"{rec.employee_name} - {rec.name} ({rec.serial_no})"
+            result.append((rec.id, name))
+        return result
 
     @api.onchange('condition_rating')
     def _onchange_condition_rating(self):
