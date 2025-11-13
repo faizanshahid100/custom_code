@@ -175,6 +175,13 @@ class DailyProgress(models.Model):
                         raise ValidationError(
                             "The following fields are mandatory. Please fill:\n" + "\n".join(missing_fields))
 
+            if any(field in vals for field in ['date_of_project', 'avg_resolved_ticket', 'billable_hours']):
+                record._recalculate_weekly_ticket_percentage(
+                    record.resource_user_id,
+                    record.week_of_year,
+                    record.year_of_kpi
+                )
+
         return res
 
     @api.depends('resource_user_id')
