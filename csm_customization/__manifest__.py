@@ -6,6 +6,7 @@
         # 'security/security.xml',
         'security/ir.model.access.csv',
         'views/csm_handbook_views.xml',
+        'views/res_partner_ext.xml',
         'views/menuitems.xml',
     ],
     'installable': True,
