@@ -212,7 +212,7 @@ class EmployeeProbationMeeting(models.Model):
 
             # Get base URL for record link
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            record_url = f"{base_url}/web#id={record.id}&model=employee.probation.meeting&view_type=form"
+            record_url = f"{base_url}/web#id={self.id}&model=employee.probation.meeting&view_type=form"
 
             # Email subject and body
             subject = f"Probation Meeting Update for {self.employee_id.name}"
