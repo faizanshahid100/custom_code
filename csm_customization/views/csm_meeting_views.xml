@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CSM Calendar View -->
+<!--    <record id="view_csm_calendar" model="ir.ui.view">-->
+<!--        <field name="name">csm.calendar</field>-->
+<!--        <field name="model">calendar.event</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <calendar string="CSM Meetings" date_start="start" date_stop="stop" color="partner_id">-->
+<!--                <field name="name"/>-->
+<!--                <field name="partner_id"/>-->
+<!--                <field name="csm_handbook_id"/>-->
+<!--            </calendar>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <!-- CSM Meeting Form View -->
+    <record id="view_csm_meeting_form" model="ir.ui.view">
+        <field name="name">csm.meeting.form</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_ids" position="after">
+                <field name="csm_handbook_id" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- CSM Calendar Action -->
+<!--    <record id="action_csm_calendar" model="ir.actions.act_window">-->
+<!--        <field name="name">CSM Calendar</field>-->
+<!--        <field name="res_model">calendar.event</field>-->
+<!--        <field name="view_mode">calendar,tree,form</field>-->
+<!--        <field name="domain">[('csm_handbook_id', '!=', False)]</field>-->
+<!--    </record>-->
+</odoo>

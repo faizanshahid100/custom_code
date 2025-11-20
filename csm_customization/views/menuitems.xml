@@ -3,11 +3,19 @@
     <menuitem id="menu_csm_root"
               name="CSM"
               web_icon="csm_customization,static/description/customer_service.png"/>
-    <!--    Root Menus-->
+    
+    <!-- CSM Calendar Menu -->
+    <menuitem id="menu_csm_calendar"
+              name="CSM Calendar"
+              parent="csm_customization.menu_csm_root"
+              action="calendar.action_calendar_event"
+              sequence="10"/>
+
+    <!-- CSM Handbook Menu -->
     <menuitem id="menu_csm_handbook"
               name="CSM Handbook"
               parent="csm_customization.menu_csm_root"
               action="csm_customization.action_csm_handbook"
-              sequence="10"/>
+              sequence="20"/>
 
 </odoo>

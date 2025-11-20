@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_csm_handbook,csm.handbook,model_csm_handbook,base.group_user,1,1,1,1
+access_calendar_event_csm,calendar.event.csm,calendar.model_calendar_event,base.group_user,1,1,1,1
+access_csm_task_lines,csm.task.lines,model_csm_task_lines,base.group_user,1,1,1,1
