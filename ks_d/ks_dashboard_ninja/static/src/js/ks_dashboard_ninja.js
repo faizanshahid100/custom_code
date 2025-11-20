@@ -152,7 +152,7 @@ odoo.define('ks_dashboard_ninja.ks_dashboard', function(require) {
             this.ksUpdateDashboardItem = this.ksUpdateDashboardItem.bind(this);
 
 
-            this.ksDateFilterSelection = false;
+            this.ksDateFilterSelection = 't_month'; //  Default here was false it is changed to 't_month'
             this.ksDateFilterStartDate = false;
             this.ksDateFilterEndDate = false;
             this.ksUpdateDashboard = {};
