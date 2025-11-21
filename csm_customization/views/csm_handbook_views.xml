@@ -60,6 +60,8 @@
                             <field name="client_attend_call"/>
                             <field name="business_tech"/>
                             <field name="gar"/>
+                            <field name="is_meeting_done"/>
+                            <field name="is_meeting_rescheduled"/>
                             <field name="calendar_event_id" invisible="1"/>
                         </group>
                     </group>

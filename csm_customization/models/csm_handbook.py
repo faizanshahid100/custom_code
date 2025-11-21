@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from datetime import datetime
 
 
 class CSMHandbook(models.Model):
@@ -132,6 +133,22 @@ class CSMHandbook(models.Model):
             record.manager_email = manager.email or False
             record.business_tech = manager.business_tech or False
             record.current_meeting_frequency = manager.current_meeting_frequency or False
+
+    @api.model
+    def _cron_update_gar_status(self):
+        """Daily scheduler to update GAR status based on meeting completion."""
+        current_datetime = datetime.now()
+        
+        # Find records where meeting is not done
+        records = self.search([('is_meeting_done', '=', False)])
+        
+        for record in records:
+            if record.is_meeting_rescheduled:
+                # Meeting rescheduled but not done = amber
+                record.gar = 'amber'
+            elif record.current_month_schedule and record.current_month_schedule < current_datetime:
+                # Meeting date passed and not done = red
+                record.gar = 'red'
 
     # @api.depends('gar')
     # def _compute_gar_banner(self):

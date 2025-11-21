@@ -9,6 +9,7 @@
         'views/res_partner_ext.xml',
         'views/csm_meeting_views.xml',
         'views/menuitems.xml',
+        'data/ir_cron_gar_update.xml',
     ],
     'installable': True,
 }
