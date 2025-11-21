@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_partner_form_view_ext" model="ir.ui.view">
+        <field name="name">res.partner.form.view.ext</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page name="csm" string="CSM" attrs="{'invisible': [('parent_id', '=', False)]}">
+                    <group>
+                        <field name="business_tech"/>
+                        <field name="current_meeting_frequency"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

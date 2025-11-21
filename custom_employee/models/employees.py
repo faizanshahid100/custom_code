@@ -54,6 +54,7 @@ class HREmployeeInherit(models.Model):
     business_unit = fields.Char(string="Business Unit")
     pl_code = fields.Char(string="PL Code")
     department = fields.Char(string="Dept")
+    manager_id = fields.Many2one('res.partner', string='Manager (Client)')
     manager = fields.Char(string="Manager (Contractor)")
     manager_email = fields.Char(string="Manager Email")
     dept_hod = fields.Char(string="Dept HOD")
