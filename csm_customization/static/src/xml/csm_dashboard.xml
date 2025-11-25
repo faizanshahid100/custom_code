@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="csm_customization.CSMDashboard" owl="1">
+        <div class="csm-dashboard">
+            <div class="dashboard-header">
+                <h2>Welcome Administrator 👋</h2>
+                <div class="dashboard-controls">
+                    <select class="form-select">
+                        <option>This Month</option>
+                    </select>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="text-center p-4">
+                <i class="fa fa-spinner fa-spin fa-2x"/>
+                <p>Loading dashboard...</p>
+            </div>
+
+            <div t-else="" class="dashboard-content">
+                <!-- Top Banner -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="widget-card bg-primary text-white p-4 text-center" 
+                             t-on-click="() => this.onWidgetClick('total_meetings')">
+                            <h1 t-esc="state.dashboardData.total_meetings"/>
+                            <p>Number of Meetings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GAR Status Row -->
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <div class="widget-card bg-danger text-white p-3 text-center"
+                             t-on-click="() => this.onWidgetClick('red_zone')">
+                            <i class="fa fa-chart-bar fa-2x mb-2"/>
+                            <h3>Red Zone</h3>
+                            <h2 t-esc="state.dashboardData.gar_counts.red"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="widget-card bg-warning text-white p-3 text-center"
+                             t-on-click="() => this.onWidgetClick('amber_zone')">
+                            <i class="fa fa-chart-bar fa-2x mb-2"/>
+                            <h3>Amber</h3>
+                            <h2 t-esc="state.dashboardData.gar_counts.amber"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="widget-card bg-success text-white p-3 text-center"
+                             t-on-click="() => this.onWidgetClick('green_zone')">
+                            <i class="fa fa-chart-bar fa-2x mb-2"/>
+                            <h3>Green</h3>
+                            <h2 t-esc="state.dashboardData.gar_counts.green"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="widget-card p-3 text-center">
+                                    <i class="fa fa-chart-line"/>
+                                    <h6>Client Satisfaction Survey</h6>
+                                    <h4 t-esc="state.dashboardData.client_satisfaction.satisfied + '/' + state.dashboardData.client_satisfaction.total"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="widget-card p-3 text-center">
+                                    <i class="fa fa-chart-line"/>
+                                    <h6>Client Feedback CSM</h6>
+                                    <h4 t-esc="state.dashboardData.client_feedback.positive + '/' + state.dashboardData.client_feedback.total"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="widget-card p-3 text-center">
+                                    <i class="fa fa-chart-line"/>
+                                    <h6>Clients in Red Zone</h6>
+                                    <h4 t-esc="state.dashboardData.gar_counts.red"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="widget-card p-3 text-center">
+                            <i class="fa fa-chart-line"/>
+                            <h6>Employees Pulse Meetings</h6>
+                            <h4 t-esc="state.dashboardData.employee_pulse.completed + '/' + state.dashboardData.employee_pulse.total"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="widget-card p-3 text-center">
+                            <i class="fa fa-chart-line"/>
+                            <h6>Client Feedback CSM</h6>
+                            <h4 t-esc="state.dashboardData.client_feedback.negative + '/' + state.dashboardData.client_feedback.total"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="widget-card p-3 text-center">
+                            <i class="fa fa-chart-line"/>
+                            <h6>NO SHOW(Today)</h6>
+                            <h4 t-esc="state.dashboardData.no_show_today.no_show + '/' + state.dashboardData.no_show_today.total"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="widget-card p-3">
+                            <h6>Client Wise Meetings</h6>
+                            <div class="chart-placeholder" style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <span class="text-muted">Chart will be rendered here</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="widget-card p-3">
+                            <h6>Weekly Late Attendance Trend</h6>
+                            <div class="chart-placeholder" style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <span class="text-muted">Chart will be rendered here</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Escalations -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="widget-card p-3">
+                            <h6>CSM - Escalations</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Task Priority</th>
+                                            <th>Reason Details</th>
+                                            <th>Assign Date</th>
+                                            <th>Last Modified on</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="state.dashboardData.task_escalations" t-as="task" t-key="task.id"
+                                            t-on-click="() => this.onWidgetClick('task_escalations')" style="cursor: pointer;">
+                                            <td t-esc="task.priority"/>
+                                            <td t-esc="task.reason"/>
+                                            <td t-esc="task.assign_date"/>
+                                            <td t-esc="task.last_modified"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="widget-card p-3">
+                            <h6>CSM - Tech PK: 5 Low Performer</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Company</th>
+                                            <th>Cumulative Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="state.dashboardData.low_performers" t-as="performer" t-key="performer_index">
+                                            <td t-esc="performer.employee"/>
+                                            <td t-esc="performer.company"/>
+                                            <td t-esc="performer.score"/>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
