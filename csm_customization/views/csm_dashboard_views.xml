@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CSM Dashboard Action -->
+    <record id="action_csm_dashboard" model="ir.actions.client">
+        <field name="name">CSM Dashboard</field>
+        <field name="tag">csm_dashboard</field>
+    </record>
+
+    <!-- CSM Dashboard Menu -->
+    <menuitem id="menu_csm_dashboard"
+              name="CSM Dashboard"
+              parent="menu_csm_root"
+              action="action_csm_dashboard"
+              sequence="1"/>
+
+</odoo>
