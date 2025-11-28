@@ -10,7 +10,8 @@
         'views/csm_meeting_views.xml',
         'views/csm_dashboard_views.xml',
         'views/menuitems.xml',
-        'data/ir_cron_gar_update.xml',
+        # 'data/ir_cron_gar_update.xml',
+        'data/ir_cron_monthly_handbook.xml',
     ],
     'assets': {
         'web.assets_backend': [

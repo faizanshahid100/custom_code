@@ -134,21 +134,61 @@ class CSMHandbook(models.Model):
             record.business_tech = manager.business_tech or False
             record.current_meeting_frequency = manager.current_meeting_frequency or False
 
+    # @api.model
+    # def _cron_update_gar_status(self):
+    #     """Daily scheduler to update GAR status based on meeting completion."""
+    #     current_datetime = datetime.now()
+    #
+    #     # Find records where meeting is not done
+    #     records = self.search([('is_meeting_done', '=', False)])
+    #
+    #     for record in records:
+    #         if record.is_meeting_rescheduled:
+    #             # Meeting rescheduled but not done = amber
+    #             record.gar = 'amber'
+    #         elif record.current_month_schedule and record.current_month_schedule < current_datetime:
+    #             # Meeting date passed and not done = red
+    #             record.gar = 'red'
+
     @api.model
-    def _cron_update_gar_status(self):
-        """Daily scheduler to update GAR status based on meeting completion."""
-        current_datetime = datetime.now()
+    def _cron_create_monthly_handbook_records(self):
+        """Monthly scheduler to create CSM handbook records for next month's first Monday."""
+        from datetime import datetime, timedelta
+        import calendar
         
-        # Find records where meeting is not done
-        records = self.search([('is_meeting_done', '=', False)])
+        # Get next month's first day
+        today = datetime.now().date()
+        if today.month == 12:
+            next_month = today.replace(year=today.year + 1, month=1, day=1)
+        else:
+            next_month = today.replace(month=today.month + 1, day=1)
         
-        for record in records:
-            if record.is_meeting_rescheduled:
-                # Meeting rescheduled but not done = amber
-                record.gar = 'amber'
-            elif record.current_month_schedule and record.current_month_schedule < current_datetime:
-                # Meeting date passed and not done = red
-                record.gar = 'red'
+        # Find first Monday of next month
+        first_monday = next_month
+        while first_monday.weekday() != 0:  # 0 = Monday
+            first_monday += timedelta(days=1)
+        
+        # Get partners with parent companies
+        partners = self.env['res.partner'].search([
+            ('parent_id', '!=', False),
+            ('parent_id.is_company', '=', True)
+        ])
+        
+        for partner in partners:
+            # Check if record already exists for this month
+            existing = self.search([
+                ('manager_id', '=', partner.id),
+                ('customer_id', '=', partner.parent_id.id),
+                ('month', '=', next_month)
+            ])
+            
+            if not existing:
+                self.create({
+                    'manager_id': partner.id,
+                    'customer_id': partner.parent_id.id,
+                    'month': next_month,
+                    'current_month_schedule': datetime.combine(first_monday, datetime.min.time().replace(hour=10))
+                })
 
     # @api.depends('gar')
     # def _compute_gar_banner(self):

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_create_monthly_handbook" model="ir.cron">
+        <field name="name">Create Monthly CSM Handbook Records</field>
+        <field name="model_id" ref="model_csm_handbook"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_create_monthly_handbook_records()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+        <field name="nextcall" eval="(DateTime.now() + relativedelta(day=31)).strftime('%Y-%m-%d 23:59:00')"/>
+    </record>
+</odoo>
