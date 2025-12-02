@@ -12,7 +12,9 @@ class EmployeeFeedback(models.Model):
     client_feedback = fields.Text('Client Feedback', required=True)
     feedback_type = fields.Selection([
         ('positive', 'Positive'),
-        ('negative', 'Negative')
+        ('negative', 'Negative'),
+        ('positive_neutral', 'Positive Neutral'),
+        ('negative_neutral', 'Negative Neutral'),
     ], string='Feedback Type', required=True)
     gar = fields.Selection([
         ("green", "Green"),

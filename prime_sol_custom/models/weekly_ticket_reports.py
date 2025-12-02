@@ -51,3 +51,18 @@ class WeeklyTicketReport(models.Model):
     week_25 = fields.Char(string='W 25', default=' ')
     week_26 = fields.Char(string='W 26', default=' ')
     week_total = fields.Char(string='Total Counts', default=' ')
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        """Override search to exclude records for employees who were absent or on leave"""
+        # Get employees who were present (had attendance records)
+        present_employees = self.env['hr.attendance'].search([]).mapped('employee_id.id')
+
+        # Add domain to filter only present employees
+        if present_employees:
+            args = args + [('employee_id', 'in', present_employees)]
+        else:
+            # If no attendance records, return empty result
+            args = args + [('id', '=', False)]
+
+        return super().search(args, offset=offset, limit=limit, order=order, count=count)
