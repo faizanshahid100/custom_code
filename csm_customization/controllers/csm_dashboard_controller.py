@@ -17,7 +17,7 @@ class CSMDashboardController(http.Controller):
         dashboard = request.env['csm.dashboard']
         records = dashboard.get_widget_data(widget_type)
         
-        if widget_type in ['red_zone', 'amber_zone', 'green_zone', 'total_meetings']:
+        if widget_type in ['red_zone', 'amber_zone', 'green_zone', 'total_meetings', 'overdue_meetings', 'completed_meetings']:
             # Return CSM handbook records
             return {
                 'model': 'csm.handbook',

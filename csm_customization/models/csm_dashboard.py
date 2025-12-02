@@ -17,12 +17,12 @@ class CSMDashboard(models.Model):
             'gar_counts': self._get_gar_counts(),
             'client_satisfaction': self._get_client_satisfaction(),
             'client_feedback': self._get_client_feedback(),
-            'employee_pulse': self._get_employee_pulse(),
+            'overdue_meetings': self._get_overdue_meetings(),
+            'completed_meetings': self._get_completed_meetings(),
             'no_show_today': self._get_no_show_today(),
             'client_wise_meetings': self._get_client_wise_meetings(),
             'task_escalations': self._get_task_escalations(),
-            'team_overview': self._get_team_overview(),
-            'low_performers': self._get_low_performers(),
+            'upcoming_meetings': self._get_upcoming_meetings(),
         }
 
     def _get_total_meetings(self):
@@ -59,13 +59,48 @@ class CSMDashboard(models.Model):
             'negative': 1
         }
 
-    def _get_employee_pulse(self):
-        """Mock employee pulse meeting data"""
-        return {
-            'completed': 22,
-            'total': 2,
-            'pending': 0
-        }
+    def _get_overdue_meetings(self):
+        """Get count of overdue meetings"""
+        today = datetime.now()
+        count = self.env['csm.handbook'].search_count([
+            ('current_month_schedule', '<', today),
+            ('is_meeting_done', '=', False)
+        ])
+        return count
+
+    def _get_completed_meetings(self):
+        """Get count of completed meetings this month"""
+        today = datetime.now()
+        start_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        count = self.env['csm.handbook'].search_count([
+            ('current_month_schedule', '>=', start_month),
+            ('current_month_schedule', '<=', today),
+            ('is_meeting_done', '=', True)
+        ])
+        return count
+
+    def _get_upcoming_meetings(self):
+        """Get upcoming meetings for next 7 days"""
+        today = datetime.now()
+        next_week = today + timedelta(days=7)
+        
+        meetings = self.env['csm.handbook'].search([
+            ('current_month_schedule', '>=', today),
+            ('current_month_schedule', '<=', next_week),
+            ('is_meeting_done', '=', False)
+        ], limit=5)
+        
+        data = []
+        for meeting in meetings:
+            data.append({
+                'id': meeting.id,
+                'customer': meeting.customer_id.name if meeting.customer_id else '',
+                'manager': meeting.manager_id.name if meeting.manager_id else '',
+                'date': meeting.current_month_schedule.strftime('%m/%d/%Y %H:%M') if meeting.current_month_schedule else '',
+                'status': meeting.gar or 'Pending'
+            })
+        
+        return data
 
     def _get_no_show_today(self):
         """Get no show count for today"""
@@ -141,6 +176,20 @@ class CSMDashboard(models.Model):
             return self.env['csm.handbook'].search([
                 ('current_month_schedule', '>=', start_month),
                 ('current_month_schedule', '<=', today)
+            ])
+        elif widget_type == 'overdue_meetings':
+            today = datetime.now()
+            return self.env['csm.handbook'].search([
+                ('current_month_schedule', '<', today),
+                ('is_meeting_done', '=', False)
+            ])
+        elif widget_type == 'completed_meetings':
+            today = datetime.now()
+            start_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            return self.env['csm.handbook'].search([
+                ('current_month_schedule', '>=', start_month),
+                ('current_month_schedule', '<=', today),
+                ('is_meeting_done', '=', True)
             ])
         elif widget_type == 'task_escalations':
             return self.env['csm.task.lines'].search([

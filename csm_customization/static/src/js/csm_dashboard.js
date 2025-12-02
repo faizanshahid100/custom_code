@@ -57,7 +57,13 @@ export class CSMDashboard extends Component {
             'amber_zone': 'Amber Zone Clients', 
             'green_zone': 'Green Zone Clients',
             'total_meetings': 'Total Meetings',
-            'task_escalations': 'Task Escalations'
+            'overdue_meetings': 'Overdue Meetings',
+            'completed_meetings': 'Completed Meetings',
+            'task_escalations': 'Task Escalations',
+            'client_satisfaction': 'Client Satisfaction Survey',
+            'client_feedback': 'Client Feedback',
+            'clients_red_zone': 'Clients in Red Zone',
+            'no_show_today': 'No Show Today'
         };
         return titles[widgetType] || 'Records';
     }
