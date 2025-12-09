@@ -22,6 +22,8 @@ class HrOffer(models.Model):
     country_id = fields.Many2one('res.country', string="Country", required=True, tracking=True)
     joining_date = fields.Date("Joining Date", required=True, tracking=True)
     job_id = fields.Many2one("hr.job", string="Designation", required=True, tracking=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', required=True,
+                                  default=lambda self: self.env.company.currency_id)
     salary = fields.Float("Salary", tracking=True)
     allowances = fields.Float("Allowances", tracking=True)
     employment_type = fields.Selection([
@@ -61,6 +63,7 @@ class HrOffer(models.Model):
     buddy_id = fields.Many2one('hr.employee', string='Buddy Name', tracking=True)
     remarks = fields.Text("Modification Remarks", tracking=True)
     special_instructions = fields.Text("Special Instructions", tracking=True)
+    internal_remarks = fields.Text("Internal Remarks", tracking=True)
     offer_submitter_id = fields.Many2one('res.users', string='Offer Submitter')
 
     # Workflow
@@ -192,11 +195,14 @@ class HrOffer(models.Model):
             # Replace variables
             replacements = {
                 "{{ candidate_name }}": record.candidate_name or "",
+                "{{ candidate_designation }}": record.job_id.name or "",
                 "{{ id_number }}": record.id_number or "",
                 "{{ address }}": record.address or "",
                 "{{ offer_issue_date }}": fields.Date.today().strftime("%d %B %Y"),
                 "{{ joining_date }}": record.joining_date.strftime("%d %B %Y") if record.joining_date else "",
                 "{{ salary }}": str(record.salary) if record.salary else "",
+                "{{ allowances }}": str(record.allowances) if record.allowances else "0",
+                "{{ currency }}": str(record.currency_id.name),
                 "{{ probation_period }}": str(record.probation_period or ""),
                 "{{ work_location }}": record.work_location or "",
                 "{{ reporting_time }}": record.reporting_time or "",
