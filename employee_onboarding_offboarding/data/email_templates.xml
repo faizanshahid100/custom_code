@@ -223,6 +223,10 @@
                     <b>Business Hours:</b>
                     12 PM to 9 PM PKT (Subject to change as per requirements)
                 </li>
+                <li>
+                    <b>Special Instructions:</b>
+                    <t t-out="object.special_instructions"/>
+                </li>
             </ul>
 
             <p>
