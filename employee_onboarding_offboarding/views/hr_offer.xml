@@ -33,6 +33,7 @@
                             <field name="country_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="joining_date" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="job_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="currency_id" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="salary" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="allowances" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="employment_type" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
@@ -63,6 +64,7 @@
                             <field name="buddy_info"/>
                             <field name="remarks" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="special_instructions" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
+                            <field name="internal_remarks"/>
                             <field name="offer_submitter_id" readonly="1"/>
                         </group>
                     </group>

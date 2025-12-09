@@ -104,13 +104,20 @@
                 <tr>
                     <th style="text-align:left; border:1px solid #000; padding:6px;">Salary</th>
                     <td style="border:1px solid #000; padding:6px;">
-                        <t t-out="object.salary"/>
+                        <t t-out="object.currency_id.name"/> <t t-out="object.salary"/>
                     </td>
                 </tr>
                 <tr>
                     <th style="text-align:left; border:1px solid #000; padding:6px;">Allowances</th>
                     <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.currency_id.name"/>
                         <t t-out="object.allowances"/>
+                    </td>
+                </tr>
+                <tr>
+                    <th style="text-align:left; border:1px solid #000; padding:6px;">Internal Remarks</th>
+                    <td style="border:1px solid #000; padding:6px;">
+                        <t t-out="object.internal_remarks"/>
                     </td>
                 </tr>
             </table>
@@ -224,8 +231,14 @@
             <ul>
                 <li>
                     <b>Basic Salary:</b>
-                    PKR
+                    <t t-out="object.currency_id.name"/>
                     <t t-out="'{:,.0f}'.format(object.salary)"/>
+                    per month
+                </li>
+                <li>
+                    <b>Basic Salary:</b>
+                    <t t-out="object.currency_id.name"/>
+                    <t t-out="'{:,.0f}'.format(object.allowances)"/>
                     per month
                 </li>
                 <li>
