@@ -177,8 +177,7 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">{{ ','.join(user.email for user in
-            object.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email) }}
+        <field name="email_cc">
         </field>
         <field name="body_html" type="html">
             <p>Dear

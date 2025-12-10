@@ -158,18 +158,27 @@ class HrOffer(models.Model):
 
     def action_sent_offer(self):
         if not self.env.user.has_group("employee_onboarding_offboarding.group_responsible_hr"):
-            raise ValidationError("Only HR Responsible can Send offers.")
+            raise ValidationError("Only HR Responsible can send offers.")
 
         self.write({"state": "send_offer"})
 
         if self.personal_email:
             template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
 
-            # Get all HR Responsible emails
-            hr_users = self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users
+            # Determine which HR group to use based on country
+            if self.country_id.name == "Pakistan":
+                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
+            elif self.country_id.name == "Philippines":
+                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
+            else:
+                # Default HR group (if desired)
+                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
+
+            # Get all HR users (based on selected group)
+            hr_users = self.env.ref(hr_group_xmlid).users
             hr_emails = ",".join([u.email for u in hr_users if u.email])
 
-            # Send email with cc
+            # Add CC and send email
             template.email_cc = hr_emails
             template.send_mail(self.id, force_send=True)
 
@@ -202,6 +211,7 @@ class HrOffer(models.Model):
                 "{{ joining_date }}": record.joining_date.strftime("%d %B %Y") if record.joining_date else "",
                 "{{ salary }}": str(record.salary) if record.salary else "",
                 "{{ allowances }}": str(record.allowances) if record.allowances else "0",
+                "{{ special_instructions }}": str(record.special_instructions) if record.special_instructions else "None",
                 "{{ currency }}": str(record.currency_id.name),
                 "{{ probation_period }}": str(record.probation_period or ""),
                 "{{ work_location }}": record.work_location or "",
