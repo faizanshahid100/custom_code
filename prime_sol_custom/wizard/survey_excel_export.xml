@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Survey Excel Export Wizard Form -->
+    <record id="view_survey_excel_export_form" model="ir.ui.view">
+        <field name="name">survey.excel.export.form</field>
+        <field name="model">survey.excel.export</field>
+        <field name="arch" type="xml">
+            <form string="Export Survey to Excel">
+                <group>
+                    <field name="survey_id" readonly="1"/>
+                </group>
+                <group attrs="{'invisible': [('excel_file', '=', False)]}">
+                    <field name="excel_file" filename="file_name" readonly="1"/>
+                    <field name="file_name" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_export_excel" string="Export to Excel" type="object" class="btn-primary" attrs="{'invisible': [('excel_file', '!=', False)]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Survey Excel Export -->
+    <record id="action_survey_excel_export" model="ir.actions.act_window">
+        <field name="name">Export Survey to Excel</field>
+        <field name="res_model">survey.excel.export</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_survey_id': active_id}</field>
+    </record>
+</odoo>

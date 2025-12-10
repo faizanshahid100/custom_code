@@ -38,6 +38,7 @@
         'wizard/scorecard_wizard.xml',
         'wizard/client_survey.xml',
         'wizard/approval_overtime.xml',
+        'wizard/survey_excel_export.xml',
     ],
     'assets': {
         'web.assets_backend': [
