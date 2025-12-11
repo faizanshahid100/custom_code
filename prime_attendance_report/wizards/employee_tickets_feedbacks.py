@@ -81,6 +81,34 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 current = week_end + timedelta(days=1)
             return ranges
 
+        def is_on_leave_entire_week(employee, week_start, week_end, leaves):
+            """Check if employee is on approved leave for all working days in the week"""
+            # Get employee's working days for the week
+            calendar = employee.resource_calendar_id or employee.company_id.resource_calendar_id
+            if not calendar:
+                return False
+            
+            working_days = []
+            current_date = week_start
+            while current_date <= week_end:
+                weekday = str(current_date.weekday())
+                has_work = any(str(int(att.dayofweek)) == weekday or str(att.dayofweek) == weekday
+                              for att in calendar.attendance_ids)
+                if has_work:
+                    working_days.append(current_date)
+                current_date += timedelta(days=1)
+            
+            if not working_days:
+                return False
+            
+            # Check if all working days are covered by approved leaves
+            for work_day in working_days:
+                covered = any(leave.request_date_from <= work_day <= leave.request_date_to
+                             for leave in leaves if leave.employee_id.id == employee.id)
+                if not covered:
+                    return False
+            return True
+
         # Start from first coming Monday
         self.start_date = self.start_date + timedelta(days=(7 - self.start_date.weekday()) % 7)
         week_ranges = get_week_ranges(self.start_date, self.end_date)
@@ -89,6 +117,14 @@ class EmployeeTicketsFeedback(models.TransientModel):
             ('date_of_project', '>=', self.start_date),
             ('date_of_project', '<=', self.end_date),
             ('resource_user_id.employee_id', 'in', employees.ids)
+        ])
+
+        # Get approved leaves for the date range
+        leaves = self.env['hr.leave'].sudo().search([
+            ('state', '=', 'validate'),
+            ('employee_id', 'in', employees.ids),
+            ('request_date_from', '<=', self.end_date),
+            ('request_date_to', '>=', self.start_date)
         ])
 
         progress_map = defaultdict(lambda: defaultdict(int))
@@ -131,6 +167,14 @@ class EmployeeTicketsFeedback(models.TransientModel):
             last_week_index = len(effective_week_ranges)
 
             for week_index, (start, end) in enumerate(effective_week_ranges, start=1):
+                # Check if employee is on leave for entire week
+                if is_on_leave_entire_week(employee, start, end, leaves):
+                    vals[f'week_{week_index}'] = (
+                        f"<div style='background-color: #e6f3ff; color: #0066cc; padding: 3px; text-align: center; font-weight: bold;'>"
+                        f"Leave</div>"
+                    )
+                    continue
+                
                 current_value = progress_map[employee.id].get(week_index, 0)
 
                 if employee.kpi_measurement == 'kpi':
