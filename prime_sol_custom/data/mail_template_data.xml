@@ -80,10 +80,12 @@
             <field name="email_to">myle.gruet@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <p>Hello,</p>
-                <p>The leave request for <strong> <span t-esc="object.employee_id.name"/> </strong> has been <strong>approved</strong>.</p>
+                <p>The leave request for Employee <strong> <span t-esc="object.employee_id.name"/> </strong> has been <strong>approved</strong>.</p>
                 <p><strong>Type:</strong> <span t-esc="object.holiday_status_id.name"/><br/>
+                   <strong>Company:</strong> <span t-esc="object.employee_id.contractor.name"/> <br/>
+                   <strong>Department:</strong> <span t-esc="object.employee_id.department_id.name"/> <br/>
                    <strong>From:</strong> <span t-esc="object.request_date_from"/> <br/>
-                   <strong>To:</strong> <span t-esc="object.request_date_from"/><span t-esc="object.request_date_to"/></p>
+                   <strong>To:</strong> <span t-esc="object.request_date_to"/></p>
             </field>
             <field name="auto_delete" eval="True"/>
         </record>
