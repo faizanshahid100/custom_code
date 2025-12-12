@@ -14,6 +14,7 @@ from . import score_weightage
 from . import score_card
 from . import hr_leave_ext
 from . import hr_leave_type_ext
+from . import hr_leave_type_display_ext
 from . import weekly_ticket_reports
 from . import weekly_feedback_reports
 from . import client_survey_report
