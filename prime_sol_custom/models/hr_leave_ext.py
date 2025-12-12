@@ -95,6 +95,54 @@ class HrLeaveExt(models.Model):
     #
     #     return result
 
+    @api.model
+    def create(self, vals):
+        record = super(HrLeaveExt, self).create(vals)
+
+        # Prepare email values
+        employee = record.employee_id
+        department = employee.department_id.name or "N/A"
+        contractor = employee.contractor.name if hasattr(employee, 'contractor') else "N/A"
+
+        # Convert date fields to dd-mm-YYYY
+        date_from = ""
+        date_to = ""
+
+        if record.request_date_from:
+            date_from = fields.Date.to_date(record.request_date_from).strftime("%d-%m-%Y")
+
+        if record.request_date_to:
+            date_to = fields.Date.to_date(record.request_date_to).strftime("%d-%m-%Y")
+
+        # Email recipient
+        to_email = "myle.gruet@primesystemsolutions.com"
+
+        # Email subject
+        subject = f"Leave Request Submitted - {employee.name}"
+
+        # Email body (HTML)
+        body = f"""
+                <p><b>Hi,</b></p>
+                <p><b>{employee.name}</b> has applied for leave.</p>
+
+                <p><b>Employee Name:</b> {employee.name}</p>
+                <p><b>Department:</b> {department}</p>
+                <p><b>Company:</b> {contractor}</p>
+                <p><b>Leave From:</b> {date_from}</p>
+                <p><b>Leave To:</b> {date_to}</p>
+            """
+
+        # Send email
+        mail_values = {
+            "subject": subject,
+            "body_html": body,
+            "email_to": to_email,
+            "auto_delete": False,
+        }
+        self.env['mail.mail'].sudo().create(mail_values).send()
+
+        return record
+
     @api.constrains('request_date_from', 'request_date_to', 'holiday_status_id')
     def _check_leave_constraints(self):
         for leave in self:

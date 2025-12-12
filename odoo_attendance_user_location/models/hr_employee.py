@@ -36,7 +36,7 @@ class HrEmployee(models.AbstractModel):
         return None, None
 
     @api.model
-    def is_within_radius(self, lat2, lon2, radius_meters=600):
+    def is_within_radius(self, lat2, lon2, radius_meters=1600):
         # Get Arfa Tower location
         center_lat, center_lon = self.get_coordinates_from_address("Arfa Software Technology Park, Lahore")
 

@@ -33,6 +33,7 @@
         'views/weekly_feedback_reports.xml',
         'views/client_survey_report.xml',
         'views/client_cadence_call.xml',
+        'views/mail_activity_template.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',
