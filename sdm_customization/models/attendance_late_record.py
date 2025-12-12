@@ -95,6 +95,6 @@ class AttendanceLateRecord(models.Model):
                 'email_to' : ','.join(managers.mapped('email')),
                 'email_from': 'sdm@primesystemsolutions.com',
             }
-            self.env['mail.mail'].create(mail_values).send()
+            self.env['mail.mail'].sudo().create(mail_values).send()
 
         return True
