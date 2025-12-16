@@ -106,6 +106,9 @@ class HREmployeeInherit(models.Model):
     child_relation = fields.Char(string="Child Relation")
     child_dob = fields.Date(string="Child DOB")
 
+    # HR Probation Feedback
+    hr_probation_feedback = fields.Html(string="HR Probation Feedback")
+
     @api.model
     def create(self, vals):
         employee = super().create(vals)
@@ -229,6 +232,42 @@ class HREmployeeInherit(models.Model):
             _logger.info("Successfully updated dashboard_employee_view and dashboard_employee_ticket_calls_view.")
         except Exception as e:
             _logger.error("Error updating views: %s", str(e))
+
+    @api.model
+    def check_probation_review_employees(self):
+        today = fields.Date.today()
+
+        # Fetch employees with manager
+        employees = self.search([
+            ('joining_date', '!=', False),
+            ('parent_id', '!=', False),
+            ('country_id', '!=', False),
+        ])
+
+        # Email template (3/6 month probation)
+        template = self.env.ref(
+            'custom_employee.email_template_employee_probation_review',
+            raise_if_not_found=False
+        )
+
+        if not template:
+            return
+
+        for emp in employees:
+            months = 0
+
+            # Decide months based on country
+            if emp.country_id.name == 'Pakistan':
+                months = 3
+            else:
+                months = 6
+
+            review_date = emp.joining_date + relativedelta(months=months)
+
+            # Send only if today is the review date
+            if review_date == today:
+                template.with_context().send_mail(emp.id, force_send=True)
+
 
     @api.model
     def check_one_month_employees(self):

@@ -170,7 +170,7 @@ class HrLeaveExt(models.Model):
             # elif leave_type == 'casual leaves' and (leave.request_date_from - today).days < 2:
             #     raise ValidationError(_("Casual Leave must be applied at least 48 hours in advance."))
 
-            elif leave_type == 'annual leaves' and (leave.request_date_from - today).days < 14:
+            elif (leave_type == 'annual leaves' and not self.env.user.has_group('base.group_erp_manager') and (leave.request_date_from - today).days < 14):
                 raise ValidationError(_("Annual Leave must be applied at least 2 weeks in advance."))
 
             elif leave_type == 'bereavement leaves':
