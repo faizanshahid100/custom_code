@@ -1,15 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="0">
+        <!--        3 Month Probation Template-->
+        <record id="email_template_employee_probation_review" model="mail.template">
+            <field name="name">Employee Probation Review</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="subject">Probation Milestone: {{ object.name }}</field>
+            <field name="email_from">hr@primesystemsolutions.com</field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+
+                    <!-- Determine review months based on country -->
+                    <t t-if="object.country_id.name == 'Pakistan'">
+                        <t t-set="review_months" t-value="3"/>
+                    </t>
+                    <t t-if="object.country_id.name == 'Philippines'">
+                        <t t-set="review_months" t-value="6"/>
+                    </t>
+
+                    <t t-set="review_date"
+                       t-value="object.joining_date + relativedelta(months=review_months)"/>
+
+                    <p>Hi Team,</p>
+
+                    <p>
+                        This is a reminder that
+                        <strong>
+                            <t t-out="object.name"/>
+                        </strong>
+                        completes their
+                        <strong><t t-out="review_months"/>-month probation milestone
+                        </strong>
+                        on
+                        <strong>
+                            <t t-out="review_date.strftime('%d %B %Y')"/>
+                        </strong>
+                        .
+                    </p>
+
+                    <p>Please ensure the following actions are completed:</p>
+
+                    <ul>
+                        <li>Probation performance review discussion is conducted</li>
+                        <li>Manager, probation status, and HR contact details are updated in Odoo</li>
+                        <li>Feedback from Service Delivery / Customer Success is recorded
+                            (discipline, attitude, cultural fit, performance)
+                        </li>
+                    </ul>
+
+                    <p>
+                        Thank you for helping us maintain strong engagement and performance standards 🌱
+                    </p>
+
+                </div>
+            </field>
+
+            <field name="auto_delete" eval="False"/>
+        </record>
+        <!--        1 Month Employee Status-->
         <record id="email_template_employee_one_month_review" model="mail.template">
             <field name="name">Employee 1-Month Performance Review</field>
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="subject">1-Month Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
-            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com </field>
-            <field name="email_cc">
-                sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com
-            </field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <t t-set="anniversary_date" t-value="object.joining_date + relativedelta(months=1)"/>
@@ -48,14 +105,12 @@
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="subject">{{ object.name }} | One-Month Milestone at Prime</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
-            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com </field>
-            <field name="email_cc">
-                sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com
-            </field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <t t-set="anniversary_date" t-value="object.joining_date + relativedelta(months=1)"/>
-                    <p>Hi <t t-out="object.contractor.name"/>,
+                    <p>Hi<t t-out="object.contractor.name"/>,
                     </p>
                     <p>
                         Just a quick note that

@@ -44,6 +44,23 @@ class EmployeeAttendanceRegister(models.TransientModel):
             start_date += delta
         return date_list
 
+    def remove_lower_state_duplicates(self, data):
+        result = {}
+
+        for rec in data:
+            key = (
+                rec['employee'],
+                rec['date'],
+                rec['month'],
+                rec['year'],
+            )
+
+            # Keep the record with the highest state
+            if key not in result or rec['state'] > result[key]['state']:
+                result[key] = rec
+
+        return list(result.values())
+
     def check_attendance(self):
         data = []
         report = self.env['hr.attendance'].sudo().search(
@@ -72,9 +89,10 @@ class EmployeeAttendanceRegister(models.TransientModel):
                     'department': rec.employee_id.department_id.id,
                 })
 
-        # Remove duplicates if any
-        res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
-        return res_list
+        # Remove less time duplicates attendance if any
+        return self.remove_lower_state_duplicates(data)
+        # res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
+        # return res_list
 
     def calculate_employee_fix_off_days(self, emp, start_date, end_date):
         if not emp.resource_calendar_id:

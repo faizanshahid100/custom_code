@@ -127,6 +127,9 @@
                             </group>
                         </group>
                     </page>
+                    <page string="HR Probation Feedback" groups="hr.group_hr_manager">
+                        <field name="hr_probation_feedback"/>
+                    </page>
                 </xpath>
                 <xpath expr="//field[@name='resource_calendar_id']" position="after">
                     <field name="calendar_tracking_ids" groups="hr.group_hr_user" readonly="0">
