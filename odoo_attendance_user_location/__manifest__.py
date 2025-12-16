@@ -15,15 +15,18 @@
         'security/security.xml',
         'views/hr_attendance_views.xml',
     ],
-    'assets': {
-        'web.assets_backend': [
-            'odoo_attendance_user_location/static/src/js/my_attendances.js',
-        ],
-    },
+
     'images': ['static/description/banner.jpg'],
-    'external_dependencies': {'python': ['geopy']},
     'license': 'AGPL-3',
     'installable': True,
     'auto_install': False,
     'application': False,
 }
+
+# Below will be uncomment and add in manifest when location started
+# 'assets': {
+#     'web.assets_backend': [
+#         'odoo_attendance_user_location/static/src/js/my_attendances.js',
+#     ],
+# },
+# 'external_dependencies': {'python': ['geopy']},
