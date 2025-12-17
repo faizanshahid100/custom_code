@@ -33,6 +33,7 @@ class EmployeeProbationMeeting(models.Model):
         ("green", "Green"),
         ("yellow", "Yellow"),
         ("red", "Red"),
+        ("blue", "Blue"),
     ], string="Employee Status", required=True, tracking=True)
     department_master_ids = fields.Many2many('department.master', string='Assign Department')
 

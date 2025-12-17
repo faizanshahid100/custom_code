@@ -33,7 +33,7 @@ class AttendanceDashboard(models.Model):
         utc_now = datetime.now()
         today = fields.Date.today()
 
-        employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0), ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH'])])
+        employees = self.env['hr.employee'].sudo().search([('hour_start_from', '>', 0), ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH', 'Business SA'])])
 
         for emp in employees:
             # 🔹 NEW: Skip employee if on approved leave today

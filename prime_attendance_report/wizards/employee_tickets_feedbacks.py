@@ -28,7 +28,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     start_date = fields.Date('Start Date', required=True)
     end_date = fields.Date('End Date', required=True)
-    department_id = fields.Many2one('hr.department', string='Department', domain=[('name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
+    department_id = fields.Many2one('hr.department', string='Department', domain=[('name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
     period = fields.Selection([
         ('q1', 'Q1 (Jan - Mar)'),
         ('q2', 'Q2 (Apr - Jun)'),
@@ -62,12 +62,15 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 self.start_date = datetime.date(year, 1, 1)
                 self.end_date = datetime.date(year, 12, 31)
 
+    def get_sprint_of_year(self, date_value):
+        return date_value.isocalendar().week
+
     def action_confirm_tickets(self):
         if self.department_id:
             employees = self.env['hr.employee'].sudo().search([('department_id', '=', self.department_id.id)])
         else:
             employees = self.env['hr.employee'].sudo().search([
-                ('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))
+                ('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))
             ])
 
         def get_week_ranges(start_date, end_date):
@@ -167,6 +170,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
             last_week_index = len(effective_week_ranges)
 
             for week_index, (start, end) in enumerate(effective_week_ranges, start=1):
+                sprint_no = self.get_sprint_of_year(start)
                 # Check if employee is on leave for entire week
                 if is_on_leave_entire_week(employee, start, end, leaves):
                     vals[f'week_{week_index}'] = (
@@ -280,7 +284,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].sudo().search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].sudo().search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK'))])
+            employees = self.env['hr.employee'].sudo().search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
