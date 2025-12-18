@@ -49,6 +49,14 @@ class HrOffer(models.Model):
     reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
     working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
     checklist_template_id = fields.Many2one('checklist.template', string='Checklist Template', tracking=True)
+    contract_type = fields.Selection([
+        ("pakistan", "Pakistan"),
+        ("philippines", "Philippines"),
+    ], string='Contract Type', required=True, tracking=True)
+    hr_responsible = fields.Selection([
+        ("pakistan", "Pakistan"),
+        ("philippines", "Philippines"),
+    ], string='Hr Responsible', required=True, tracking=True)
 
     # Reporting Structure
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
@@ -163,23 +171,26 @@ class HrOffer(models.Model):
         self.write({"state": "send_offer"})
 
         if self.personal_email:
-            template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+            if self.contract_type == 'pakistan':
+                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+            elif self.contract_type == 'philippines':
+                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template_philippines")
 
-            # Determine which HR group to use based on country
-            if self.country_id.name == "Pakistan":
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
-            elif self.country_id.name == "Philippines":
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
-            else:
-                # Default HR group (if desired)
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
-
-            # Get all HR users (based on selected group)
-            hr_users = self.env.ref(hr_group_xmlid).users
-            hr_emails = ",".join([u.email for u in hr_users if u.email])
-
-            # Add CC and send email
-            template.email_cc = hr_emails
+            # # # Determine which HR group to use based on country
+            # # if self.hr_responsible == "pakistan":
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
+            # # elif self.hr_responsible == "philippines":
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
+            # # else:
+            # #     # Default HR group (if desired)
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
+            # #
+            # # # Get all HR users (based on selected group)
+            # # hr_users = self.env.ref(hr_group_xmlid).users
+            # # hr_emails = ",".join([u.email for u in hr_users if u.email])
+            #
+            # # Add CC and send email
+            # template.email_cc = hr_emails
             template.send_mail(self.id, force_send=True)
 
     def action_sent_contract(self):
@@ -192,6 +203,11 @@ class HrOffer(models.Model):
 
             # Template in /data/
             template_path = os.path.join(base_path, "data", "contract_template.docx")
+            # TODO : when below done then above line to be removed
+            # if self.contract_type == 'pakistan':
+            #     template_path = os.path.join(base_path, "data", "contract_template.docx")
+            # elif self.contract_type == 'philippines':
+            #     template_path = os.path.join(base_path, "data", "contract_template_philippines.docx")
 
             # Contracts folder
             contracts_dir = os.path.join(base_path, "contracts")
