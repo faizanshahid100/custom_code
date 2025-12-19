@@ -106,6 +106,9 @@
                         <page string="Employee Info" name="employee_info" attrs="{'invisible': [('state', 'not in', ('send_offer', 'send_contract', 'hired'))]}">
                             <group></group>
                         </page>
+                        <page string="Job Description" name="employee_info" attrs="{'invisible': [('contract_type', '!=', 'philippines')]}">
+                            <field name="job_description" attrs="{'required': [('state', 'in', ['send_offer', 'approved', 'send_contract', 'hired']), ('contract_type', '=', 'philippines')]}"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
