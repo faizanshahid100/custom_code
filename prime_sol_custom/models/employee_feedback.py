@@ -9,7 +9,20 @@ class EmployeeFeedback(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True, readonly=False)
     date_feedback = fields.Date(string='Date', required=True)
     client_id = fields.Many2one('res.partner', string='Client Name', required=True, domain=[('is_company','=', True)])
+    manager_id = fields.Many2one('res.partner', string='Manager')
+    manager_email = fields.Char(string='Manager Email', compute='_compute_manager_fields', store=True, readonly=False)
+    current_meeting_frequency = fields.Selection([
+        ('monthly', 'Monthly'),
+        ('bi_monthly', 'Bi-Monthly'),
+        ('weekly', 'Weekly'),
+        ('bi_weekly', 'Bi-Weekly'),
+        ('tbd', 'TBD'),
+        ('not_required', 'Not Required')
+    ], string='Current Meeting Frequency', compute='_compute_manager_fields', store=True, readonly=False)
+    business_tech = fields.Char(string='Business/Tech', compute='_compute_manager_fields', store=True, readonly=False)
     client_feedback = fields.Text('Client Feedback', required=True)
+    month = fields.Date(string='Month')
+    current_month_schedule = fields.Datetime(string='Current Month Schedule')
     feedback_type = fields.Selection([
         ('positive', 'Positive'),
         ('negative', 'Negative'),
@@ -29,6 +42,8 @@ class EmployeeFeedback(models.Model):
         ('resolved', 'Resolved'),
     ], string="Feedback Status", default='casual', required=True)
     comment = fields.Text()
+    is_meeting_done = fields.Boolean(string='Is Meeting Done?')
+    is_meeting_rescheduled = fields.Boolean(string='Is Meeting Rescheduled?')
 
 
     @api.onchange('employee_id')
@@ -38,3 +53,12 @@ class EmployeeFeedback(models.Model):
             self.client_id = self.employee_id.contractor
         else:
             self.client_id = False  # Clear the field if no contractor is found
+
+    @api.depends('manager_id.email', 'manager_id.business_tech', 'manager_id.current_meeting_frequency')
+    def _compute_manager_fields(self):
+        """Compute all dependent manager-related fields."""
+        for record in self:
+            manager = record.manager_id
+            record.manager_email = manager.email or False
+            record.business_tech = manager.business_tech or False
+            record.current_meeting_frequency = manager.current_meeting_frequency or False
