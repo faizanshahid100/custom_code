@@ -89,7 +89,43 @@
                             <field name="outcome_suggested" widget="text" placeholder="Type '/' for commands"/>
                         </page>
                         <page name='task_assignment' string="Task Assignment">
-
+                            <field name="task_assign_line_ids">
+                                <tree editable="bottom">
+                                    <field name="reason"/>
+                                    <field name="to_employee_ids" widget="many2many_tags"/>
+                                    <field name="cc_employee_ids" widget="many2many_tags"/>
+                                    <field name="priority" widget="priority"/>
+                                    <field name="assign_date"/>
+                                    <field name="csm_task_confirmed"/>
+                                    <button name="action_send_action_mail" type="object" class="oe_highlight" string="Send Email" icon="fa-envelope"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="reason"/>
+                                                <field name="action_taken_comment"/>
+                                                <field name="priority"/>
+                                                <field name="assign_date"/>
+                                            </group>
+                                            <group>
+                                                <field name="to_employee_ids"/>
+                                                <field name="cc_employee_ids"/>
+                                                <field name="csm_task_confirmed"/>
+                                                <field name="confirmed_date"/>
+                                            </group>
+                                        </group>
+                                        <div class="oe_button_box">
+                                            <button name="action_send_action_mail" type="object" class="oe_highlight" string="Send Email"/>
+                                        </div>
+                                    </sheet>
+                                    <div class="oe_chatter">
+                                        <field name="message_follower_ids"/>
+                                        <field name="activity_ids"/>
+                                        <field name="message_ids"/>
+                                    </div>
+                                </form>
+                            </field>
                         </page>
                         <page name='comment' string="Notes">
                             <field name="comment" placeholder="Type '/' for commands"/>

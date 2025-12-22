@@ -20,3 +20,4 @@ access_scorecard_wizard,access.scorecard.wizard,model_scorecard_wizard,,1,1,1,1
 access_client_survey,access.client.survey,model_client_survey,,1,1,1,1
 access_approval_overtime_user,access.approval.overtime.user,model_approval_overtime,,1,1,1,1
 access_survey_excel_export,survey.excel.export,model_survey_excel_export,,1,1,1,1
+access_employee_feedback_task_lines,employee.feedback.task.lines,model_employee_feedback_task_lines,base.group_user,1,1,1,1
