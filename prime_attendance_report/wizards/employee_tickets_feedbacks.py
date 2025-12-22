@@ -62,8 +62,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 self.start_date = datetime.date(year, 1, 1)
                 self.end_date = datetime.date(year, 12, 31)
 
-    def get_sprint_of_year(self, date_value):
-        return date_value.isocalendar().week
+    # def get_sprint_of_year(self, date_value):
+    #     return date_value.isocalendar().week
 
     def action_confirm_tickets(self):
         if self.department_id:
@@ -170,7 +170,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
             last_week_index = len(effective_week_ranges)
 
             for week_index, (start, end) in enumerate(effective_week_ranges, start=1):
-                sprint_no = self.get_sprint_of_year(start)
+                # sprint_no = self.get_sprint_of_year(start)
                 # Check if employee is on leave for entire week
                 if is_on_leave_entire_week(employee, start, end, leaves):
                     vals[f'week_{week_index}'] = (
