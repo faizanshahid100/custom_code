@@ -104,7 +104,8 @@
                 <tr>
                     <th style="text-align:left; border:1px solid #000; padding:6px;">Salary</th>
                     <td style="border:1px solid #000; padding:6px;">
-                        <t t-out="object.currency_id.name"/> <t t-out="object.salary"/>
+                        <t t-out="object.currency_id.name"/>
+                        <t t-out="object.salary"/>
                     </td>
                 </tr>
                 <tr>
@@ -171,13 +172,14 @@
         </field>
     </record>
 
+    <!--    Offer latter Pakistan-->
     <record id="candidate_offer_final_template" model="mail.template">
-        <field name="name">Candidate Final Offer Email</field>
+        <field name="name">Candidate Final Offer Email PK</field>
         <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">
+        <field name="email_cc">{{','.join(user.email for user in (object.env.ref('employee_onboarding_offboarding.group_responsible_hr_pak').users | object.env.ref('employee_onboarding_offboarding.group_talent_acquisition_pak').users) if user.email)}},,sadia.hamid@primesystemsolutions.com,hassan.zia@primesystemsolutions.com
         </field>
         <field name="body_html" type="html">
             <p>Dear
@@ -220,7 +222,7 @@
                 </li>
                 <li>
                     <b>Business Hours:</b>
-                    12 PM to 9 PM PKT (Subject to change as per requirements)
+                    <t t-out="object.reporting_time"/>
                 </li>
                 <li>
                     <b>Special Instructions:</b>
@@ -238,12 +240,14 @@
                     <t t-out="'{:,.0f}'.format(object.salary)"/>
                     per month
                 </li>
-                <li>
-                    <b>Basic Salary:</b>
-                    <t t-out="object.currency_id.name"/>
-                    <t t-out="'{:,.0f}'.format(object.allowances)"/>
-                    per month
-                </li>
+                <t t-if="object.allowances > 0">
+                    <li>
+                        <b>Allowances:</b>
+                        <t t-out="object.currency_id.name"/>
+                        <t t-out="'{:,.0f}'.format(object.allowances)"/>
+                        per month
+                    </li>
+                </t>
                 <li>
                     <b>Employment Type:</b>
                     <t t-out="object.employment_type.capitalize()"/>
@@ -306,6 +310,132 @@
             <br/>
             <p>
                 <b>Regards,</b>
+                <br/>
+                <t t-out="object.env.user.name"/>
+                <br/>
+                HR Team
+                <br/>
+                Prime System Solutions
+            </p>
+        </field>
+    </record>
+
+    <!--    Offer Latter Phillipines-->
+    <record id="candidate_offer_final_template_philippines" model="mail.template">
+        <field name="name">Candidate Final Offer Email PH</field>
+        <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
+        <field name="email_from">hr@primesystemsolutions.com</field>
+        <field name="subject">Offer Letter - Prime System Solutions</field>
+        <field name="email_to">{{object.personal_email}}</field>
+        <field name="email_cc">{{','.join(user.email for user in (object.env.ref('employee_onboarding_offboarding.group_responsible_hr_philippines').users | object.env.ref('employee_onboarding_offboarding.group_talent_acquisition_philippines').users) if user.email)}},,sadia.hamid@primesystemsolutions.com,hassan.zia@primesystemsolutions.com
+        </field>
+        <field name="body_html" type="html">
+            <p>Dear
+                <b>
+                    <strong>
+                        <t t-out="object.candidate_name"/>
+                    </strong>
+                </b>
+                ,
+            </p>
+
+            <p>
+                We are delighted to extend to you the position of
+                <b>
+                    <t t-out="object.job_id.name"/>
+                </b>
+                at <b>Prime System Solutions</b>.
+                Your professional background and enthusiasm make you an ideal fit for our team!
+            </p>
+
+            <p>
+                At Prime IT INC, we foster an environment where you can unlock your full potential, challenge norms, and
+                advance your career. We strive to unite individuals, locations, and processes, seeking individuals who
+                can innovate, envision, and collaborate with us. Our culture celebrates diversity and recognizes
+                diligence. We are in search of achievers, leaders, and innovators. Joining Prime IT Inc., means
+                embracing a dynamic and ever-evolving business landscape.
+            </p>
+
+            <h4>Below are the details of your employment:</h4>
+            <p>
+                <b>Work Environment</b>
+            </p>
+            <ul>
+                <li>
+                    <b>Client Company:</b>
+                    Prime IT INC.
+                </li>
+                <li>
+                    <b>Reporting To:</b>
+                    TBC
+                </li>
+                <li>
+                    <b>Location/Site:</b>
+                    Remote, Philippines
+                </li>
+                <li>
+                    <b>Business Operation Schedule:</b>
+                    TBC
+                </li>
+                <li>
+                    <b>Compensation</b>
+                    <br/>
+                    o Your compensation will be PHP
+                    <t t-out="'{:,.0f}'.format(object.salary)"/>
+                    base compensation and PHP
+                    <t t-out="'{:,.0f}'.format(object.allowances)"/>
+                    De Minimis
+                    <br/>
+                    o Salary will be paid on bi-monthly basis
+                </li>
+                <li>
+                    <b>Employment Type:</b>
+                    <t t-out="object.employment_type.capitalize()"/>
+                </li>
+                <li>
+                    <b>Probation Period</b>
+                    <br/>
+                    o Your employment probation period will be at 6 months with 90-day performance review
+                </li>
+                <li>
+                    <b>Special Instructions:</b>
+                    <t t-out="object.special_instructions"/>
+                </li>
+            </ul>
+
+            <p>
+                <b>Please be advised that the employment contract will be released following the successful completion
+                    of the character reference check. Non-compliance with this pre-onboarding requirement, or an
+                    unfavorable reference outcome, may result in a delay of your start date and/or withdrawal of the
+                    offer.
+                </b>
+            </p>
+            <p>
+                Please provide the following information for our record: Link:
+                <a href="https://forms.office.com/r/1frZvYykWQ" target="_blank"
+                   style="display:inline-block; padding:10px 20px; font-size:14px;
+                          font-weight:bold; color:#ffffff; background-color:#1a73e8;
+                          text-decoration:none; border-radius:6px;">Click Here
+                </a>
+            </p>
+
+            <h4>Next Steps</h4>
+            <p>
+                We kindly request your response to this employment offer on or before
+                <b>
+                    <t t-out="format_date((datetime.date.today() + relativedelta(days=+2)), date_format='EEEE, d MMMM y')"/>
+                </b>
+                (Manila Time),
+            </p>
+            <p>Your anticipated joining date is
+                <b>
+                    <t t-out="object.joining_date.strftime('%d-%m-%Y')"/>
+                </b>
+            </p>
+            <p>
+                <b>Regards,</b>
+                <br/>
+                <t t-out="object.env.user.name"/>
                 <br/>
                 HR Team
                 <br/>

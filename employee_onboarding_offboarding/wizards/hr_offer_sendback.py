@@ -23,10 +23,10 @@ class HrOfferSendBackWizard(models.TransientModel):
                     "employee_onboarding_offboarding.candidate_offer_modification_template",
                     raise_if_not_found=False
                 )
-                group_talent_acquisition = self.env.ref('employee_onboarding_offboarding.group_talent_acquisition')
+                group_talent_acquisition = self.env.ref('employee_onboarding_offboarding.group_talent_acquisition_pak') if offer.hr_responsible == 'pakistan' else self.env.ref('employee_onboarding_offboarding.group_talent_acquisition_philippines')
                 if mail_template:
                     mail_template.send_mail(offer.id, force_send=True, email_values={
-                        "email_to": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_talent_acquisition').users if user.email),
+                        "email_to": ','.join(user.email for user in group_talent_acquisition.users if user.email),
                         # "email_cc": offer.offer_submitter_id.email,
                     })
         return {"type": "ir.actions.act_window_close"}

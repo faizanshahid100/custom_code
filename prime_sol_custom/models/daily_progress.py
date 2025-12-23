@@ -265,7 +265,7 @@ class DailyProgress(models.Model):
 
         # Fetch relevant employees (Tech + Business, PK + PH)
         employees = self.env['hr.employee'].sudo().search([
-            ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH']),
+            ('department_id.name', 'in', ['Tech PK', 'Tech PH', 'Business PK', 'Business PH', 'Business SA']),
             ('joining_date', '<=', cutoff_date)
         ])
 

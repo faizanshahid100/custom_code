@@ -43,7 +43,7 @@
     <!-- Menu Item (child of Emp Feedback) -->
     <menuitem id="menu_client_cadence_call"
               name="Client Cadence Calls"
-              parent="menu_hr_employee_feedback"
+              parent="prime_sol_custom.menu_csm_head"
               action="action_client_cadence_call"/>
 
 </odoo>

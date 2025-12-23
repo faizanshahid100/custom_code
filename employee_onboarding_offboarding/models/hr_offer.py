@@ -5,6 +5,8 @@ import base64
 from docx import Document
 import os
 from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
+
 
 
 class HrOffer(models.Model):
@@ -49,6 +51,14 @@ class HrOffer(models.Model):
     reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
     working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
     checklist_template_id = fields.Many2one('checklist.template', string='Checklist Template', tracking=True)
+    contract_type = fields.Selection([
+        ("pakistan", "Pakistan"),
+        ("philippines", "Philippines"),
+    ], string='Contract Type', required=True, tracking=True)
+    hr_responsible = fields.Selection([
+        ("pakistan", "Pakistan"),
+        ("philippines", "Philippines"),
+    ], string='Hr Responsible', required=True, tracking=True)
 
     # Reporting Structure
     manager_id = fields.Many2one("hr.employee", string="Internal Manager", required=True, tracking=True)
@@ -94,6 +104,8 @@ class HrOffer(models.Model):
     swift_code = fields.Char(string='SWIFT Code', tracking=True)
     linked_in_profile = fields.Char(string='LinkedIn Profile Link', tracking=True)
 
+    # Job Description
+    job_description = fields.Html(string='Job Description', tracking=True)
 
     def name_get(self):
         result = []
@@ -163,23 +175,26 @@ class HrOffer(models.Model):
         self.write({"state": "send_offer"})
 
         if self.personal_email:
-            template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+            if self.contract_type == 'pakistan':
+                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
+            elif self.contract_type == 'philippines':
+                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template_philippines")
 
-            # Determine which HR group to use based on country
-            if self.country_id.name == "Pakistan":
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
-            elif self.country_id.name == "Philippines":
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
-            else:
-                # Default HR group (if desired)
-                hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
-
-            # Get all HR users (based on selected group)
-            hr_users = self.env.ref(hr_group_xmlid).users
-            hr_emails = ",".join([u.email for u in hr_users if u.email])
-
-            # Add CC and send email
-            template.email_cc = hr_emails
+            # # # Determine which HR group to use based on country
+            # # if self.hr_responsible == "pakistan":
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
+            # # elif self.hr_responsible == "philippines":
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
+            # # else:
+            # #     # Default HR group (if desired)
+            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
+            # #
+            # # # Get all HR users (based on selected group)
+            # # hr_users = self.env.ref(hr_group_xmlid).users
+            # # hr_emails = ",".join([u.email for u in hr_users if u.email])
+            #
+            # # Add CC and send email
+            # template.email_cc = hr_emails
             template.send_mail(self.id, force_send=True)
 
     def action_sent_contract(self):
@@ -191,7 +206,12 @@ class HrOffer(models.Model):
             base_path = os.path.join(module_path, "..")
 
             # Template in /data/
-            template_path = os.path.join(base_path, "data", "contract_template.docx")
+            # template_path = os.path.join(base_path, "data", "contract_template.docx")
+            # TODO : when below done then above line to be removed
+            if self.contract_type == 'pakistan':
+                template_path = os.path.join(base_path, "data", "contract_template.docx")
+            elif self.contract_type == 'philippines':
+                template_path = os.path.join(base_path, "data", "contract_template_philippines.docx")
 
             # Contracts folder
             contracts_dir = os.path.join(base_path, "contracts")
@@ -208,7 +228,9 @@ class HrOffer(models.Model):
                 "{{ id_number }}": record.id_number or "",
                 "{{ address }}": record.address or "",
                 "{{ offer_issue_date }}": fields.Date.today().strftime("%d %B %Y"),
+                "{{ job_description }}": record.job_description or "",
                 "{{ joining_date }}": record.joining_date.strftime("%d %B %Y") if record.joining_date else "",
+                "{{ probation_end_date }}": ((record.joining_date + relativedelta(months=3 if record.contract_type == 'pakistan' else 6 )).strftime("%d %B %Y") if record.joining_date else ""),
                 "{{ salary }}": str(record.salary) if record.salary else "",
                 "{{ allowances }}": str(record.allowances) if record.allowances else "0",
                 "{{ special_instructions }}": str(record.special_instructions) if record.special_instructions else "None",
@@ -249,6 +271,12 @@ class HrOffer(models.Model):
             })
 
             # --- SEND EMAIL WITH ATTACHMENT ---
+            hr_responsible_group = (
+                'employee_onboarding_offboarding.group_responsible_hr_pak'
+                if record.contract_type == 'pakistan'
+                else 'employee_onboarding_offboarding.group_responsible_hr_philippines'
+            )
+
             mail_values = {
                 "subject": "Independent Contractor Service Agreement",
                 "body_html": f"""
@@ -262,7 +290,7 @@ class HrOffer(models.Model):
                             """,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": record.personal_email,
-                "email_cc": ','.join(user.email for user in record.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                "email_cc": ','.join(user.email for user in record.env.ref(hr_responsible_group).users if user.email),
                 "attachment_ids": [(6, 0, [attachment.id])],
             }
             self.env["mail.mail"].sudo().create(mail_values).send()

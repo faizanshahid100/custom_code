@@ -48,6 +48,8 @@
                             <field name="reporting_time" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="working_hours" attrs="{'readonly': [('state', 'in', ('approved', 'send_contract', 'hired'))]}"/>
                             <field name="checklist_template_id" attrs="{'readonly': [('state', 'in', ('hired'))]}"/>
+                            <field name="contract_type" attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
+                            <field name="hr_responsible" attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                         </group>
 
                         <group string="Reporting Structure">
@@ -103,6 +105,9 @@
                         </page>
                         <page string="Employee Info" name="employee_info" attrs="{'invisible': [('state', 'not in', ('send_offer', 'send_contract', 'hired'))]}">
                             <group></group>
+                        </page>
+                        <page string="Job Description" name="employee_info" attrs="{'invisible': [('contract_type', '!=', 'philippines')]}">
+                            <field name="job_description" attrs="{'required': [('state', 'in', ['send_offer', 'approved', 'send_contract', 'hired']), ('contract_type', '=', 'philippines')]}"/>
                         </page>
                     </notebook>
                 </sheet>
