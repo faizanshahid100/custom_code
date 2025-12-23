@@ -248,7 +248,6 @@ class EmployeeTicketsFeedback(models.TransientModel):
                             color = "#ff0000"
                             text_color = "white"
 
-
                     # Display with percentage
                     vals[f'week_{week_index}'] = (
                         f"<div style='background-color: {color}; color: {text_color}; padding: 3px;text-align: center;'>"
