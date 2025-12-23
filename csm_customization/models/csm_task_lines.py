@@ -58,9 +58,9 @@ class CSMTaskLines(models.Model):
             body = f"""
                 <div style="font-family:Arial, sans-serif; line-height:1.6;">
                     <h3 style="color:#004080;">CSM Meeting Action Update</h3>
-                    <p><b>Task Completed:</b> ✅</p>
+                    # <p><b>Task Completed:</b> ✅</p>
                     <p><b>Customer:</b> {record.handbook_id.customer_id.name}</p>
-                    <p><b>Manager:</b> {record.handbook_id.manager_id.name}</p>
+                    <p><b>Manager:</b> {record.handbook_id.manager_id.name or 'N/A'}</p>
                     <p><b>Action Taken:</b> {record.action_taken_comment or 'Resolved'}</p>
                     <p>You can view this CSM record in Odoo:
                         <a href="{record_url}" target="_blank">View Record</a>

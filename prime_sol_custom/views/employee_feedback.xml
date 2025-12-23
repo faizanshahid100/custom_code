@@ -15,9 +15,11 @@
                 <field name="date_feedback"/>
                 <field name="next_followup_date"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_feedback_type" string="Feedback Type" domain="[]" context="{'group_by': 'feedback_type'}"/>
+                    <filter name="group_feedback_type" string="Feedback Type" domain="[]"
+                            context="{'group_by': 'feedback_type'}"/>
                     <filter name="group_client" string="Client" domain="[]" context="{'group_by': 'client_id'}"/>
-                    <filter name="group_feedback_status" string="Feedback Status" domain="[]" context="{'group_by': 'feedback_status'}"/>
+                    <filter name="group_feedback_status" string="Feedback Status" domain="[]"
+                            context="{'group_by': 'feedback_status'}"/>
                 </group>
             </search>
         </field>
@@ -92,46 +94,32 @@
                             <field name="task_assign_line_ids">
                                 <tree editable="bottom">
                                     <field name="reason"/>
-                                    <field name="to_employee_ids" widget="many2many_tags"/>
-                                    <field name="cc_employee_ids" widget="many2many_tags"/>
+                                    <field name="to_employee_ids" widget="many2many_tags"
+                                           groups="csm_customization.group_csm"/>
+                                    <field name="cc_employee_ids" widget="many2many_tags"
+                                           groups="csm_customization.group_csm"/>
                                     <field name="priority" widget="priority"/>
                                     <field name="assign_date"/>
-                                    <field name="csm_task_confirmed"/>
-                                    <button name="action_send_action_mail" type="object" class="oe_highlight" string="Send Email" icon="fa-envelope"/>
+                                    <field name="action_taken_comment"/>
+                                    <field name="employee_task_confirmed" widget="boolean_toggle"/>
+                                    <field name="csm_task_confirmed" groups="csm_customization.group_csm"/>
+                                    <button name="action_send_action_mail" type="object" class="oe_highlight"
+                                            string="Send Email" icon="fa-envelope"/>
                                 </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="reason"/>
-                                                <field name="action_taken_comment"/>
-                                                <field name="priority"/>
-                                                <field name="assign_date"/>
-                                            </group>
-                                            <group>
-                                                <field name="to_employee_ids"/>
-                                                <field name="cc_employee_ids"/>
-                                                <field name="csm_task_confirmed"/>
-                                                <field name="confirmed_date"/>
-                                            </group>
-                                        </group>
-                                        <div class="oe_button_box">
-                                            <button name="action_send_action_mail" type="object" class="oe_highlight" string="Send Email"/>
-                                        </div>
-                                    </sheet>
-                                    <div class="oe_chatter">
-                                        <field name="message_follower_ids"/>
-                                        <field name="activity_ids"/>
-                                        <field name="message_ids"/>
-                                    </div>
-                                </form>
                             </field>
+                            <button name="action_send_reason_mail" type="object" string="Send Reason Mail"
+                                    class="btn-primary" icon="fa-envelope" groups="sdm_customization.group_sdm"/>
                         </page>
                         <page name='comment' string="Notes">
                             <field name="comment" placeholder="Type '/' for commands"/>
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -150,7 +138,11 @@
     </record>
 
     <!-- Menu Item -->
+    <menuitem id="menu_csm_head" name="CSM Client Feedback"
+              parent="csm_customization.menu_csm_root"/>
     <menuitem id="menu_hr_employee_feedback" name="Emp Feedback"
-              groups="prime_sol_custom.group_employee_feedback_manager"
-              action="action_hr_employee_feedback" web_icon="prime_sol_custom,static/description/feedback.png"/>
+              parent="prime_sol_custom.menu_csm_head"
+              action="prime_sol_custom.action_hr_employee_feedback"/>
+<!--     web_icon="prime_sol_custom,static/description/feedback.png"-->
+
 </odoo>
