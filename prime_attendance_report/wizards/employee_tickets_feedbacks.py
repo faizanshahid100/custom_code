@@ -2,10 +2,12 @@ from odoo import api, fields, models, registry, _
 from dateutil.relativedelta import relativedelta
 import datetime
 import io
+from odoo.exceptions import ValidationError
 import base64
 from datetime import timedelta
 import xlsxwriter
 from collections import defaultdict
+
 
 
 class EmployeeTicketsFeedback(models.TransientModel):
@@ -115,6 +117,9 @@ class EmployeeTicketsFeedback(models.TransientModel):
         # Start from first coming Monday
         self.start_date = self.start_date + timedelta(days=(7 - self.start_date.weekday()) % 7)
         week_ranges = get_week_ranges(self.start_date, self.end_date)
+
+        if len(week_ranges) > 26:
+            raise ValidationError('You can not see tickets more than 26 weeks(6 months)')
 
         progresses = self.env['daily.progress'].sudo().search([
             ('date_of_project', '>=', self.start_date),
@@ -298,6 +303,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
             return ranges
 
         week_ranges = get_week_ranges(self.start_date, self.end_date)
+        if len(week_ranges) > 26:
+            raise ValidationError('You can not see tickets more than 26 weeks(6 months)')
 
         feedbacks = self.env['hr.employee.feedback'].sudo().search([
             ('employee_id', 'in', employees.ids),

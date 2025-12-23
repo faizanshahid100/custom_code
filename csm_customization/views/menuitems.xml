@@ -2,6 +2,7 @@
     <!-- Main Menu -->
     <menuitem id="menu_csm_root"
               name="CSM"
+              groups="csm_customization.group_csm"
               web_icon="csm_customization,static/description/customer_service.png"/>
     
     <!-- CSM Calendar Menu -->

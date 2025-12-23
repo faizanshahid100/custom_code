@@ -1,0 +1,59 @@
+<odoo>
+    <!--    Search-->
+    <record id="view_employee_leave_balance_search" model="ir.ui.view">
+        <field name="name">employee.leave.summary.search</field>
+        <field name="model">employee.leave.summary</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Filter -->
+                <field name="employee_id"/>
+
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter
+                            string="Employee"
+                            name="group_employee"
+                            context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!-- Tree View -->
+    <record id="view_employee_leave_balance_tree" model="ir.ui.view">
+        <field name="name">employee.leave.balance.tree</field>
+        <field name="model">employee.leave.summary</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+
+                <field name="floater"/>
+                <field name="sick"/>
+                <field name="unpaid"/>
+                <field name="parental"/>
+                <field name="annual"/>
+                <field name="public"/>
+                <field name="compensatory"/>
+
+                <field name="total"/>
+                <field name="used"/>
+                <field name="remaining"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_employee_leave_balance" model="ir.actions.act_window">
+        <field name="name">Employee Leave Balance Summary</field>
+        <field name="res_model">employee.leave.summary</field>
+        <field name="view_mode">search,tree</field>
+    </record>
+
+    <!-- Menu -->
+
+
+    <menuitem
+            id="menu_employee_leave_balance"
+            name="Employee Leave Balance Summary"
+            action="action_employee_leave_balance"
+    />
+</odoo>
