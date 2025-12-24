@@ -22,14 +22,14 @@ class LeaveSummaryWizard(models.TransientModel):
 
         summary_model = self.env["employee.leave.summary"]
         summary_model.search([]).unlink()
-        employees = self.env["hr.employee"].search([("active", "=", True)])
+        employees = self.env["hr.employee"].sudo().search([("active", "=", True)])
 
         for emp in employees:
             taken = {}
             assigned = {}
 
             # --- Leaves Taken ---
-            leaves = self.env["hr.leave"].search([
+            leaves = self.env["hr.leave"].sudo().search([
                 ("employee_id", "=", emp.id),
                 ("state", "=", "validate"),
                 ("request_date_from", ">=", self.date_from),
@@ -41,7 +41,7 @@ class LeaveSummaryWizard(models.TransientModel):
                 taken[key] = round(taken.get(key, 0.0) + l.number_of_days_display, 2)
 
             # --- Leaves Assigned ---
-            allocations = self.env["hr.leave.allocation"].search([
+            allocations = self.env["hr.leave.allocation"].sudo().search([
                 ("employee_id", "=", emp.id),
                 ("state", "=", "validate"),
             ])
