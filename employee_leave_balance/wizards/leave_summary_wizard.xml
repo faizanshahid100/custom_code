@@ -35,6 +35,7 @@
     <menuitem
             id="menu_leave_summary_wizard"
             name="Leave Summary"
+            groups="hr.group_hr_manager"
             action="employee_leave_balance.action_leave_summary_wizard"
     />
 </odoo>

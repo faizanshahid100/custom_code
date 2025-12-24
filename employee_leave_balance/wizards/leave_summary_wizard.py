@@ -57,7 +57,7 @@ class LeaveSummaryWizard(models.TransientModel):
             used = round(sum(taken.values()), 2)
             remaining = round(total - used, 2)
 
-            summary_model.create({
+            summary_model.sudo().create({
                 "employee_id": emp.id,
                 "floater": val("floater leaves"),
                 "sick": val("sick leaves"),
