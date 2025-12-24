@@ -41,19 +41,12 @@
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Action (Not using yet)-->
     <record id="action_employee_leave_balance" model="ir.actions.act_window">
         <field name="name">Employee Leave Balance Summary</field>
         <field name="res_model">employee.leave.summary</field>
         <field name="view_mode">search,tree</field>
     </record>
 
-    <!-- Menu -->
 
-
-    <menuitem
-            id="menu_employee_leave_balance"
-            name="Employee Leave Balance Summary"
-            action="action_employee_leave_balance"
-    />
 </odoo>

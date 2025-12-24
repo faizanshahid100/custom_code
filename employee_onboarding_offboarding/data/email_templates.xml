@@ -179,7 +179,7 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">{{','.join(user.email for user in (object.env.ref('employee_onboarding_offboarding.group_responsible_hr_pak').users | object.env.ref('employee_onboarding_offboarding.group_talent_acquisition_pak').users) if user.email)}},,sadia.hamid@primesystemsolutions.com,hassan.zia@primesystemsolutions.com
+        <field name="email_cc">sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,misbah.yasir@primesystemsolutions.com,{{object.offer_submitter_id.login}}
         </field>
         <field name="body_html" type="html">
             <p>Dear
@@ -327,7 +327,7 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">{{','.join(user.email for user in (object.env.ref('employee_onboarding_offboarding.group_responsible_hr_philippines').users | object.env.ref('employee_onboarding_offboarding.group_talent_acquisition_philippines').users) if user.email)}},,sadia.hamid@primesystemsolutions.com,hassan.zia@primesystemsolutions.com
+        <field name="email_cc">sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,misbah.yasir@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,{{object.offer_submitter_id.login}}
         </field>
         <field name="body_html" type="html">
             <p>Dear

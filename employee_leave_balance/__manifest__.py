@@ -6,8 +6,8 @@
     "depends": ["hr", "hr_holidays"],
     "data": [
         "security/ir.model.access.csv",
-        "data/ir_crones.xml",
         "views/employee_leave_summary.xml",
+        "wizards/leave_summary_wizard.xml",
     ],
     "installable": True,
     "application": False,

@@ -290,7 +290,7 @@ class HrOffer(models.Model):
                             """,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": record.personal_email,
-                "email_cc": ','.join(user.email for user in record.env.ref(hr_responsible_group).users if user.email),
+                "email_cc": "misbah.yasir@primesystemsolutions.com" if record.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com",
                 "attachment_ids": [(6, 0, [attachment.id])],
             }
             self.env["mail.mail"].sudo().create(mail_values).send()
