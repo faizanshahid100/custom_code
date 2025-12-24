@@ -9,7 +9,6 @@ import xlsxwriter
 from collections import defaultdict
 
 
-
 class EmployeeTicketsFeedback(models.TransientModel):
     _name = "employee.tickets.feedbacks"
     _description = 'Employee Tickets Feedbacks'
@@ -30,7 +29,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
     start_date = fields.Date('Start Date', required=True)
     end_date = fields.Date('End Date', required=True)
-    department_id = fields.Many2one('hr.department', string='Department', domain=[('name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
+    department_id = fields.Many2one('hr.department', string='Department', domain=[
+        ('name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
     period = fields.Selection([
         ('q1', 'Q1 (Jan - Mar)'),
         ('q2', 'Q2 (Apr - Jun)'),
@@ -86,33 +86,35 @@ class EmployeeTicketsFeedback(models.TransientModel):
                 current = week_end + timedelta(days=1)
             return ranges
 
-        def is_on_leave_entire_week(employee, week_start, week_end, leaves):
-            """Check if employee is on approved leave for all working days in the week"""
+        def get_leave_days_in_week(employee, week_start, week_end, leaves):
+            """Get number of approved leave days in the week and check if entire week is on leave"""
             # Get employee's working days for the week
             calendar = employee.resource_calendar_id or employee.company_id.resource_calendar_id
             if not calendar:
-                return False
-            
+                return 0, False
+
             working_days = []
             current_date = week_start
             while current_date <= week_end:
                 weekday = str(current_date.weekday())
                 has_work = any(str(int(att.dayofweek)) == weekday or str(att.dayofweek) == weekday
-                              for att in calendar.attendance_ids)
+                               for att in calendar.attendance_ids)
                 if has_work:
                     working_days.append(current_date)
                 current_date += timedelta(days=1)
-            
+
             if not working_days:
-                return False
-            
-            # Check if all working days are covered by approved leaves
+                return 0, False
+
+            # Count leave days and check if all working days are covered
+            leave_days = 0
             for work_day in working_days:
-                covered = any(leave.request_date_from <= work_day <= leave.request_date_to
-                             for leave in leaves if leave.employee_id.id == employee.id)
-                if not covered:
-                    return False
-            return True
+                if any(leave.request_date_from <= work_day <= leave.request_date_to
+                       for leave in leaves if leave.employee_id.id == employee.id):
+                    leave_days += 1
+
+            entire_week_on_leave = leave_days == len(working_days)
+            return leave_days, entire_week_on_leave
 
         # Start from first coming Monday
         self.start_date = self.start_date + timedelta(days=(7 - self.start_date.weekday()) % 7)
@@ -175,34 +177,40 @@ class EmployeeTicketsFeedback(models.TransientModel):
             last_week_index = len(effective_week_ranges)
 
             for week_index, (start, end) in enumerate(effective_week_ranges, start=1):
-                # sprint_no = self.get_sprint_of_year(start)
-                # Check if employee is on leave for entire week
-                if is_on_leave_entire_week(employee, start, end, leaves):
+                # Check leave days in this week
+                leave_days, entire_week_on_leave = get_leave_days_in_week(employee, start, end, leaves)
+
+                # If entire week is on leave, show "Leave"
+                if entire_week_on_leave:
                     vals[f'week_{week_index}'] = (
                         f"<div style='background-color: #e6f3ff; color: #0066cc; padding: 3px; text-align: center; font-weight: bold;'>"
                         f"Leave</div>"
                     )
                     continue
-                
+
                 current_value = progress_map[employee.id].get(week_index, 0)
 
                 if employee.kpi_measurement == 'kpi':
+                    # Adjust weekly target based on leave days
+                    adjusted_weekly_tickets = weekly_tickets - (leave_days * (weekly_tickets / 5))
+                    adjusted_weekly_tickets = max(0, int(adjusted_weekly_tickets))  # Ensure non-negative
+
                     resolved_tickets_total += current_value
-                    all_tickets_total += weekly_tickets
+                    all_tickets_total += adjusted_weekly_tickets
 
                     # --- Color logic ---
                     if week_index == last_week_index:
                         if current_value == 0:
                             color = "#ff0000"  # red
                             text_color = "white"
-                        elif current_value >= weekly_tickets:
+                        elif current_value >= adjusted_weekly_tickets:
                             color = "#c6efce"  # green
                             text_color = "black"
                         else:
                             color = "#ffff99"  # yellow
                             text_color = "black"
                     else:
-                        if current_value >= weekly_tickets:
+                        if current_value >= adjusted_weekly_tickets:
                             color = "#c6efce"
                             text_color = "black"
                         else:
@@ -211,7 +219,7 @@ class EmployeeTicketsFeedback(models.TransientModel):
 
                     vals[f'week_{week_index}'] = (
                         f"<div style='background-color: {color}; color: {text_color}; padding: 3px;text-align: center;'>"
-                        f"{current_value} / {weekly_tickets}</div>"
+                        f"{current_value} / {adjusted_weekly_tickets}</div>"
                     )
                     # below is for Total Counts (The last Column)
                     vals['week_total'] = (
@@ -288,7 +296,8 @@ class EmployeeTicketsFeedback(models.TransientModel):
         if self.department_id:
             employees = self.env['hr.employee'].sudo().search([('department_id', '=', self.department_id.id)])
         else:
-            employees = self.env['hr.employee'].sudo().search([('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
+            employees = self.env['hr.employee'].sudo().search(
+                [('department_id.name', 'in', ('Tech PH', 'Tech PK', 'Business PH', 'Business PK', 'Business SA'))])
 
         def get_week_ranges(start_date, end_date):
             ranges = []
