@@ -34,6 +34,7 @@
         'views/client_survey_report.xml',
         'views/client_cadence_call.xml',
         'views/mail_activity_template.xml',
+        'views/approval_request_ext.xml',
         'data/mail_template_data.xml',
         'wizard/meeting_summary_view.xml',
         'wizard/scorecard_wizard.xml',

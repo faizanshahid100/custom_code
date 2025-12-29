@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+
+        <record id="approval_request_prime_inherit_id" model="ir.ui.view">
+            <field name="name">approval.request.prime.form.inherit.id</field>
+            <field name="model">approval.request</field>
+            <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Make Category readonly -->
+                <xpath expr="//field[@name='category_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+
+                <!-- OPD-specific fields -->
+                <xpath expr="//field[@name='request_owner_id']" position="after">
+                    <field name="employee_email" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
+                    <field name="relation" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
