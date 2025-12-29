@@ -18,6 +18,9 @@ class HrEmployee(models.Model):
     d_ticket_resolved = fields.Integer('Ticket Resolved')
     d_avg_resolution_time = fields.Integer('Avg.Resolution Time')
     d_CAST = fields.Integer('CAST %')
+    
+    # Weekly comments
+    weekly_comment_ids = fields.One2many('weekly.employee.comment', 'employee_id', string='Weekly Comments')
     d_billable_hours = fields.Integer('Billable Hours%')
     d_no_of_call_attended = fields.Integer('No Of Call Attended')
 

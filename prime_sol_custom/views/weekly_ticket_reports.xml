@@ -3,48 +3,74 @@
         <record id="view_weekly_ticket_report_tree" model="ir.ui.view">
             <field name="name">weekly.ticket.report.tree</field>
             <field name="model">weekly.ticket.report</field>
+            <field name="groups_id" eval="[(4, ref('sdm_customization.group_sdm'))]"/>
             <field name="arch" type="xml">
-                <tree>
-                    <field name="employee_id"/>
-                    <field name="contractor"/>
-                    <field name="level"/>
-                    <field name="employment_type" optional="hide"/>
-                    <field name="working_hours_type" optional="hide"/>
-                    <field name="job_position" optional="hide"/>
-                    <field name="department" optional="hide"/>
-                    <field name="contractor_manager" optional="hide"/>
-                    <field name="manager" optional="hide"/>
-                    <field name="gender" optional="hide"/>
-                    <field name="comments"/>
+                <tree editable="bottom">
+                    <field name="employee_id" readonly="1"/>
+                    <field name="contractor" readonly="1"/>
+                    <field name="level" readonly="1"/>
+                    <field name="employment_type" optional="hide" readonly="1"/>
+                    <field name="working_hours_type" optional="hide" readonly="1"/>
+                    <field name="job_position" optional="hide" readonly="1"/>
+                    <field name="department" optional="hide" readonly="1"/>
+                    <field name="contractor_manager" optional="hide" readonly="1"/>
+                    <field name="manager" optional="hide" readonly="1"/>
+                    <field name="gender" optional="hide" readonly="1"/>
+                    <field name="comments" readonly="1"/>
                     <!-- Week fields -->
-                    <field name="week_1" widget="html"/>
-                    <field name="week_2" widget="html"/>
-                    <field name="week_3" widget="html"/>
-                    <field name="week_4" widget="html"/>
-                    <field name="week_5" widget="html"/>
-                    <field name="week_6" widget="html"/>
-                    <field name="week_7" widget="html"/>
-                    <field name="week_8" widget="html"/>
-                    <field name="week_9" optional="hide" widget="html"/>
-                    <field name="week_10" optional="hide" widget="html"/>
-                    <field name="week_11" optional="hide" widget="html"/>
-                    <field name="week_12" optional="hide" widget="html"/>
-                    <field name="week_13" optional="hide" widget="html"/>
-                    <field name="week_14" optional="hide" widget="html"/>
-                    <field name="week_15" optional="hide" widget="html"/>
-                    <field name="week_16" optional="hide" widget="html"/>
-                    <field name="week_17" optional="hide" widget="html"/>
-                    <field name="week_18" optional="hide" widget="html"/>
-                    <field name="week_19" optional="hide" widget="html"/>
-                    <field name="week_20" optional="hide" widget="html"/>
-                    <field name="week_21" optional="hide" widget="html"/>
-                    <field name="week_22" optional="hide" widget="html"/>
-                    <field name="week_23" optional="hide" widget="html"/>
-                    <field name="week_24" optional="hide" widget="html"/>
-                    <field name="week_25" optional="hide" widget="html"/>
-                    <field name="week_26" optional="hide" widget="html"/>
-                    <field name="week_26" optional="hide" widget="html"/>
-                    <field name="week_total" widget="html"/>
+                    <field name="week_1" widget="html" readonly="1"/>
+                    <field name="week_1_comment" placeholder="Add comment..."/>
+                    <field name="week_2" widget="html" readonly="1"/>
+                    <field name="week_2_comment" placeholder="Add comment..."/>
+                    <field name="week_3" widget="html" readonly="1"/>
+                    <field name="week_3_comment" placeholder="Add comment..."/>
+                    <field name="week_4" widget="html" readonly="1"/>
+                    <field name="week_4_comment" placeholder="Add comment..."/>
+                    <field name="week_5" widget="html" readonly="1"/>
+                    <field name="week_5_comment" placeholder="Add comment..."/>
+                    <field name="week_6" widget="html" readonly="1"/>
+                    <field name="week_6_comment" placeholder="Add comment..."/>
+                    <field name="week_7" widget="html" readonly="1"/>
+                    <field name="week_7_comment" placeholder="Add comment..."/>
+                    <field name="week_8" widget="html" readonly="1"/>
+                    <field name="week_8_comment" placeholder="Add comment..."/>
+                    <field name="week_9" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_9_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_10" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_10_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_11" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_11_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_12" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_12_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_13" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_13_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_14" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_14_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_15" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_15_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_16" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_16_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_17" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_17_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_18" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_18_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_19" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_19_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_20" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_20_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_21" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_21_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_22" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_22_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_23" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_23_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_24" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_24_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_25" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_25_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_26" optional="hide" widget="html" readonly="1"/>
+                    <field name="week_26_comment" optional="hide" placeholder="Add comment..."/>
+                    <field name="week_total" widget="html" readonly="1"/>
                 </tree>
             </field>
         </record>
@@ -52,6 +78,7 @@
         <record id="view_weekly_ticket_report_search" model="ir.ui.view">
             <field name="name">weekly.ticket.report.search</field>
             <field name="model">weekly.ticket.report</field>
+            <field name="groups_id" eval="[(4, ref('sdm_customization.group_sdm'))]"/>
             <field name="arch" type="xml">
                 <search string="Weekly Ticket Reports">
                     <field name="employee_id"/>
