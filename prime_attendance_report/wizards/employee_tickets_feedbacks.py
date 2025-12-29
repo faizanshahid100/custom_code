@@ -282,6 +282,12 @@ class EmployeeTicketsFeedback(models.TransientModel):
             combined_comments = "\n".join(comments_map[employee.id]) if comments_map[employee.id] else ""
             vals['comments'] = combined_comments
 
+            # Store week ranges for comment computation
+            import json
+            week_ranges_json = json.dumps([(start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d')) 
+                                         for start, end in effective_week_ranges])
+            vals['week_ranges'] = week_ranges_json
+
             self.env['weekly.ticket.report'].sudo().create(vals)
 
         return {

@@ -17,5 +17,6 @@ from . import hr_leave_type_ext
 # from . import hr_leave_type_display_ext
 from . import weekly_ticket_reports
 from . import weekly_feedback_reports
+from . import weekly_employee_comment
 from . import client_survey_report
 from . import client_cadence_call
