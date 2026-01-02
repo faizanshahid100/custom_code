@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError, UserError
 import base64
 from docx import Document
 import os
+import subprocess
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -261,13 +262,21 @@ class HrOffer(models.Model):
             with open(final_path, "rb") as f:
                 file_data = f.read()
 
+            # Convert docx to PDF using LibreOffice
+            pdf_path = os.path.join(contracts_dir, f"Contract_{safe_name}.pdf")
+            subprocess.run(['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', contracts_dir, final_path], check=True)
+            
+            # Read PDF file
+            with open(pdf_path, "rb") as f:
+                pdf_data = f.read()
+
             attachment = self.env["ir.attachment"].create({
-                "name": f"Contract_{safe_name}.docx",
+                "name": f"Contract_{safe_name}.pdf",
                 "type": "binary",
-                "datas": base64.b64encode(file_data),
+                "datas": base64.b64encode(pdf_data),
                 "res_model": "hr.offer",
                 "res_id": record.id,
-                "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "mimetype": "application/pdf",
             })
 
             # --- SEND EMAIL WITH ATTACHMENT ---
