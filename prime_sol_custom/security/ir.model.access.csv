@@ -11,7 +11,7 @@ access_meeting_attendance_summary,access.meeting.attendance.summary,model_meetin
 access_score_card,access.score.card,model_score_card,,1,1,1,1
 access_score_weightage_user,score.weightage user,model_score_weightage,,1,1,1,1
 access_weekly_ticket_report,weekly.ticket.report,model_weekly_ticket_report,sdm_customization.group_sdm,1,1,1,1
-access_weekly_employee_comment,weekly.employee.comment,model_weekly_employee_comment,sdm_customization.group_sdm,1,1,1,1
+access_weekly_employee_comment,weekly.employee.comment,model_weekly_employee_comment,,1,1,1,1
 access_weekly_feedback_report,weekly.feedback.report,model_weekly_feedback_report,,1,1,1,1
 access_client_survey_report,client.survey.report,model_client_survey_report,,1,1,1,1
 access_client_cadence_call_manager,client.cadence.call manager,model_client_cadence_call,,1,1,1,1
