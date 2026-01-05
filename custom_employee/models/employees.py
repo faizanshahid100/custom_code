@@ -105,6 +105,14 @@ class HREmployeeInherit(models.Model):
     child_name = fields.Char(string="Child Name")
     child_relation = fields.Char(string="Child Relation")
     child_dob = fields.Date(string="Child DOB")
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department',
+        tracking=True
+    )
+    job_id = fields.Many2one('hr.job', tracking=True)
+    parent_id = fields.Many2one('hr.employee', tracking=True)
+    work_location_id = fields.Many2one('hr.work.location', tracking=True)
 
     # HR Probation Feedback
     hr_probation_feedback = fields.Html(string="HR Probation Feedback")
