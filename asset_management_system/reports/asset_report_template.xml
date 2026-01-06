@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_asset_report" model="ir.actions.report">
+        <field name="name">Asset Report</field>
+        <field name="model">asset.management.asset</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">asset_management_system.asset_report_template</field>
+        <field name="report_file">asset_management_system.asset_report_template</field>
+        <field name="binding_model_id" ref="model_asset_management_asset"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="asset_report_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    
+                    <!-- Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="text-center mb-4">
+                                <strong>Asset Management Report</strong>
+                            </h2>
+                            <div class="text-center mb-3">
+                                <span class="text-muted">Generated on: </span>
+                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y at %I:%M %p')"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assets Table -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <table class="table table-sm table-bordered">
+                                <thead style="background-color: #f8f9fa;">
+                                    <tr>
+                                        <th>Asset No.</th>
+                                        <th>Asset Name</th>
+                                        <th>Category</th>
+                                        <th>Serial No.</th>
+                                        <th>Model</th>
+                                        <th>Employee</th>
+                                        <th>Status</th>
+                                        <th>Condition</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs" t-as="asset">
+                                        <tr>
+                                            <td><span t-field="asset.sequence_no"/></td>
+                                            <td><span t-field="asset.name"/></td>
+                                            <td><span t-field="asset.asset_category_id.name"/></td>
+                                            <td><span t-field="asset.serial_no"/></td>
+                                            <td><span t-field="asset.model_name"/></td>
+                                            <td><span t-field="asset.employee_name"/></td>
+                                            <td>
+                                                <t t-if="asset.state == 'in_store'">
+                                                    <span class="badge badge-secondary">In Store</span>
+                                                </t>
+                                                <t t-elif="asset.state == 'in_running'">
+                                                    <span class="badge badge-success">Allocated</span>
+                                                </t>
+                                                <t t-elif="asset.state == 'in_repair'">
+                                                    <span class="badge badge-warning">In Repair</span>
+                                                </t>
+                                                <t t-elif="asset.state == 'scraped'">
+                                                    <span class="badge badge-danger">Scrapped</span>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <span t-field="asset.condition_rating"/>/10
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Summary Section -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h4><strong>Asset Summary by Status</strong></h4>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <table class="table table-sm table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>In Store</strong></td>
+                                                <td class="text-right">
+                                                    <span t-esc="state_counts['in_store']"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Allocated</strong></td>
+                                                <td class="text-right">
+                                                    <span t-esc="state_counts['in_running']"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>In Repair</strong></td>
+                                                <td class="text-right">
+                                                    <span t-esc="state_counts['in_repair']"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Scrapped</strong></td>
+                                                <td class="text-right">
+                                                    <span t-esc="state_counts['scraped']"/>
+                                                </td>
+                                            </tr>
+                                            <tr style="background-color: #f8f9fa;">
+                                                <td><strong>Total Assets</strong></td>
+                                                <td class="text-right">
+                                                    <strong t-esc="len(docs)"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

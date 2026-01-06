@@ -108,6 +108,7 @@
                                 <field name="client_joining_date"/>
                                 <field name="contract_end"/>
                                 <field name="work_mode"/>
+                                <field name="onsite_day_ids" attrs="{'invisible': [('work_mode', '!=', 'hybrid')]}" options="{'no_create': True, 'no_edit': True}" widget="many2many_tags"/>
                             </group>
                         </group>
                     </page>

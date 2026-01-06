@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="onsite_day_monday" model="hr.onsite.day">
+        <field name="name">Monday</field>
+    </record>
+
+    <record id="onsite_day_tuesday" model="hr.onsite.day">
+        <field name="name">Tuesday</field>
+    </record>
+
+    <record id="onsite_day_wednesday" model="hr.onsite.day">
+        <field name="name">Wednesday</field>
+    </record>
+
+    <record id="onsite_day_thursday" model="hr.onsite.day">
+        <field name="name">Thursday</field>
+    </record>
+
+    <record id="onsite_day_friday" model="hr.onsite.day">
+        <field name="name">Friday</field>
+    </record>
+
+    <record id="onsite_day_saturay" model="hr.onsite.day">
+        <field name="name">Saturday</field>
+    </record>
+
+    <record id="onsite_day_sunday" model="hr.onsite.day">
+        <field name="name">Sunday</field>
+    </record>
+</odoo>

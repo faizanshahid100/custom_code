@@ -17,6 +17,7 @@
         'security/ir.model.access.csv',
         'data/email_template.xml',
         'data/scheduled_action.xml',
+        'data/onsite_day.xml',
         'views/employees.xml',
         'views/res_partner_bank.xml',
         'views/hr_employee_pivot.xml',
