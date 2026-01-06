@@ -117,6 +117,9 @@ class HREmployeeInherit(models.Model):
     # HR Probation Feedback
     hr_probation_feedback = fields.Html(string="HR Probation Feedback")
 
+    # TODO remove this field and related model in Odoo 19 while migrating the code
+    onsite_day_ids = fields.Many2many('hr.onsite.day', string="Onsite Days")
+
     @api.model
     def create(self, vals):
         employee = super().create(vals)

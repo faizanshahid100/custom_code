@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_calendar_tracking_user,calendar.tracking user,model_calendar_tracking,base.group_user,1,1,1,1
+access_hr_onsite_day_user,hr.onsite.day user,model_hr_onsite_day,base.group_user,1,1,1,1

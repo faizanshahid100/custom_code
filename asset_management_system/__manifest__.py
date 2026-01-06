@@ -13,6 +13,7 @@
         'views/location_views.xml',
         'views/assignment_views.xml',
         'views/menu_views.xml',
+        'reports/asset_report_template.xml',
     ],
     'installable': True,
     'application': True,
