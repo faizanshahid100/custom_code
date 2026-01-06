@@ -33,26 +33,35 @@ class HrAttendances(models.Model):
     os = fields.Char('OS')
     address = fields.Char('Address')
 
-    # @api.model
-    # def create(self, vals):
-    #     # 1. Detect OS from user agent if available
-    #     try:
-    #         user_agent = request.httprequest.headers.get('User-Agent', '')
-    #         if "Windows" in user_agent:
-    #             vals['os'] = "Windows"
-    #         elif "Mac" in user_agent:
-    #             vals['os'] = "MacOS"
-    #         elif "Android" in user_agent:
-    #             vals['os'] = "Android"
-    #         elif "iPhone" in user_agent or "iPad" in user_agent:
-    #             vals['os'] = "iOS"
-    #         elif "Linux" in user_agent:
-    #             vals['os'] = "Linux"
-    #         else:
-    #             vals['os'] = "Unknown"
-    #     except Exception as e:
-    #         _logger.warning(f"Could not determine OS: {e}")
-    #
+    @api.model
+    def create(self, vals):
+        company = self.env.company
+        is_onsite = False
+
+        try:
+            public_ip = requests.get(
+                "https://api.ipify.org",
+                timeout=3
+            ).text.strip()
+
+            office_ips = [
+                company.work_from_office_ip_1,
+                company.work_from_office_ip_2,
+            ]
+
+            # Clean & compare
+            office_ips = [ip.strip() for ip in office_ips if ip]
+
+            if public_ip in office_ips:
+                is_onsite = True
+
+        except Exception as e:
+            _logger.warning(f"Could not determine public IP: {e}")
+
+        vals['is_onsite_in'] = is_onsite
+
+        return super().create(vals)
+
     #     # 2. Detect Address from Latitude/Longitude if present
     #     lat = vals.get('checkin_latitude')
     #     lon = vals.get('checkin_longitude')
@@ -75,7 +84,7 @@ class HrAttendances(models.Model):
     #     except Exception as e:
     #         _logger.warning(f"Could not determine address from lat/lon: {e}")
     #
-    #     return super(HrAttendances, self).create(vals)
+        return super(HrAttendances, self).create(vals)
     #
     # def write(self, vals):
     #     # Check if check-out is happening

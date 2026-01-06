@@ -397,14 +397,32 @@ class DailyProgress(models.Model):
             }
             self.env['mail.mail'].sudo().create(mail_values).send()
 
-    @api.depends('resource_user_id')
+    @api.depends('resource_user_id', 'date_of_project')
     def _compute_avg_assigned_ticket(self):
         for rec in self:
-            rec.avg_assigned_ticket = (
+            base = (
                 rec.resource_user_id.employee_id.d_ticket_resolved
                 if rec.resource_user_id and rec.resource_user_id.employee_id
                 else 0
             )
+
+            # Find the latest date_of_project across all records for this user
+            if rec.resource_user_id:
+                latest_date = (
+                    self.search([
+                        ('resource_user_id', '=', rec.resource_user_id.id),
+                        ('date_of_project', '!=', False)
+                    ], order='date_of_project desc', limit=1).date_of_project
+                )
+            else:
+                latest_date = rec.date_of_project
+
+            # Multiply by day of the week (1 = Monday ... 7 = Sunday)
+            if latest_date:
+                day_of_week = latest_date.isoweekday()
+            else:
+                day_of_week = 1  # fallback
+            rec.avg_assigned_ticket = base * day_of_week
 
     def _recalculate_weekly_ticket_percentage(self, resource_user_id, week_of_year, year_of_kpi):
         """

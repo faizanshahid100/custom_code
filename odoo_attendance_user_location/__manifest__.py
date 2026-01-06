@@ -13,6 +13,7 @@
     'depends': ['base', 'hr', 'hr_attendance'],
     'data': [
         'security/security.xml',
+        'views/setting_attendance.xml',
         'views/hr_attendance_views.xml',
     ],
 
