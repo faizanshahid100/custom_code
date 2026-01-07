@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_inherit_work_from_office_ip" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.work.from.office.ip</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="90"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert below "Check-In/Out in Kiosk Mode" -->
+            <xpath expr="//h2[normalize-space()='Check-In/Out in Kiosk Mode']"
+                   position="after">
+
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+
+                            <label for="work_from_office_ip_1"/>
+                            <span class="fa fa-lg fa-building-o"
+                                  title="Company specific"
+                                  role="img"
+                                  aria-label="Company specific"
+                                  groups="base.group_multi_company"/>
+
+                            <div class="row">
+                                <div class="text-muted col-lg-10">
+                                    Define the allowed IPs address for employees
+                                    working from the office.
+                                </div>
+                            </div>
+
+                            <div class="content-group mt16">
+                                <field name="work_from_office_ip_1"
+                                       placeholder="e.g. 119.63.130.82"/> <br/>
+                                <field name="work_from_office_ip_2"
+                                       placeholder="e.g. 119.63.130.83"/>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
