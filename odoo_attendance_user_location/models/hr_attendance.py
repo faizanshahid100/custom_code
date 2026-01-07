@@ -62,5 +62,6 @@ class HrAttendances(models.Model):
             print('Errrrrorrrrr')
 
         vals['is_onsite_in'] = is_onsite
+        print('Before Superrrr')
 
         return super().create(vals)
