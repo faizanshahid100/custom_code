@@ -43,11 +43,13 @@ class HrAttendances(models.Model):
                 "https://api.ipify.org",
                 timeout=3
             ).text.strip()
+            print(public_ip)
 
             office_ips = [
                 company.work_from_office_ip_1,
                 company.work_from_office_ip_2,
             ]
+            print(office_ips)
 
             # Clean & compare
             office_ips = [ip.strip() for ip in office_ips if ip]
@@ -57,6 +59,7 @@ class HrAttendances(models.Model):
 
         except Exception as e:
             _logger.warning(f"Could not determine public IP: {e}")
+            print('Errrrrorrrrr')
 
         vals['is_onsite_in'] = is_onsite
 
