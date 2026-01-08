@@ -33,35 +33,31 @@ class HrAttendances(models.Model):
     os = fields.Char('OS')
     address = fields.Char('Address')
 
-    @api.model
-    def create(self, vals):
-        company = self.env.company
-        is_onsite = False
-
-        try:
-            public_ip = requests.get(
-                "https://api.ipify.org",
-                timeout=3
-            ).text.strip()
-            print(public_ip)
-
-            office_ips = [
-                company.work_from_office_ip_1,
-                company.work_from_office_ip_2,
-            ]
-            print(office_ips)
-
-            # Clean & compare
-            office_ips = [ip.strip() for ip in office_ips if ip]
-
-            if public_ip in office_ips:
-                is_onsite = True
-
-        except Exception as e:
-            _logger.warning(f"Could not determine public IP: {e}")
-            print('Errrrrorrrrr')
-
-        vals['is_onsite_in'] = is_onsite
-        print('Before Superrrr')
-
-        return super().create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     company = self.env.company
+    #     is_onsite = False
+    #
+    #     try:
+    #         public_ip = requests.get(
+    #             "https://api.ipify.org",
+    #             timeout=3
+    #         ).text.strip()
+    #
+    #         office_ips = [
+    #             company.work_from_office_ip_1,
+    #             company.work_from_office_ip_2,
+    #         ]
+    #
+    #         # Clean & compare
+    #         office_ips = [ip.strip() for ip in office_ips if ip]
+    #
+    #         if public_ip in office_ips:
+    #             is_onsite = True
+    #
+    #     except Exception as e:
+    #         _logger.warning(f"Could not determine public IP: {e}")
+    #
+    #     vals['is_onsite_in'] = is_onsite
+    #
+    #     return super().create(vals)

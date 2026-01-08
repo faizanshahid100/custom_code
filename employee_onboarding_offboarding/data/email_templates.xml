@@ -218,7 +218,11 @@
             <ul>
                 <li>
                     <b>Location/Site:</b>
-                    <t t-out="dict(onsite='Onsite, Lahore', remote='Remote', hybrid='Hybrid').get(object.work_location, '')"/>
+                    <t t-out="
+                        'Hybrid (%s)' % ', '.join(object.onsite_day_ids.mapped('name'))
+                        if object.work_location == 'hybrid'
+                        else dict(onsite='Onsite, Lahore', remote='Remote').get(object.work_location, '')
+                    "/>
                 </li>
                 <li>
                     <b>Business Hours:</b>

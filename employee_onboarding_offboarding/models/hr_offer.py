@@ -49,6 +49,9 @@ class HrOffer(models.Model):
         ("fully_remote", "Remote"),
         ("hybrid", "Hybrid"),
     ], string="Work Location",default='onsite', required=True, tracking=True)
+
+    # TODO remove this field and related model in Odoo 19 while migrating the code
+    onsite_day_ids = fields.Many2many('hr.onsite.day', string="Onsite Days")
     reporting_time = fields.Char("Reporting Time", default='12:00 PM - 9:00 PM (PST PK)', tracking=True)
     working_hours = fields.Float("Working Hours (per day)", default=9.0, tracking=True)
     checklist_template_id = fields.Many2one('checklist.template', string='Checklist Template', tracking=True)
@@ -237,7 +240,7 @@ class HrOffer(models.Model):
                 "{{ special_instructions }}": str(record.special_instructions) if record.special_instructions else "None",
                 "{{ currency }}": str(record.currency_id.name),
                 "{{ probation_period }}": str(record.probation_period or ""),
-                "{{ work_location }}": record.work_location or "",
+                "{{ work_location }}": record.work_location + ' ' + (', '.join(record.onsite_day_ids.mapped('name'))) if record.work_location == 'hybrid' else record.work_location,
                 "{{ reporting_time }}": record.reporting_time or "",
             }
 
@@ -349,6 +352,7 @@ class HrOffer(models.Model):
                     "joining_date": record.joining_date,
                     "joining_salary": record.salary,
                     "work_mode": record.work_location,
+                    "onsite_day_ids": record.onsite_day_ids.ids,
                     "total_working_hour": record.working_hours,
                     "gazetted_holiday_id": record.gazetted_holiday_id.id,
                     "checklist_template_id": record.checklist_template_id.id,
@@ -404,6 +408,7 @@ class HrOffer(models.Model):
                 "joining_date": record.joining_date,
                 "joining_salary": record.salary,
                 "work_mode": record.work_location,
+                "onsite_day_ids": record.onsite_day_ids.ids,
                 "total_working_hour": record.working_hours,
                 "gazetted_holiday_id": record.gazetted_holiday_id.id,
                 "checklist_template_id": record.checklist_template_id.id,
