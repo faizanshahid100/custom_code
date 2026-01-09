@@ -37,7 +37,7 @@ class EmployeeFeedback(models.Model):
         ("yellow", "Yellow"),
         ("red", "Red"),
     ], string="Employee Status", default='green', required=True, tracking=True)
-    outcome_suggested = fields.Text(string='Outcome Suggested', required=True)
+    outcome_suggested = fields.Text(string='Outcome Suggested')
     next_followup_date = fields.Date(string='Next Follow-up')
     feedback_status = fields.Selection([
         ('casual', 'Casual'),
