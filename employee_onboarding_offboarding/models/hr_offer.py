@@ -173,33 +173,29 @@ class HrOffer(models.Model):
                     self.env['mail.mail'].sudo().create(mail_values).send()
 
     def action_sent_offer(self):
+        self.ensure_one()
         if not self.env.user.has_group("employee_onboarding_offboarding.group_responsible_hr"):
             raise ValidationError("Only HR Responsible can send offers.")
 
         self.write({"state": "send_offer"})
 
-        if self.personal_email:
-            if self.contract_type == 'pakistan':
-                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template")
-            elif self.contract_type == 'philippines':
-                template = self.env.ref("employee_onboarding_offboarding.candidate_offer_final_template_philippines")
+        if not self.personal_email:
+            raise ValidationError("Personal email is required to send offer.")
 
-            # # # Determine which HR group to use based on country
-            # # if self.hr_responsible == "pakistan":
-            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_pak"
-            # # elif self.hr_responsible == "philippines":
-            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr_philippines"
-            # # else:
-            # #     # Default HR group (if desired)
-            # #     hr_group_xmlid = "employee_onboarding_offboarding.group_responsible_hr"
-            # #
-            # # # Get all HR users (based on selected group)
-            # # hr_users = self.env.ref(hr_group_xmlid).users
-            # # hr_emails = ",".join([u.email for u in hr_users if u.email])
-            #
-            # # Add CC and send email
-            # template.email_cc = hr_emails
-            template.send_mail(self.id, force_send=True)
+        if self.contract_type == 'pakistan':
+            template = self.env.ref(
+                "employee_onboarding_offboarding.candidate_offer_final_template",
+                raise_if_not_found=False
+            )
+        elif self.contract_type == 'philippines':
+            template = self.env.ref(
+                "employee_onboarding_offboarding.candidate_offer_final_template_philippines",
+                raise_if_not_found=False
+            )
+        else:
+            raise ValidationError("Unsupported contract type.")
+
+        template.send_mail(self.id, force_send=True)
 
     def action_sent_contract(self):
         for record in self:
