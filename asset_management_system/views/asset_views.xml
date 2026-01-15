@@ -61,7 +61,7 @@
                             <field name="serial_no" attrs="{'readonly': [('state', '=', 'in_running')]}"/>
                             <field name="model_name" attrs="{'readonly': [('state', '=', 'in_running')]}"/>
                             <field name="processor" attrs="{'readonly': [('state', '=', 'in_running')]}"/>
-                            <field name="assigned_id" readonly="1"/>
+                            <field name="assigned_id" readonly="0" domain="[('state', '=', 'in_store')]"/>
                             <field name="is_allotted" readonly="1" invisible="1"/>
                             <field name="is_in_repair" readonly="1" invisible="1"/>
                             <field name="is_in_scrap" readonly="1" invisible="1"/>

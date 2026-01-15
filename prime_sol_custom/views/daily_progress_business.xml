@@ -994,7 +994,7 @@
     </record>
 
     <menuitem id="menu_project_daily_progress_business"
-              name="Daily Progress Business"
+              name="KPI-Business Team"
               parent="project.menu_main_pm"
               action="action_project_daily_progress_business"
               sequence="24"/>

@@ -42,7 +42,7 @@ class AssetManagementAsset(models.Model):
         for rec in self:
             name = rec.name
             if rec.serial_no:
-                name = f"{rec.employee_name} - {rec.name} ({rec.serial_no})"
+                name = f"{rec.name} {rec.model_name} ({rec.serial_no})"
             result.append((rec.id, name))
         return result
 

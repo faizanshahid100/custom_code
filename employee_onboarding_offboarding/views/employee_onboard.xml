@@ -117,13 +117,13 @@
             id="employee_onboarding_head_menu"
             name="Employee Onboarding"
             action="action_employee_onboard"
-            groups="hr.group_hr_manager,employee_onboarding_offboarding.group_onboarding_offboarding_admin"
+            groups="employee_onboarding_offboarding.group_onboarding_offboarding_admin"
             parent="employee_onboarding_offboarding"
             sequence="20"/>
     <menuitem
             id="configuration_head_menu"
             name="Configurations"
-            groups="hr.group_hr_manager,employee_onboarding_offboarding.group_onboarding_offboarding_admin"
+            groups="employee_onboarding_offboarding.group_onboarding_offboarding_admin"
             parent="employee_onboarding_offboarding"
             sequence="50"/>
 

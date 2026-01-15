@@ -43,7 +43,7 @@
                             <field name="asset_line_ids" attrs="{'readonly': [('state', '!=', 'in_store')]}">
                                 <tree editable="bottom">
                                     <field name="asset_category_id"/>
-                                    <field name="asset_id"
+                                    <field name="asset_id" force_save="1"
                                            domain="[('is_allotted', '!=', True), ('is_in_repair', '!=', True), ('is_in_scrap', '!=', True), ('asset_category_id', '=', asset_category_id)]"/>
                                     <field name="serial_no"/>
                                     <field name="model_name"/>

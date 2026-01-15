@@ -20,6 +20,13 @@ class AssetManagementAssignment(models.Model):
     ], string="Status", default='in_store', tracking=True)
     asset_line_ids = fields.One2many('asset.management.assignment.line', 'assignment_id', string="Assigned Assets")
 
+    def name_get(self):
+        result = []
+        for rec in self:
+            name = f"{rec.employee_id.name} {rec.name}"
+        result.append((rec.id, name))
+        return result
+
     @api.model
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
@@ -48,9 +55,9 @@ class AssetManagementAssignment(models.Model):
     def update_assets_allotment(self):
         for rec in self.asset_line_ids:
             if self.state == 'in_store':
-                rec.asset_id.write({'is_allotted': True, 'assigned_id':self.id, 'state':'in_running'})
+                rec.asset_id.write({'is_allotted': True, 'assigned_id':self.id, 'state':'in_running', 'employee_name': self.employee_id.name})
             elif self.state != 'in_store':
-                rec.asset_id.write({'is_allotted': False, 'assigned_id':False, 'state': 'in_store'})
+                rec.asset_id.write({'is_allotted': False, 'assigned_id':False, 'state': 'in_store', 'employee_name': ''})
     # -----------------------------
     # 🔹 State change button actions
     # -----------------------------
