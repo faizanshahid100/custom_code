@@ -347,6 +347,7 @@ class HrOffer(models.Model):
                     "dept_hod_email": record.dept_hod_email,
                     "joining_date": record.joining_date,
                     "joining_salary": record.salary,
+                    "contractor": record.client_id.id,
                     "work_mode": record.work_location,
                     "onsite_day_ids": record.onsite_day_ids.ids,
                     "total_working_hour": record.working_hours,

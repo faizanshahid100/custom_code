@@ -51,11 +51,25 @@ class EmployeeFeedback(models.Model):
 
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
-        """ Set client_id to the contractor of the selected employee """
-        if self.employee_id and self.employee_id.contractor:
-            self.client_id = self.employee_id.contractor
-        else:
-            self.client_id = False  # Clear the field if no contractor is found
+        for rec in self:
+            if not rec.employee_id:
+                rec.client_id = False
+                rec.manager_id = False
+                rec.manager_email = False
+                rec.business_tech = False
+                return
+
+            employee = rec.employee_id
+
+            # Client from contractor
+            contractor = employee.contractor
+            rec.client_id = contractor.id if contractor else False
+
+            # Manager from contractor child
+            manager = contractor.child_ids[:1] if contractor and contractor.child_ids else False
+            rec.manager_id = manager.id if manager else False
+            rec.manager_email = manager.email if manager else False
+            rec.business_tech = employee.department_id.name if employee.department_id else False
 
     @api.depends('manager_id.email', 'manager_id.business_tech', 'manager_id.current_meeting_frequency')
     def _compute_manager_fields(self):
