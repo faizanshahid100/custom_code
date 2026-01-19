@@ -177,7 +177,7 @@ class HrOffer(models.Model):
         if not self.env.user.has_group("employee_onboarding_offboarding.group_responsible_hr"):
             raise ValidationError("Only HR Responsible can send offers.")
 
-        self.write({"state": "send_offer"})
+        self.write({"state": "send_contract"})
 
         if not self.personal_email:
             raise ValidationError("Personal email is required to send offer.")
