@@ -239,11 +239,11 @@ class EmployeeProbationMeeting(models.Model):
             to_emails = [emp.work_email for emp in record.to_employee_ids if emp.work_email]
             cc_emails = [emp.work_email for emp in record.cc_employee_ids if emp.work_email]
 
-            # Add default CC for users in the "Managers" security group
-            manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
-            if manager_group:
-                manager_users = manager_group.users.filtered(lambda u: u.partner_id.email)
-                cc_emails.extend([u.partner_id.email for u in manager_users])
+            # # Add default CC for users in the "Managers" security group
+            # manager_group = self.env.ref('prime_sol_custom.prime_group_managers', raise_if_not_found=False)
+            # if manager_group:
+            #     manager_users = manager_group.users.filtered(lambda u: u.partner_id.email)
+            #     cc_emails.extend([u.partner_id.email for u in manager_users])
 
             # Remove duplicates and join into comma-separated string
             to_emails = ','.join(set(to_emails))
