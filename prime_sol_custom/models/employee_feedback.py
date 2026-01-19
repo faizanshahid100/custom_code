@@ -13,7 +13,7 @@ class EmployeeFeedback(models.Model):
     date_feedback = fields.Date(string='Date', required=True)
     client_id = fields.Many2one('res.partner', string='Client Name', required=True, domain=[('is_company', '=', True)])
     manager_id = fields.Many2one('res.partner', string='Manager')
-    manager_email = fields.Char(string='Manager Email', compute='_compute_manager_fields', store=True, readonly=False)
+    manager_email = fields.Char(string='Manager Email', store=True, readonly=False)
     current_meeting_frequency = fields.Selection([
         ('monthly', 'Monthly'),
         ('bi_monthly', 'Bi-Monthly'),
@@ -21,8 +21,8 @@ class EmployeeFeedback(models.Model):
         ('bi_weekly', 'Bi-Weekly'),
         ('tbd', 'TBD'),
         ('not_required', 'Not Required')
-    ], string='Current Meeting Frequency', compute='_compute_manager_fields', store=True, readonly=False)
-    business_tech = fields.Char(string='Business/Tech', compute='_compute_manager_fields', store=True, readonly=False)
+    ], string='Current Meeting Frequency', store=True, readonly=False)
+    business_tech = fields.Char(string='Business/Tech', store=True, readonly=False)
     client_feedback = fields.Text('Client Feedback', required=True)
     month = fields.Date(string='Month')
     current_month_schedule = fields.Datetime(string='Current Month Schedule')
@@ -70,15 +70,6 @@ class EmployeeFeedback(models.Model):
             rec.manager_id = manager.id if manager else False
             rec.manager_email = manager.email if manager else False
             rec.business_tech = employee.department_id.name if employee.department_id else False
-
-    @api.depends('manager_id.email', 'manager_id.business_tech', 'manager_id.current_meeting_frequency')
-    def _compute_manager_fields(self):
-        """Compute all dependent manager-related fields."""
-        for record in self:
-            manager = record.manager_id
-            record.manager_email = manager.email or False
-            record.business_tech = manager.business_tech or False
-            record.current_meeting_frequency = manager.current_meeting_frequency or False
 
     # ----------------------------
     # Send Reason Mail
