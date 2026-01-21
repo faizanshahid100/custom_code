@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_hr_employee_form" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[last()]" position="after">
+                <page string="Assets Assigned" name="asset_assigned">
+                    <field name="assigned_asset_ids">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="sequence_no" readonly="1"/>
+                            <field name="name" readonly="1"/>
+                            <field name="model_name" readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

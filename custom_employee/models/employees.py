@@ -120,6 +120,16 @@ class HREmployeeInherit(models.Model):
     # TODO remove this field and related model in Odoo 19 while migrating the code
     onsite_day_ids = fields.Many2many('hr.onsite.day', string="Onsite Days")
 
+    # To attach multiple attachments in HR Probation Feedback
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'hr_employee_attachment_rel',
+        'employee_id',
+        'attachment_id',
+        string='Employee Documents',
+        help="Upload multiple documents related to the employee"
+    )
+
     @api.model
     def create(self, vals):
         employee = super().create(vals)

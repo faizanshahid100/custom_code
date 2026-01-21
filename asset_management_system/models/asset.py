@@ -37,6 +37,8 @@ class AssetManagementAsset(models.Model):
 
     display_name = fields.Char()
 
+    employee_id = fields.Many2one('hr.employee', string='Assigned To')
+
     def name_get(self):
         result = []
         for rec in self:
@@ -60,8 +62,44 @@ class AssetManagementAsset(models.Model):
             vals['sequence_no'] = self.env['ir.sequence'].next_by_code('asset.management.asset') or 'New'
         return super(AssetManagementAsset, self).create(vals)
 
+    def write(self, vals):
+        state_before = {rec.id: rec.state for rec in self}
+
+        res = super().write(vals)
+
+        if 'state' in vals:
+            for asset in self:
+                old_state = state_before.get(asset.id)
+                new_state = asset.state
+
+                if old_state != new_state:
+                    asset._create_history_line(new_state)
+
+                # Clear employee when not running
+                if new_state != 'in_running':
+                    asset.employee_id = False
+
+        return res
+
+    def _create_history_line(self, state):
+        vals = {
+            'asset_id': self.id,
+            'state': state,
+            'assign_date': fields.Date.today(),
+        }
+
+        # Assign employee ONLY when running
+        if state == 'in_running':
+            if not self.employee_id:
+                raise ValidationError(
+                    'Employee must be assigned before moving asset to In Running.'
+                )
+            vals['employee_id'] = self.employee_id.id
+
+        self.env['asset.history.line'].create(vals)
+
     def action_set_in_store(self):
-        self.write({'state': 'in_store', 'is_allotted': False,'is_in_repair': False, 'is_in_scrap':False, 'assigned_id':False})
+        self.write({'state': 'in_store', 'is_allotted': False,'is_in_repair': False, 'is_in_scrap':False, 'employee_id':False, 'employee_name':False})
     def action_set_in_repair(self):
         if self.state == 'in_store':
             self.write({'state': 'in_repair', 'is_in_repair': True })
@@ -74,17 +112,34 @@ class AssetManagementAsset(models.Model):
         else:
             raise ValidationError('Please move the asset to the Store first.')
 
+    def action_set_in_running(self):
+        if not self.employee_id:
+            raise ValidationError('Please assign an employee before marking asset as In Running.')
+        # if self.state != 'in_store':
+        #     raise ValidationError('Asset must be in Store before assigning.')
+        self.write({
+            'state': 'in_running',
+            'employee_name': self.employee_id.name
+        })
+
 
 class AssetsHistory(models.Model):
     _name = 'asset.history.line'
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = 'IT Asset Usage History'
+    _order = 'id desc'
 
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True, tracking=True)
-    assign_date = fields.Date('Assign Date', default=lambda self: fields.Date.today())
-    return_date = fields.Date('Assign Date', default=lambda self: fields.Date.today())
-    assigned_by_id = fields.Many2one('res.users', 'Assign By')
-    return_by_id = fields.Many2one('res.users', 'Return By')
-    assignment_id = fields.Many2one('asset.management.assignment', string="Assignment", required=True,
-                                    ondelete="cascade")
+    employee_id = fields.Many2one('hr.employee', string="Employee", tracking=True)
+    assign_date = fields.Date('Assign Date')
+    # return_date = fields.Date('Assign Date', default=lambda self: fields.Date.today())
+    # assigned_by_id = fields.Many2one('res.users', 'Assign By')
+    # return_by_id = fields.Many2one('res.users', 'Return By')
+    # assignment_id = fields.Many2one('asset.management.assignment', string="Assignment", required=True,
+    #                                 ondelete="cascade")
     asset_id = fields.Many2one('asset.management.asset', string="Asset", required=True, tracking=True)
+    state = fields.Selection([
+        ('in_store', 'In Store'),
+        ('in_running', 'In Running'),
+        ('in_repair', 'In Repair'),
+        ('scraped', 'Scraped'),
+    ], string="Status", default='in_store', tracking=True)
