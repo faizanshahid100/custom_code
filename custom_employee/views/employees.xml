@@ -129,7 +129,14 @@
                         </group>
                     </page>
                     <page string="HR Probation Feedback" groups="hr.group_hr_manager">
-                        <field name="hr_probation_feedback"/>
+                        <group>
+                            <group name="attachment" string="Attachments">
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </group>
+                            <group string="HR Probation Feedback" name="hr_probation_feedback">
+                                <field name="hr_probation_feedback"/>
+                            </group>
+                        </group>
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='resource_calendar_id']" position="after">

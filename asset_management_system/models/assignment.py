@@ -20,44 +20,44 @@ class AssetManagementAssignment(models.Model):
     ], string="Status", default='in_store', tracking=True)
     asset_line_ids = fields.One2many('asset.management.assignment.line', 'assignment_id', string="Assigned Assets")
 
-    def name_get(self):
-        result = []
-        for rec in self:
-            name = f"{rec.employee_id.name} {rec.name}"
-        result.append((rec.id, name))
-        return result
+    # def name_get(self):
+    #     result = []
+    #     for rec in self:
+    #         name = f"{rec.employee_id.name} {rec.name}"
+    #     result.append((rec.id, name))
+    #     return result
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('asset.assignment') or 'New'
-        return super(AssetManagementAssignment, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('name', 'New') == 'New':
+    #         vals['name'] = self.env['ir.sequence'].next_by_code('asset.assignment') or 'New'
+    #     return super(AssetManagementAssignment, self).create(vals)
 
-    def _validate_duplicate_assets(self):
-        """Raise error if same asset appears multiple times."""
-        for rec in self:
-            asset_ids = rec.asset_line_ids.mapped('asset_id.id')
-            if len(rec.asset_line_ids) != len(set(asset_ids)):
-                raise ValidationError(
-                    "Duplicate assets detected in assignment lines. Each asset can only be assigned once.")
+    # def _validate_duplicate_assets(self):
+    #     """Raise error if same asset appears multiple times."""
+    #     for rec in self:
+    #         asset_ids = rec.asset_line_ids.mapped('asset_id.id')
+    #         if len(rec.asset_line_ids) != len(set(asset_ids)):
+    #             raise ValidationError(
+    #                 "Duplicate assets detected in assignment lines. Each asset can only be assigned once.")
 
     # -------------------------------------
     # 🔹 State change actions with validation
     # -------------------------------------
-    def _is_already_allotted(self):
-        """Prevent skipping 'in_store' when asset already allotted."""
-        for rec in self.asset_line_ids:
-            if rec.asset_id.is_allotted:
-                raise ValidationError(
-                    f"Assets {rec.asset_id.name} {rec.asset_id.serial_no} already allotted. Please set state to 'In Store' first before changing it to another state."
-                )
+    # def _is_already_allotted(self):
+    #     """Prevent skipping 'in_store' when asset already allotted."""
+    #     for rec in self.asset_line_ids:
+    #         if rec.asset_id.is_allotted:
+    #             raise ValidationError(
+    #                 f"Assets {rec.asset_id.name} {rec.asset_id.serial_no} already allotted. Please set state to 'In Store' first before changing it to another state."
+    #             )
 
-    def update_assets_allotment(self):
-        for rec in self.asset_line_ids:
-            if self.state == 'in_store':
-                rec.asset_id.write({'is_allotted': True, 'assigned_id':self.id, 'state':'in_running', 'employee_name': self.employee_id.name})
-            elif self.state != 'in_store':
-                rec.asset_id.write({'is_allotted': False, 'assigned_id':False, 'state': 'in_store', 'employee_name': ''})
+    # def update_assets_allotment(self):
+    #     for rec in self.asset_line_ids:
+    #         if self.state == 'in_store':
+    #             rec.asset_id.write({'is_allotted': True, 'assigned_id':self.id, 'state':'in_running', 'employee_name': self.employee_id.name})
+    #         elif self.state != 'in_store':
+    #             rec.asset_id.write({'is_allotted': False, 'assigned_id':False, 'state': 'in_store', 'employee_name': ''})
     # -----------------------------
     # 🔹 State change button actions
     # -----------------------------
@@ -71,15 +71,15 @@ class AssetManagementAssignment(models.Model):
     #             rec.asset_line_ids.mapped('asset_id').write({'is_allotted': False, 'assigned_id': False})
 
 
-    def action_set_in_store(self):
-        self.update_assets_allotment()
-        self.write({'state': 'in_store', 'assignee_user_id': False})
+    # def action_set_in_store(self):
+    #     self.update_assets_allotment()
+    #     self.write({'state': 'in_store', 'assignee_user_id': False})
 
-    def action_set_in_running(self):
-        self._validate_duplicate_assets()
-        self._is_already_allotted()
-        self.update_assets_allotment()
-        self.write({'state': 'in_running', 'assignee_user_id': self.env.user.id})
+    # def action_set_in_running(self):
+    #     self._validate_duplicate_assets()
+    #     self._is_already_allotted()
+    #     self.update_assets_allotment()
+    #     self.write({'state': 'in_running', 'assignee_user_id': self.env.user.id})
 
 
 class AssetManagementAssignmentLine(models.Model):
@@ -131,7 +131,7 @@ class AssetManagementAssignmentLine(models.Model):
     #         self.mapped('asset_id').write({'is_allotted': True})
     #     return res
 
-    def unlink(self):
-        """When line deleted, unmark the asset."""
-        self.mapped('asset_id').write({'is_allotted': False})
-        return super().unlink()
+    # def unlink(self):
+    #     """When line deleted, unmark the asset."""
+    #     self.mapped('asset_id').write({'is_allotted': False})
+    #     return super().unlink()
