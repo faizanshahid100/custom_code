@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[last()]" position="after">
-                <page string="Assets Assigned" name="asset_assigned">
+                <page string="Assets Assigned" name="asset_assigned" groups="asset_management_system.group_asset_management_manager">
                     <field name="assigned_asset_ids">
                         <tree create="false" delete="false" edit="false">
                             <field name="sequence_no" readonly="1"/>

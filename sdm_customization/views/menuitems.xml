@@ -13,12 +13,7 @@
               name="Attendance Dashboard"
               parent="sdm_customization.menu_sdm_root"
               sequence="20"/>
-    <menuitem
-            id="scorecard_wizard_wizard"
-            parent="sdm_customization.menu_sdm_root"
-            name="Score Card"
-            action="prime_sol_custom.action_scorecard_wizard"
-            sequence="30"/>
+
     <menuitem
             id="menu_sdm_reporting"
             parent="sdm_customization.menu_sdm_root"
@@ -28,7 +23,6 @@
               name="Configurations"
               parent="sdm_customization.menu_sdm_root"
               sequence="100"/>
-
 
     <!--            Sub-Menues-->
     <menuitem id="menu_employee_probation_meeting_root"
@@ -44,6 +38,16 @@
               parent="sdm_customization.menu_attendance_dashboard_root"
               action="action_employee_late_record"
               sequence="20"/>
+    <menuitem id="menu_emp_feedback" name="Emp Feedback"
+              parent="sdm_customization.menu_sdm_reporting"
+              sequence="25"
+              action="prime_sol_custom.action_hr_employee_feedback"/>
+    <menuitem
+            id="scorecard_wizard_wizard"
+            parent="sdm_customization.menu_sdm_reporting"
+            name="Score Card"
+            action="prime_sol_custom.action_scorecard_wizard"
+            sequence="30"/>
     <menuitem id='menu_score_management' name='Score-Card Management'
               parent='sdm_customization.menu_sdm_configurations_root' groups="prime_sol_custom.group_score_card_admin"
               sequence='5'/>

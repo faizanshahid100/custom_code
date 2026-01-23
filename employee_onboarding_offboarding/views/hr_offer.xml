@@ -48,7 +48,6 @@
                 <field name="job_id"/>
                 <field name="client_id"/>
                 <field name="joining_date"/>
-                <field name="salary"/>
                 <field name="state"/>
             </tree>
         </field>

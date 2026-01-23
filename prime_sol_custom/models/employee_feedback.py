@@ -13,6 +13,7 @@ class EmployeeFeedback(models.Model):
     date_feedback = fields.Date(string='Date', required=True)
     client_id = fields.Many2one('res.partner', string='Client Name', required=True, domain=[('is_company', '=', True)])
     manager_id = fields.Many2one('res.partner', string='Manager')
+    manager = fields.Char(string='Manager')
     manager_email = fields.Char(string='Manager Email', store=True, readonly=False)
     current_meeting_frequency = fields.Selection([
         ('monthly', 'Monthly'),
@@ -54,8 +55,8 @@ class EmployeeFeedback(models.Model):
         for rec in self:
             if not rec.employee_id:
                 rec.client_id = False
-                rec.manager_id = False
-                rec.manager_email = False
+                rec.manager = False
+                rec.manager_email = ''
                 rec.business_tech = False
                 return
 
@@ -66,9 +67,8 @@ class EmployeeFeedback(models.Model):
             rec.client_id = contractor.id if contractor else False
 
             # Manager from contractor child
-            manager = contractor.child_ids[:1] if contractor and contractor.child_ids else False
-            rec.manager_id = manager.id if manager else False
-            rec.manager_email = manager.email if manager else False
+            rec.manager = employee.manager if employee else ''
+            rec.manager_email = employee.manager_email if employee else ''
             rec.business_tech = employee.department_id.name if employee.department_id else False
 
     # ----------------------------
@@ -192,7 +192,7 @@ class CSMTaskLines(models.Model):
                     <h3 style="color:#004080;">CSM Meeting Action Update</h3>
                     <p><b>Task Completed:</b> ✅</p>
                     <p><b>Customer:</b> {record.feedback_id.client_id.name}</p>
-                    <p><b>Manager:</b> {record.feedback_id.manager_id.name or 'N/A'}</p>
+                    <p><b>Manager:</b> {record.feedback_id.manager or 'N/A'}</p>
                     <p><b>Action Taken:</b> {record.action_taken_comment or 'Resolved'}</p>
                     <p>You can view this CSM record in Odoo:
                         <a href="{record_url}" target="_blank">View Record</a>

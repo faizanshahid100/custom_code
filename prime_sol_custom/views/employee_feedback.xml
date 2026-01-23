@@ -8,7 +8,7 @@
             <search string="Employee Feedback Search">
                 <field name="employee_id"/>
                 <field name="client_id"/>
-                <field name="manager_id"/>
+                <field name="manager"/>
                 <field name="feedback_type"/>
                 <field name="gar"/>
                 <field name="feedback_status"/>
@@ -33,7 +33,7 @@
                 <field name="employee_id"/>
                 <field name="date_feedback"/>
                 <field name="client_id"/>
-                <field name="manager_id"/>
+                <field name="manager"/>
                 <field name="feedback_type"/>
                 <field name="gar"/>
                 <field name="client_feedback"/>
@@ -66,9 +66,7 @@
                         <group>
                             <field name="employee_id" options="{'no_create':True, 'no_open':True}"/>
                             <field name="client_id"/>
-                            <field name="manager_id"
-                                   domain="[('parent_id', '=', client_id), ('parent_id', '!=', False)]"
-                                   options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="manager"/>
                             <field name="manager_email"/>
                             <field name="business_tech"/>
                             <field name="month" invisible="1"/>

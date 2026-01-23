@@ -56,6 +56,7 @@ class EmployeeOnboard(models.Model):
                     'user_id': line.responsible_user_id.id,
                     'assigned_date': fields.Date.today(),
                     'expected_date': record.joining_date - timedelta(days=line.due_days) if line.task_type == 'before' else record.joining_date + timedelta(days=line.due_days),
+                    'joining_date': record.joining_date,
                     'state': 'todo',
                     'onboard_id': record.id,
                 })
@@ -73,6 +74,7 @@ class EmployeeOnboard(models.Model):
                                         <li><b>Task:</b> {req.request}</li>
                                         <li><b>Assigned By:</b> {'System Auto Generated Task'}</li>
                                         <li><b>Expected Completion Date:</b> {req.expected_date.strftime('%d %B %Y')}</li>
+                                        <li><b>Joining Date:</b> {req.joining_date.strftime('%d %B %Y')}</li>
                                     </ul>
                                     <p>Please complete this task before the due date.</p>
                                     <br/>
@@ -100,6 +102,7 @@ class ChecklistRequests(models.Model):
     user_id = fields.Many2one('res.users', string='Responsible Person')
     assigned_date = fields.Date('Assigned Date')
     expected_date = fields.Date('Expected Date')
+    joining_date = fields.Date("Joining Date", required=True)
     state = fields.Selection([('todo', 'Todo'),
                                         ('inprogress', 'In-Progress'),('completed', 'Completed')],
                                        string='Request Status', default='todo', tracking=True)
@@ -157,6 +160,7 @@ class ChecklistRequests(models.Model):
                     <li><b>Employee:</b> {self.employee_id.name}</li>
                     <li><b>Task:</b> {self.request}</li>
                     <li><b>Expected Completion Date:</b> {self.expected_date.strftime('%d %B %Y')}</li>
+                    <li><b>Joining Date:</b> {self.joining_date.strftime('%d %B %Y')}</li>
                     <li><b>Status:</b> {self.state}</li>
                 </ul>
                 <p>Please complete this task as soon as possible.</p>
@@ -168,6 +172,7 @@ class ChecklistRequests(models.Model):
                 "body_html": body,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": self.user_id.email,
-                "email_cc": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                # "email_cc": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                "email_cc": "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if self.employee_id.country_id.name == 'pakistan' else "misbah.yasir@primesystemsolutions.com,Irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com",
             }
             self.env["mail.mail"].sudo().create(mail_values).send()

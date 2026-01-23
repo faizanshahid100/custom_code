@@ -298,7 +298,7 @@ class HrOffer(models.Model):
                             """,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": record.personal_email,
-                "email_cc": "misbah.yasir@primesystemsolutions.com" if record.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com",
+                "email_cc": "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if record.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com",
                 "attachment_ids": [(6, 0, [attachment.id])],
             }
             self.env["mail.mail"].sudo().create(mail_values).send()
@@ -436,9 +436,8 @@ class HrOffer(models.Model):
             if not it_support_emails:
                 raise UserError("No IT Support user with email found.")
 
-            # Get HR Responsible users
-            hr_group = self.env.ref("employee_onboarding_offboarding.group_responsible_hr")
-            hr_emails = [user.email for user in hr_group.users if user.email]
+            # Get HR Responsible Emails
+            hr_emails = "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if record.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com"
 
             # Build subject & body
             subject = f"Request to Create Official Email - {record.candidate_name}"
@@ -446,7 +445,7 @@ class HrOffer(models.Model):
                 Dear IT Support Team,<br/><br/>
                 Please create an official email ID for the candidate <b>{record.candidate_name}</b>.<br/>
                 Personal Email: {record.personal_email}<br/><br/>
-                Once created, kindly inform HR Responsible ({', '.join(hr_emails)}).<br/><br/>
+                Once created, kindly inform HR Responsible ({hr_emails}).<br/><br/>
                 Regards,<br/>
                 HR Team
             """
@@ -457,7 +456,7 @@ class HrOffer(models.Model):
                 "body_html": body,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": ",".join(it_support_emails),
-                "email_cc": ",".join(hr_emails),
+                "email_cc": hr_emails,
             }
             self.env["mail.mail"].sudo().create(mail_values).send()
 
@@ -477,6 +476,8 @@ class HrOffer(models.Model):
                 pdf_data = base64.b64encode(f.read())
 
         for rec in records:
+            # Get HR Responsible Emails
+            hr_emails = "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if rec.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com"
             subject = "Welcome to Prime System Solutions - Your Odoo Credentials"
             body = f"""
                 <p>Dear <b>{rec.candidate_name}</b>,</p>
@@ -512,7 +513,7 @@ class HrOffer(models.Model):
                 "body_html": body,
                 "email_from": "hr@primesystemsolutions.com",
                 "email_to": rec.personal_email,
-                "email_cc": ','.join(user.email for user in self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users if user.email),
+                "email_cc": hr_emails,
                 "attachment_ids": [],
             }
 
@@ -540,6 +541,7 @@ class HrOffer(models.Model):
         ])
 
         for offer in offers:
+            hr_emails = "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if offer.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com"
             buddy = offer.buddy_id
             if buddy.work_email:
                 subject = f"New Joiner Tomorrow: {offer.candidate_name}"
@@ -554,14 +556,12 @@ class HrOffer(models.Model):
                         <p>Regards,<br/>HR Team</p>
                     """
 
-                hr_users = self.env.ref('employee_onboarding_offboarding.group_responsible_hr').users
-                hr_emails = ",".join([u.email for u in hr_users if u.email])
                 self.env['mail.mail'].sudo().create({
                     'subject': subject,
                     'body_html': body,
                     'email_from': 'hr@primesystemsolutions.com',
                     'email_to': buddy.work_email,
-                    'email_cc': hr_emails+','+offer.personal_email,  # optional: also CC candidate
+                    'email_cc': hr_emails+','+offer.personal_email,
                 }).send()
 
     @api.model
@@ -580,15 +580,14 @@ class HrOffer(models.Model):
             return
 
         accountant_group = self.env.ref('employee_onboarding_offboarding.group_accountant_id')
-        hr_group = self.env.ref('employee_onboarding_offboarding.group_responsible_hr')
 
         accountant_emails = [u.email for u in accountant_group.users if u.email]
-        hr_emails = [u.email for u in hr_group.users if u.email]
 
         if not accountant_emails:
             return
 
         for offer in offers:
+            hr_emails = "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com" if offer.contract_type == 'pakistan' else "misbah.yasir@primesystemsolutions.com,irzam.tasneem@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com"
             employee_code = offer.employee_id.barcode or ''
             salary_after_probation = (offer.salary or 0) + (offer.allowances or 0)
 
@@ -629,5 +628,5 @@ class HrOffer(models.Model):
                 'body_html': body,
                 'email_from': 'hr@primesystemsolutions.com',
                 'email_to': ",".join(accountant_emails),
-                'email_cc': ",".join(hr_emails + [offer.personal_email]),
+                'email_cc': hr_emails+','+offer.personal_email,
             }).send()
