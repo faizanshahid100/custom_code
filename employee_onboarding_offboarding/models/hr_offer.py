@@ -76,7 +76,7 @@ class HrOffer(models.Model):
     buddy_info = fields.Char("Buddy Info", tracking=True)
     buddy_id = fields.Many2one('hr.employee', string='Buddy Name', tracking=True)
     remarks = fields.Text("Modification Remarks", tracking=True)
-    special_instructions = fields.Text("Special Instructions", tracking=True)
+    special_instructions = fields.Text("Special Instructions(for Candidate)", tracking=True)
     internal_remarks = fields.Text("Internal Remarks", tracking=True)
     offer_submitter_id = fields.Many2one('res.users', string='Offer Submitter')
 
