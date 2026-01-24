@@ -324,7 +324,7 @@
         </field>
     </record>
 
-    <!--    Offer Latter Phillipines-->
+    <!--    Offer Latter Philippines-->
     <record id="candidate_offer_final_template_philippines" model="mail.template">
         <field name="name">Candidate Final Offer Email PH</field>
         <field name="model_id" ref="employee_onboarding_offboarding.model_hr_offer"/>
