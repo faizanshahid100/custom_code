@@ -6,6 +6,10 @@
             <field name="model">approval.request</field>
             <field name="inherit_id" ref="approvals.approval_request_view_form"/>
             <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='amount']" position="attributes">
+                    <attribute name="string">Claim Amount</attribute>
+                </xpath>
                 <!-- Make Category readonly -->
                 <xpath expr="//field[@name='category_id']" position="attributes">
                     <attribute name="readonly">1</attribute>
@@ -14,7 +18,10 @@
                 <!-- OPD-specific fields -->
                 <xpath expr="//field[@name='request_owner_id']" position="after">
                     <field name="employee_email" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
-                    <field name="relation" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='amount']" position="before">
+                    <field name="relation" required="1" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
+                    <field name="remaining_opd" readonly="1" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
                 </xpath>
             </field>
         </record>

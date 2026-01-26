@@ -12,7 +12,8 @@ class DailyProgressExt(models.Model):
     _inherit = 'approval.request'
 
     employee_email = fields.Char('Employee Email')
-    relation = fields.Char('Relation with Patient')
+    relation = fields.Selection([('self', 'Self'), ('spouse', 'Spouse'), ('son', 'Son'), ('daughter', 'Daughter')],'Relation with Patient')
+    remaining_opd = fields.Float(string="Remaining OPD Limit", compute="_compute_remaining_opd", store=False)
 
     def _create_attendance_entry(self):
         """Creates an attendance entry for the request owner if they are an employee."""
@@ -98,3 +99,30 @@ class DailyProgressExt(models.Model):
     def _check_opd_on_change(self):
         self._check_opd_yearly_limit()
 
+    @api.depends('category_id', 'request_owner_id')
+    def _compute_remaining_opd(self):
+        OPD_LIMIT = 60000
+
+        for record in self:
+            record.remaining_opd = 0.0
+
+            # Only for OPD category (ID = 14)
+            if record.category_id.id != 14 or not record.request_owner_id:
+                continue
+
+            # Current year date range
+            today = fields.Date.today()
+            start_of_year = date(today.year, 1, 1)
+            end_of_year = date(today.year, 12, 31)
+
+            # Sum of OPD amounts already used in current year
+            opd_requests = self.env['approval.request'].search([
+                ('request_owner_id', '=', record.request_owner_id.id),
+                ('category_id', '=', 14),
+                ('date', '>=', start_of_year),
+                ('date', '<=', end_of_year),
+                ('request_status', '=', 'approved')
+            ])
+
+            used_amount = sum(opd_requests.mapped('amount'))
+            record.remaining_opd = OPD_LIMIT - used_amount
