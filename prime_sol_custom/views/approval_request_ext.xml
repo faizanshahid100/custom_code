@@ -20,7 +20,7 @@
                     <field name="employee_email" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='amount']" position="before">
-                    <field name="relation" required="1" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
+                    <field name="relation" required="0" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
                     <field name="remaining_opd" readonly="1" attrs="{'invisible': [('category_id', '!=', 14)]}"/>
                 </xpath>
             </field>
