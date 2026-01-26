@@ -53,10 +53,12 @@ class EmployeeFeedback(models.Model):
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         for rec in self:
+            rec.manager_id = False
+            rec.manager_email = ''
             if not rec.employee_id:
                 rec.client_id = False
-                rec.manager = False
-                rec.manager_email = ''
+                # rec.manager_id = False
+                # rec.manager_email = ''
                 rec.business_tech = False
                 return
 
@@ -66,9 +68,6 @@ class EmployeeFeedback(models.Model):
             contractor = employee.contractor
             rec.client_id = contractor.id if contractor else False
 
-            # Manager from contractor child
-            rec.manager = employee.manager if employee else ''
-            rec.manager_email = employee.manager_email if employee else ''
             rec.business_tech = employee.department_id.name if employee.department_id else False
 
     # ----------------------------
@@ -131,6 +130,14 @@ class EmployeeFeedback(models.Model):
             # Send email
             self.env['mail.mail'].sudo().create(mail_values).send()
 
+    @api.onchange('manager_id')
+    def _onchange_client_id(self):
+        for record in self:
+            if record.manager_id:
+                record.manager_email = record.manager_id.email
+            else:
+                record.manager_email = None
+
 
 class CSMTaskLines(models.Model):
     _name = 'employee.feedback.task.lines'
@@ -192,7 +199,7 @@ class CSMTaskLines(models.Model):
                     <h3 style="color:#004080;">CSM Meeting Action Update</h3>
                     <p><b>Task Completed:</b> ✅</p>
                     <p><b>Customer:</b> {record.feedback_id.client_id.name}</p>
-                    <p><b>Manager:</b> {record.feedback_id.manager or 'N/A'}</p>
+                    <p><b>Manager:</b> {record.feedback_id.manager_id.name or 'N/A'}</p>
                     <p><b>Action Taken:</b> {record.action_taken_comment or 'Resolved'}</p>
                     <p>You can view this CSM record in Odoo:
                         <a href="{record_url}" target="_blank">View Record</a>
