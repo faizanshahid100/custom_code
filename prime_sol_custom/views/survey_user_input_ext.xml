@@ -20,6 +20,13 @@
         <field name="model">survey.user_input</field>
         <field name="inherit_id" ref="survey.survey_user_input_view_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <button name="action_export_survey_excel"
+                        type="object"
+                        string="Export Survey to Excel"
+                        class="btn-primary"
+                        icon="fa-file-excel-o"/>
+            </xpath>
             <field name="survey_id" position="after">
                 <field name="employee_id"/>
                 <field name="job_id"/>
