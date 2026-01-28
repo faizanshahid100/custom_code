@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class CSMHandbook(models.Model):
@@ -10,6 +10,7 @@ class CSMHandbook(models.Model):
 
     # name = fields.Char(string='')
     manager_id = fields.Many2one('res.partner', string='Manager')
+    manager_ids = fields.Many2many('res.partner', string='Managers')
     customer_id = fields.Many2one('res.partner', string='Customer', domain=[('is_company', '=', True)])
     manager_email = fields.Char(string='Email Address', compute='_compute_manager_fields', store=True, readonly=False)
     # suggested_meeting_frequency = fields.Selection([
@@ -55,6 +56,11 @@ class CSMHandbook(models.Model):
         for record in self:
             record.calendar_event_count = 1 if record.calendar_event_id else 0
 
+    @api.onchange('customer_id')
+    def _onchange_customer_id(self):
+        if self.customer_id:
+            self.manager_ids = [(5, 0, 0)]
+
     @api.model
     def create(self, vals):
         record = super().create(vals)
@@ -64,54 +70,63 @@ class CSMHandbook(models.Model):
 
     def write(self, vals):
         result = super().write(vals)
-        if 'current_month_schedule' in vals or 'manager_id' in vals:
+
+        if 'current_month_schedule' in vals or 'manager_ids' in vals:
             for record in self:
                 if record.calendar_event_id and record.current_month_schedule:
+                    # Safe attendee list
+                    attendee_ids = list(record.manager_ids.ids)
+
+                    # Add current user as attendee if not present
+                    if record.env.user.partner_id.id not in attendee_ids:
+                        attendee_ids.append(record.env.user.partner_id.id)
+
                     event_vals = {
                         'start': record.current_month_schedule,
-                        'stop': record.current_month_schedule,
+                        'stop': record.current_month_schedule + timedelta(hours=1),  # ✅ 1-hour meeting
+                        'name': f'CSM Meeting With {", ".join(record.manager_ids.mapped("name"))} from {record.customer_id.name}',
+                        'partner_ids': [(6, 0, attendee_ids)],
                     }
-                    if 'manager_id' in vals and record.manager_id:
-                        # Add manager and current user as attendees
-                        attendee_ids = [record.manager_id.id]
-                        if record.env.user.partner_id.id != record.manager_id.id:
-                            attendee_ids.append(record.env.user.partner_id.id)
-                        
-                        event_vals.update({
-                            'name': f'CSM Meeting With {record.manager_id.name} from {record.customer_id.name}',
-                            'partner_ids': [(6, 0, attendee_ids)],
-                        })
+
                     record.calendar_event_id.write(event_vals)
+
                 elif record.current_month_schedule and not record.calendar_event_id:
                     record._create_calendar_event()
+
         return result
 
     def _create_calendar_event(self):
-        if self.current_month_schedule and self.manager_id and self.customer_id:
+        if self.current_month_schedule and self.manager_ids and self.customer_id:
             # Find or create 10-minute alarm
-            alarm = self.env['calendar.alarm'].search([('duration_minutes', '=', 10)], limit=1)
+            alarm = self.env['calendar.alarm'].search([
+                ('duration', '=', 10),
+                ('interval', '=', 'minutes')
+            ], limit=1)
+
             if not alarm:
                 alarm = self.env['calendar.alarm'].create({
                     'name': '10 minutes before',
                     'alarm_type': 'notification',
                     'duration': 10,
                     'interval': 'minutes',
-                    'duration_minutes': 10,
                 })
-            
-            # Add manager and current user as attendees
-            attendee_ids = [self.manager_id.id]
-            if self.env.user.partner_id.id != self.manager_id.id:
+
+            # Safe attendee list
+            attendee_ids = list(self.manager_ids.ids)
+
+            # Add current user as attendee
+            if self.env.user.partner_id.id not in attendee_ids:
                 attendee_ids.append(self.env.user.partner_id.id)
-            
+
             event = self.env['calendar.event'].create({
-                'name': f'CSM Meeting With {self.manager_id.name} from {self.customer_id.name}',
+                'name': f'CSM Meeting With {", ".join(self.manager_ids.mapped("name"))} from {self.customer_id.name}',
                 'start': self.current_month_schedule,
-                'stop': self.current_month_schedule,
+                'stop': self.current_month_schedule + timedelta(hours=1),  # ✅ duration
                 'alarm_ids': [(6, 0, [alarm.id])],
                 'csm_handbook_id': self.id,
                 'partner_ids': [(6, 0, attendee_ids)],
             })
+
             self.calendar_event_id = event.id
 
     def action_view_calendar_event(self):
@@ -124,70 +139,79 @@ class CSMHandbook(models.Model):
             'target': 'current',
         }
 
-
-    @api.depends('manager_id.email', 'manager_id.business_tech', 'manager_id.current_meeting_frequency')
+    @api.depends('manager_ids.email', 'manager_ids.business_tech')
     def _compute_manager_fields(self):
         """Compute all dependent manager-related fields."""
         for record in self:
-            manager = record.manager_id
-            record.manager_email = manager.email or False
-            record.business_tech = manager.business_tech or False
-            record.current_meeting_frequency = manager.current_meeting_frequency or False
+            managers = record.manager_ids
+
+            record.manager_email = ", ".join(
+                filter(None, managers.mapped('email'))
+            ) or False
+
+            record.business_tech = ", ".join(
+                filter(None, managers.mapped('business_tech'))
+            ) or False
+            # record.current_meeting_frequency = ", ".join(managers.mapped('current_meeting_frequency')) or False
 
     @api.model
     def _cron_update_gar_status(self):
         """Daily scheduler to update GAR status based on meeting completion."""
-        current_datetime = datetime.now()
+        current_datetime = fields.Datetime.now()
 
-        # Find records where meeting is not done
         records = self.search([('is_meeting_done', '=', False)])
 
         for record in records:
+            new_gar = False
+
             if record.is_meeting_rescheduled:
-                # Meeting rescheduled but not done = amber
-                record.gar = 'amber'
+                new_gar = 'amber'
             elif record.current_month_schedule and record.current_month_schedule < current_datetime:
-                # Meeting date passed and not done = red
-                record.gar = 'red'
+                new_gar = 'red'
+
+            # Update only if changed
+            if new_gar and record.gar != new_gar:
+                record.write({'gar': new_gar})
 
     @api.model
     def _cron_create_monthly_handbook_records(self):
         """Monthly scheduler to create CSM handbook records for next month's first Monday."""
         from datetime import datetime, timedelta
-        import calendar
-        
-        # Get next month's first day
-        today = datetime.now().date()
+
+        today = fields.Date.today()
         if today.month == 12:
             next_month = today.replace(year=today.year + 1, month=1, day=1)
         else:
             next_month = today.replace(month=today.month + 1, day=1)
-        
-        # Find first Monday of next month
+
         first_monday = next_month
-        while first_monday.weekday() != 0:  # 0 = Monday
+        while first_monday.weekday() != 0:
             first_monday += timedelta(days=1)
-        
-        # Get partners with parent companies
+
         partners = self.env['res.partner'].search([
             ('parent_id', '!=', False),
             ('parent_id.is_company', '=', True)
         ])
-        
+
         for partner in partners:
-            # Check if record already exists for this month
+            if not partner.parent_id:
+                continue
+
             existing = self.search([
-                ('manager_id', '=', partner.id),
+                ('manager_ids', 'in', [partner.id]),
                 ('customer_id', '=', partner.parent_id.id),
                 ('month', '=', next_month)
-            ])
-            
+            ], limit=1)
+
             if not existing:
                 self.create({
-                    'manager_id': partner.id,
+                    'manager_ids': [(6, 0, [partner.id])],
                     'customer_id': partner.parent_id.id,
                     'month': next_month,
-                    'current_month_schedule': datetime.combine(first_monday, datetime.min.time().replace(hour=10))
+                    'current_month_schedule': datetime.combine(
+                        first_monday,
+                        datetime.min.time().replace(hour=10)
+                    )
                 })
 
     # @api.depends('gar')

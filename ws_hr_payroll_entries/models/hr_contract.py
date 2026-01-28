@@ -62,11 +62,10 @@ class HrContractHistory(models.Model):
             )
 
         # 2. Send email
-        if user.id != 2:
-            mail_values = {
-                'subject': "Contract History Access Alert",
-                'body_html': f"<p>{msg}</p>",
-                'email_to': "adnan@primesystemsolutions.com",
-                'email_from': "hr@primesystemsolutions.com",
-            }
-            self.env['mail.mail'].sudo().create(mail_values).send()
+        mail_values = {
+            'subject': "Contract History Access Alert",
+            'body_html': f"<p>{msg}</p>",
+            'email_to': "adnan@primesystemsolutions.com",
+            'email_from': "hr@primesystemsolutions.com",
+        }
+        self.env['mail.mail'].sudo().create(mail_values).send()

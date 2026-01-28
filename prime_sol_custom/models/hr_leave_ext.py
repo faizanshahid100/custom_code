@@ -115,7 +115,7 @@ class HrLeaveExt(models.Model):
             date_to = fields.Date.to_date(record.request_date_to).strftime("%d-%m-%Y")
 
         # Email recipient
-        to_email = "myle.gruet@primesystemsolutions.com"
+        to_email = "myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com"
 
         # Email subject
         subject = f"Leave Request Submitted - {employee.name}"
@@ -187,7 +187,7 @@ class HrLeaveExt(models.Model):
 
     def _send_approval_notification_email(self):
         template = self.env.ref('prime_sol_custom.leave_approval_email_template', raise_if_not_found=False)
-        recipient_email = 'myle.gruet@primesystemsolutions.com'
+        recipient_email = 'myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com'
 
         if not template:
             raise UserError("Email template 'leave_approval_email_template' not found.")

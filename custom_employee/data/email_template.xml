@@ -7,7 +7,7 @@
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="subject">Probation Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
-            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
             <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
@@ -65,7 +65,7 @@
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="subject">1-Month Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
-            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
             <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
@@ -105,7 +105,7 @@
             <field name="model_id" ref="hr.model_hr_employee"/>
             <field name="subject">{{ object.name }} | One-Month Milestone at Prime</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
-            <field name="email_to">myle.gruet@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
+            <field name="email_to">myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
             <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">

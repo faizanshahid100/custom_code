@@ -52,7 +52,14 @@
                 </header>
                 <sheet>
                     <h2>
-                        <field name="sequence_no"/>
+                        <div class="row">
+                            <div class="col-6">
+                                <field name="sequence_no"/>
+                            </div>
+                            <div class="col-6">
+                                <field name="qr_code" widget="image" class="oe_avatar" options="{'size': [150, 150]}" />
+                            </div>
+                        </div>
                     </h2>
                     <group>
                         <group>
