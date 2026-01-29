@@ -72,25 +72,27 @@ class AssetManagementAsset(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('sequence_no', 'New') == 'New':
-            category_id = vals.get('asset_category_id')
-            if not category_id:
-                raise ValidationError('Please select Product Category before creating Product.')
+        # Create record first
+        record = super(AssetManagementAsset, self).create(vals)
 
-            category = self.env['asset.management.category'].browse(category_id)
+        # Generate sequence only after successful creation
+        if record.sequence_no == 'New':
+            category = record.asset_category_id
+            if not category:
+                raise ValidationError('Please select Product Category before creating Product.')
 
             if not category.code:
                 raise ValidationError('Product Category must have a Code.')
 
             sequence_code = f'asset.management.asset.{category.code}'
 
-            seq = self.env['ir.sequence'].search(
+            seq = self.env['ir.sequence'].sudo().search(
                 [('code', '=', sequence_code)],
                 limit=1
             )
 
             if not seq:
-                seq = self.env['ir.sequence'].create({
+                seq = self.env['ir.sequence'].sudo().create({
                     'name': f'Product Sequence {category.code}',
                     'code': sequence_code,
                     'prefix': f'{category.code}/',
@@ -98,10 +100,11 @@ class AssetManagementAsset(models.Model):
                     'number_increment': 1,
                 })
 
-            vals['sequence_no'] = self.env['ir.sequence'].next_by_code(sequence_code)
+            record.sequence_no = self.env['ir.sequence'].next_by_code(sequence_code)
 
-        record = super(AssetManagementAsset, self).create(vals)
+        # Generate QR after everything
         record._generate_qr_code()
+
         return record
 
     def write(self, vals):
