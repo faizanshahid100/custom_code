@@ -1,5 +1,5 @@
 from email.policy import default
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 import base64
 from docx import Document
@@ -138,6 +138,34 @@ class HrOffer(models.Model):
             for user in ceo_users:
                 # Send mail to each CEO
                 template.send_mail(self.id, force_send=True, email_values={"email_to": user.email})
+        # -------------------------------
+        # Confirmation email to submitter
+        # -------------------------------
+        submitter = self.offer_submitter_id
+        if submitter and submitter.email:
+            ceo_names = ", ".join(ceo_users.mapped("name"))
+
+            body_html = f"""
+                <p>Dear {submitter.name},</p>
+                <p>
+                    This is to confirm that the candidate offer has been successfully
+                    submitted and sent to the CEO <strong>{ceo_names}</strong> for approval:
+                </p>
+                <p>You will be notified once a decision is made.</p>
+                <br/>
+                <p>Regards,<br/>Odoo auto reply</p>
+            """
+
+            mail_values = {
+                "subject": _("Offer Sent for CEO Approval"),
+                "body_html": body_html,
+                "email_from": 'hr@primesystemsolutions.com',
+                "email_to": submitter.email,
+                "email_cc": 'umair.zafar@primesystemsolutions.com',
+                "auto_delete": True,
+            }
+
+            self.env["mail.mail"].sudo().create(mail_values).send()
 
     def action_send_back(self):
         return {
@@ -168,9 +196,38 @@ class HrOffer(models.Model):
                         'body_html': f"<p>Dear {user.name},</p>"
                                      f"<p>The CEO has approved the offer <b>{self.candidate_name}</b>. "
                                      f"Now you can proceed to send it to the employee.</p>",
+                        'email_from': 'hr@primesystemsolutions.com',
                         'email_to': user.email,
                     }
                     self.env['mail.mail'].sudo().create(mail_values).send()
+
+        # --------------------------------
+        # Confirmation email to submitter
+        # --------------------------------
+        submitter = self.offer_submitter_id
+        if submitter and submitter.email:
+            body_html = f"""
+                <p>Dear {submitter.name},</p>
+                <p>
+                    This is to confirm that the CEO has
+                    <strong>approved</strong> the offer for
+                    <strong>{self.candidate_name}</strong>.
+                </p>
+                <p>The HR team has been notified to proceed further.</p>
+                <br/>
+                <p>Regards,<br/>Odoo auto reply</p>
+            """
+
+            mail_values = {
+                "subject": _("Offer Approved"),
+                "body_html": body_html,
+                "email_from": 'hr@primesystemsolutions.com',
+                "email_to": submitter.email,
+                "email_cc": 'umair.zafar@primesystemsolutions.com',
+                "auto_delete": True,
+            }
+
+            self.env["mail.mail"].sudo().create(mail_values).send()
 
     def action_sent_offer(self):
         self.ensure_one()
@@ -180,7 +237,7 @@ class HrOffer(models.Model):
         self.write({"state": "send_contract"})
 
         if not self.personal_email:
-            raise ValidationError("Personal email is required to send offer.")
+            raise ValidationError("Candidate Personal email is required to send offer.")
 
         if self.contract_type == 'pakistan':
             template = self.env.ref(
