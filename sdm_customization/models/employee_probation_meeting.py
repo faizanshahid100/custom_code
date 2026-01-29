@@ -29,6 +29,12 @@ class EmployeeProbationMeeting(models.Model):
         ("post", "Post-Probation"),
     ], string="Probation Type", required=True)
 
+    probation_time = fields.Selection([
+        ("1_3", "Month 1-3"),
+        ("3_6", "Month 3-6"),
+        ("6_onwards", "Month 6-Onwards"),
+    ], string="Probation Time", required=True)
+
     meeting_status = fields.Selection([
         ("green", "Green"),
         ("yellow", "Yellow"),
@@ -55,7 +61,7 @@ class EmployeeProbationMeeting(models.Model):
         ('not_satisfied', 'Not Satisfied'),
     ], string="1. How is your experience going so far?")
     q1_experience = fields.Char(string="Q1 Explanation")
-
+    #
     q2_rating = fields.Selection([
         ('satisfied', 'Satisfied'),
         ('neutral', 'Neutral'),
@@ -156,6 +162,62 @@ class EmployeeProbationMeeting(models.Model):
         help="Employees who will receive the action taken update email."
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
+
+
+    # Month 1-3
+    # Setting In & Adjustment
+    settling_with_team = fields.Text(string='How are you settling into the role and team?')
+    time_zone_schedule = fields.Text(string='How is the time zone / schedule working for you?')
+    fatigue_sustainability_concerns = fields.Text(string='Any fatigue or sustainability concerns?')
+    # Tools & Equipment
+    equipment_system_access = fields.Text(string='Do you have all the equipment and system access you need?')
+    technical_setup_issues = fields.Text(string='Any technical or setup issues slowing you down?')
+    # Role Clarity
+    # Do you feel clear on
+    day_to_day_responsibilities = fields.Text(string='Day-to-day responsibilities?')
+    priorities_expectations = fields.Text(string='Priorities and expectations?')
+    gray_areas_assumptions = fields.Text(string='Any gray areas or assumptions that need clarification?')
+    # Manager Connection
+    regular_scheduled_manager = fields.Text(string='Are regular 1:1s scheduled with your manager?')
+    comfortable_raising_concerns = fields.Text(string='Do you feel comfortable raising questions or concerns?')
+    # Early Support Needs
+    team_help_needed = fields.Text(string='Anything Prime or the client team can do to help you ramp faster?')
+
+    # Month 3-6
+    # Self-Assessment
+    personally_gauge_performance = fields.Text(string='How do you personally gauge your performance so far?')
+    fell_really_well = fields.Text(string='What do you feel you’re doing really well?')
+    you_could_improve = fields.Text(string='Where do you think you could improve?')
+    # Client Feedback Transparency
+    set_expectations = fields.Text(string='Set expectations - prime will be getting feedback from your manager.')
+    # Manager Alignment
+    feedback_received = fields.Text(string='What feedback have you received so far?')
+    expectations_consistent_clear = fields.Text(string='Are expectations consistent and clear?')
+    surprises_misalignments = fields.Text(string='Any surprises or misalignments?')
+    # Growth & Capability
+    challenged_enough = fields.Text(string='Are you being challenged enough?')
+    skills_exposure_want = fields.Text(string='Any skills you’d like to build or exposure you want?')
+    # Engagement & Motivation
+    motivated_in_role = fields.Text(string='What keeps you motivated in this role?')
+    morale_confidence = fields.Text(string='Anything impacting morale or confidence?')
+
+    # Month 6-Onwards
+    # Contribution & Impact
+    proud_contributions = fields.Text(string='What contributions are you most proud of?')
+    adding_values = fields.Text(string='Where do you feel you’re adding the most value?')
+    # Value Add Beyond the Role
+    improvements_ideas_initiatives = fields.Text(string='Any process improvements, ideas, or initiatives you’ve contributed?')
+    make_an_impact = fields.Text(string='Where else could you make an impact?')
+    # Recognition & Shout-Outs
+    wins_shout_outs_by_client = fields.Text(string='Any wins or shout-outs from the client team?')
+    acknowledge_document_successes = fields.Text(string='Acknowledge and document successes.')
+    # Career & Progression
+    role_evolving = fields.Text(string='How do you see your role evolving?')
+    interest_in = fields.Selection([('responsibility', 'Higher responsibility?'),
+                                    ('mentorship', 'Mentorship?'), ('scope', 'Expanded scope?')], string='Interest in:')
+    # Long-Term Alignment
+    what_success_look_like = fields.Text(string='What would “success” look like for you over the next 12 months?')
+
 
     def action_resolve(self):
         """Mark record as Completed"""
