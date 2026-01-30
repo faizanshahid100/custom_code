@@ -30,6 +30,7 @@ class EmployeeProbationMeeting(models.Model):
     ], string="Probation Type", required=True)
 
     probation_time = fields.Selection([
+        ("0_1", "Less Than a Month"),
         ("1_3", "Month 1-3"),
         ("3_6", "Month 3-6"),
         ("6_onwards", "Month 6-Onwards"),
@@ -163,6 +164,27 @@ class EmployeeProbationMeeting(models.Model):
     )
     is_action_mail_sent = fields.Boolean(string="Action Mail Sent", readonly=True, tracking=True)
 
+    # Month 0-1
+    overall_experience = fields.Text(
+        string="How has your overall experience been this week while working with the client and Prime?"
+    )
+
+    challenges_obstacles = fields.Text(
+        string="Are you facing any challenges or obstacles in your role (workload, processes, communication, or tools)?"
+    )
+
+    support_feedback = fields.Text(
+        string="Do you feel you are getting the support you need from the client team and Prime management? If not, what could be improved?"
+    )
+
+    motivation_engagement = fields.Text(
+        string="Is there anything affecting your motivation, engagement, or job satisfaction that you’d like to share?"
+    )
+
+    concerns_suggestions = fields.Text(
+        string="Do you have any concerns, suggestions, or issues you would like us to address or escalate on your behalf?"
+    )
+
 
     # Month 1-3
     # Setting In & Adjustment
@@ -268,7 +290,9 @@ class EmployeeProbationMeeting(models.Model):
                     + (today.month - employee.joining_date.month)
             )
 
-            if months_diff <= 3:
+            if months_diff <= 1:
+                rec.probation_time = '0_1'
+            elif 1 < months_diff <= 3:
                 rec.probation_time = '1_3'
             elif 3 < months_diff <= 6:
                 rec.probation_time = '3_6'
