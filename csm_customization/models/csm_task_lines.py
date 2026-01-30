@@ -70,8 +70,8 @@ class CSMTaskLines(models.Model):
 
             # Send to manager and current user
             to_emails = []
-            if record.handbook_id.manager_email:
-                to_emails.append(record.handbook_id.manager_email)
+            # if record.handbook_id.manager_email:
+            #     to_emails.append(record.handbook_id.manager_email)
             if self.env.user.partner_id.email:
                 to_emails.append(self.env.user.partner_id.email)
             

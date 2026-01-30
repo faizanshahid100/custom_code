@@ -148,7 +148,7 @@ class HrOffer(models.Model):
             body_html = f"""
                 <p>Dear {submitter.name},</p>
                 <p>
-                    This is to confirm that the candidate offer has been successfully
+                    This is to confirm that the candidate <strong>{self.candidate_name}</strong> for Client <strong>{self.client_id.name}'s</strong> offer has been successfully
                     submitted and sent to the CEO <strong>{ceo_names}</strong> for approval:
                 </p>
                 <p>You will be notified once a decision is made.</p>
@@ -210,8 +210,8 @@ class HrOffer(models.Model):
                 <p>Dear {submitter.name},</p>
                 <p>
                     This is to confirm that the CEO has
-                    <strong>approved</strong> the offer for
-                    <strong>{self.candidate_name}</strong>.
+                    <strong>approved</strong> the offer of
+                    <strong>{self.candidate_name}</strong> for Client <strong>{self.client_id.name}</strong>.
                 </p>
                 <p>The HR team has been notified to proceed further.</p>
                 <br/>

@@ -102,7 +102,7 @@ class ChecklistRequests(models.Model):
     user_id = fields.Many2one('res.users', string='Responsible Person')
     assigned_date = fields.Date('Assigned Date')
     expected_date = fields.Date('Expected Date')
-    joining_date = fields.Date("Joining Date", required=True)
+    joining_date = fields.Date("Joining Date")
     state = fields.Selection([('todo', 'Todo'),
                                         ('inprogress', 'In-Progress'),('completed', 'Completed')],
                                        string='Request Status', default='todo', tracking=True)

@@ -3,6 +3,7 @@
         <record id="group_attendance_geo_maintainer" model="res.groups">
             <field name="name">Attendance Geo Location Maintainer</field>
             <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
     </data>
 </odoo>

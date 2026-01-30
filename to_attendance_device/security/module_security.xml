@@ -5,6 +5,7 @@
 	        <field name="name">Attendance Device Manager</field>
 	        <field name="category_id" ref="base.module_category_usability" />	        
 	        <field name="comment">The users in this group will have full access rights to attendance devices and their data.</field>
+			<field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     	</record>
 
     	<record id="hr_attendance.group_hr_attendance_manager" model="res.groups">

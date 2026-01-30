@@ -11,17 +11,18 @@
             <field name="name">Late Check-out Attendance Group</field>
             <field name="comment">This group allows users to mark late check-out attendance.</field>
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
         <record id="group_employee_feedback_manager" model="res.groups">
             <field name="name">Employee Feedback Manager</field>
             <field name="comment">Users in this group can manage employee feedback records.</field>
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
-            <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
         <record id="group_score_card_admin" model="res.groups">
             <field name="name">Score Card Admin</field>
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
-            <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
         <record id="group_pakistan" model="res.groups">
             <field name="name">Pakistan Users</field>
@@ -46,10 +47,12 @@
         <record id="prime_group_managers" model="res.groups">
             <field name="name">Prime Managers</field>
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
         <record id="kpi_managers" model="res.groups">
             <field name="name">KPI Manager</field>
             <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
 
         <!--        Record Rules-->
