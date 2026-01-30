@@ -236,11 +236,13 @@ class EmployeeProbationMeeting(models.Model):
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         """Update related fields and probation type when employee changes"""
+        today = date.today()
         for rec in self:
             employee = rec.employee_id
             if not employee:
                 rec.employee_pulse_id = False
                 rec.probation_type = False
+                rec.probation_time = False
                 return
 
             # Set pulse profile
@@ -252,7 +254,26 @@ class EmployeeProbationMeeting(models.Model):
                     _("Confirmation date for %s is not mentioned in the Employee form.") % employee.name)
 
             # Determine probation type
-            rec.probation_type = 'pre' if date.today() < employee.confirmation_date else 'post'
+            rec.probation_type = 'pre' if today < employee.confirmation_date else 'post'
+
+            # -------------------------------
+            # Determine probation time
+            # -------------------------------
+            if not employee.joining_date:
+                rec.probation_time = False
+                return
+
+            months_diff = (
+                    (today.year - employee.joining_date.year) * 12
+                    + (today.month - employee.joining_date.month)
+            )
+
+            if months_diff <= 3:
+                rec.probation_time = '1_3'
+            elif 3 < months_diff <= 6:
+                rec.probation_time = '3_6'
+            else:
+                rec.probation_time = '6_onwards'
 
     @api.onchange('task_assign_line_ids')
     def _onchange_task_assign_line_ids(self):
@@ -286,7 +307,7 @@ class EmployeeProbationMeeting(models.Model):
                     <p>You have been assigned the following probation review task:</p>
                     <p><b>Employee:</b> {self.employee_id.name}</p>
                     <p><b>Meeting Date:</b> {self.date_meeting.strftime('%d-%m-%Y')}</p>
-                    <p><b>Probation Type:</b> {self.probation_type.replace('_', ' ').title()} Probation</p>
+                    <p><b>Probation Time:</b> {self.probation_time.replace('_', '- probation_time').title()} Months Probation</p>
                     <p><b>Reason:</b> {record.reason}</p>
                     <p><b>Priority:</b> {'⭐' * int(record.priority)}</p>
                     <p>You can view the full meeting record here:

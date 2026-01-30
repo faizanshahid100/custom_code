@@ -8,6 +8,26 @@ class EmployeePulseProfile(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Employee Name", required=True, ondelete="cascade")
     comment = fields.Char('Comment')
 
+    _1_3_probation_meeting_ids = fields.One2many(
+        'employee.probation.meeting',
+        'employee_pulse_id',
+        string="1-3 Month Probation Meetings",
+        domain=[('probation_time', '=', '1_3')]
+    )
+
+    _3_6_probation_meeting_ids = fields.One2many(
+        'employee.probation.meeting',
+        'employee_pulse_id',
+        string="3-6 Months Probation Meetings",
+        domain=[('probation_time', '=', '3_6')]
+    )
+    _6_onwards_probation_meeting_ids = fields.One2many(
+        'employee.probation.meeting',
+        'employee_pulse_id',
+        string="6 Onward Months Probation Meetings",
+        domain=[('probation_time', '=', '6_onwards')]
+    )
+
     pre_probation_meeting_ids = fields.One2many(
         'employee.probation.meeting',
         'employee_pulse_id',

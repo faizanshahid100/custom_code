@@ -7,7 +7,7 @@
                 <field name="employee_id"/>
                 <field name="department_id"/>
                 <field name="date_meeting"/>
-                <field name="probation_type"/>
+                <field name="probation_time"/>
                 <field name="meeting_status" widget="badge"
                        decoration-danger="meeting_status == 'red'"
                        decoration-warning="meeting_status == 'yellow'"
@@ -259,7 +259,7 @@
             <search string="Search Probation Meetings">
                 <field name="employee_id"/>
                 <field name="department_id"/>
-                <field name="probation_type"/>
+                <field name="probation_time"/>
                 <field name="meeting_status"/>
                 <field name="state"/>
                 <field name="date_meeting"/>
@@ -275,8 +275,10 @@
                 <group expand="0" string="Group By">
                     <filter string="Employee" name="group_by_employee" context="{'group_by':'employee_id'}"/>
                     <filter string="Department" name="group_by_department" context="{'group_by':'department_id'}"/>
-                    <filter string="Probation Type" name="group_by_probation_type"
-                            context="{'group_by':'probation_type'}"/>
+<!--                    <filter string="Probation Type" name="group_by_probation_type"-->
+<!--                            context="{'group_by':'probation_type'}"/>-->
+                    <filter string="Probation Time" name="group_by_probation_time"
+                            context="{'group_by':'probation_time'}"/>
                     <filter string="Status" name="group_by_task_status"
                             context="{'group_by':'state'}"/>
                     <filter string="Employee Status" name="group_by_meeting_status"
