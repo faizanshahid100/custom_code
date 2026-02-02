@@ -127,6 +127,8 @@ class HrOffer(models.Model):
 
     # Workflow Actions
     def action_submit(self):
+        if not self.attachment_ids:
+            raise ValidationError('Candidate CV/Documents are mandatory. Please attach a CV or related documents.')
         self.write({
             "state": "submitted",
             "offer_submitter_id":self.env.user.id

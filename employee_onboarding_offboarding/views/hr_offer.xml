@@ -111,7 +111,7 @@
                                    attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                             <field name="probation_period"
                                    attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                            <field name="attachment_ids" widget="many2many_binary" required="1"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
                         </group>
 
                         <group string="Client Assignment">
