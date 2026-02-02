@@ -35,6 +35,14 @@ class HrOffer(models.Model):
         ("intern", "Internship"),
     ], string="Employment Type", required=True, tracking=True)
     probation_period = fields.Integer("Probation Period (months)", default=3, tracking=True)
+    attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'hr_offer_attachment_rel',
+        'offer_id',
+        'attachment_id',
+        string='Candidate CV(Documents)',
+        help="Upload CV and documents related to the Candidate"
+    )
 
     # Client Assignment
     client_id = fields.Many2one("res.partner", string="Client", required=True, domain="[('is_company','=',True)]", tracking=True)
