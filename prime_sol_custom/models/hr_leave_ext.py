@@ -145,34 +145,52 @@ class HrLeaveExt(models.Model):
 
     @api.constrains('request_date_from', 'request_date_to', 'holiday_status_id')
     def _check_leave_constraints(self):
+        today = fields.Date.today()
+
         for leave in self:
             employee = leave.employee_id
             leave_type = leave.holiday_status_id.name.strip().lower()
-            today = fields.Date.today()
 
-            if leave.request_date_from and leave.request_date_to:
-                leave_days = (leave.request_date_to - leave.request_date_from).days + 1 # included week days
-            else:
+            if not leave.request_date_from or not leave.request_date_to:
                 continue
 
-            if leave_type == 'parental leaves':
-                if employee.gender == 'male':
-                    if leave.number_of_days_display > 3:
-                        raise ValidationError(_("Paternity Leaves cannot exceed 3 days."))
-                elif employee.gender == 'female':
+            # PK Parental Leaves
+            if leave_type == 'pk parental leaves':
+                if employee.gender == 'male' and leave.number_of_days_display > 3:
+                    raise ValidationError(_("Paternity Leaves cannot exceed 3 days."))
+
+                if employee.gender == 'female':
                     if leave.number_of_days_display > 45:
-                    # if leave_days > 45: # for included weekdays
                         raise ValidationError(_("Maternity Leaves cannot exceed 45 days."))
+
                     if employee.joining_date and (leave.request_date_from - employee.joining_date).days < 180:
                         raise ValidationError(
-                            _("Employee must have completed 6 months of service for Maternity Leave."))
+                            _("Employee must have completed 6 months of service for Maternity Leave.")
+                        )
 
-            # elif leave_type == 'casual leaves' and (leave.request_date_from - today).days < 2:
-            #     raise ValidationError(_("Casual Leave must be applied at least 48 hours in advance."))
+            # Standard Time-Off (ERP Manager exemption applies ONLY here)
+            elif leave_type == 'standard time-off':
 
-            elif (leave_type == 'annual leaves' and not self.env.user.has_group('base.group_erp_manager') and (leave.request_date_from - today).days < 14):
-                raise ValidationError(_("Annual Leave must be applied at least 2 weeks in advance."))
+                # ERP Manager → no restriction
+                if self.env.user.has_group('base.group_erp_manager'):
+                    continue
 
+                # 1️⃣ Single-day leave → 48 hours before or after
+                if leave.number_of_days_display == 1:
+                    allowed_last_date = leave.request_date_from + timedelta(days=2)
+
+                    if today > allowed_last_date:
+                        raise ValidationError(
+                            _("Single-day leave must be applied before or within 48 hours after availing the leave.")
+                        )
+
+                # 2️⃣ More than 1 day → 2 weeks in advance
+                elif leave.number_of_days_display > 1 and (leave.request_date_from - today).days < 14:
+                    raise ValidationError(
+                        _("More than 1 day leave must be applied at least 2 weeks in advance.")
+                    )
+
+            # Bereavement Leaves
             elif leave_type == 'bereavement leaves':
                 if leave.number_of_days_display > 3:
                     raise ValidationError(_("Bereavement Leaves cannot exceed 3 days."))
