@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_import_connectwise_xml_wizard" model="ir.ui.view">
+        <field name="name">import.connectwise.xml.wizard.form</field>
+        <field name="model">import.connectwise.xml.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import ConnectWise XML">
+                <group>
+                    <field name="xml_file" filename="filename"/>
+                </group>
+                <footer>
+                    <button string="Import"
+                            type="object"
+                            name="action_import"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_connectwise_xml" model="ir.actions.act_window">
+        <field name="name">Import ConnectWise XML</field>
+        <field name="res_model">import.connectwise.xml.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_import_connectwise_xml"
+              name="Import XML"
+              sequence="10"
+              parent="menu_connectwise_root"
+              action="action_import_connectwise_xml"/>
+</odoo>

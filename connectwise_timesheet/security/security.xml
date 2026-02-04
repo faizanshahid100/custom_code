@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ConnectWise Admin Group -->
+    <record id="group_connectwise_admin" model="res.groups">
+        <field name="name">ConnectWise Admin</field>
+        <field name="category_id" ref="prime_sol_custom.pss_security_group_category"/>
+    </record>
+
+
+    <!-- EMPLOYEE: See only own timesheets -->
+    <record id="cw_timesheet_employee_rule" model="ir.rule">
+        <field name="name">ConnectWise Timesheet - Employee Own Records</field>
+        <field name="model_id" ref="model_connectwise_timesheet"/>
+        <field name="domain_force">
+            [('employee_id.user_id', '=', user.id)]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="cw_timesheet_admin_rule" model="ir.rule">
+        <field name="name">ConnectWise Timesheet - Admin Full Access</field>
+        <field name="model_id" ref="model_connectwise_timesheet"/>
+        <field name="domain_force">
+            [(1, '=', 1)]
+        </field>
+        <field name="groups" eval="[(4, ref('connectwise_timesheet.group_connectwise_admin'))]"/>
+    </record>
+
+    <record id="cw_timesheet_line_employee_rule" model="ir.rule">
+        <field name="name">ConnectWise Timesheet Line - Employee Own Records</field>
+        <field name="model_id" ref="model_connectwise_timesheet_line"/>
+        <field name="domain_force">
+            [('timesheet_id.employee_id.user_id', '=', user.id)]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="cw_timesheet_line_admin_rule" model="ir.rule">
+        <field name="name">ConnectWise Timesheet Line - Admin Full Access</field>
+        <field name="model_id" ref="model_connectwise_timesheet_line"/>
+        <field name="domain_force">
+            [(1, '=', 1)]
+        </field>
+        <field name="groups" eval="[(4, ref('connectwise_timesheet.group_connectwise_admin'))]"/>
+    </record>
+
+</odoo>
