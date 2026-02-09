@@ -7,7 +7,12 @@
         <field name="arch" type="xml">
             <form string="Import ConnectWise XML">
                 <group>
-                    <field name="xml_file" filename="filename"/>
+                    <group>
+                        <field name="xml_file" filename="filename"/>
+                    </group>
+                    <group>
+                        <field name="employee_id" groups="connectwise_timesheet.group_connectwise_admin" options='{"no_open": True, "no_create": True}'/>
+                    </group>
                 </group>
                 <footer>
                     <button string="Import"

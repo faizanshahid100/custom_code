@@ -2,7 +2,7 @@ import base64
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-from odoo import models, fields
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
@@ -11,7 +11,15 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
     _description = 'Import ConnectWise XML'
 
     xml_file = fields.Binary(string='XML File', required=True)
+    employee_id = fields.Many2one('hr.employee', default=lambda self: self._default_employee(), string='Employee')
     filename = fields.Char(string='File Name')
+
+    @api.model
+    def _default_employee(self):
+        return self.env['hr.employee'].search(
+            [('user_id', '=', self.env.uid)],
+            limit=1
+        )
 
     # ---------------------------------------------------------
     # Helper: Strip XML namespace
@@ -23,7 +31,7 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
         xml_data = base64.b64decode(self.xml_file)
         root = ET.fromstring(xml_data)
 
-        employee = self.env.user.employee_id
+        employee = self.employee_id
         if not employee:
             raise UserError('Logged-in user has no linked employee.')
 
@@ -73,6 +81,8 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
                     continue
 
                 self.env['connectwise.timesheet.line'].create({
+                    'ticket': elem.get('textbox89'),
+                    'internal_ticket': elem.get('textbox59'),
                     'timesheet_id': timesheet.id,
                     'timespan': elem.get('textbox80'),
                     'charge_to': elem.get('textbox82'),
@@ -81,4 +91,7 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
                     'notes': elem.get('textbox99'),
                 })
 
-        return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }

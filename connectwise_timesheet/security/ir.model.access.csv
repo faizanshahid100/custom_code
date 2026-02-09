@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_connectwise_timesheet,connectwise.timesheet,model_connectwise_timesheet,base.group_user,1,1,1,1
-access_connectwise_timesheet_line,connectwise.timesheet.line,model_connectwise_timesheet_line,base.group_user,1,1,1,1
+access_connectwise_timesheet_user,connectwise.timesheet,model_connectwise_timesheet,,1,0,1,0
+access_connectwise_timesheet_admin,connectwise.timesheet,model_connectwise_timesheet,connectwise_timesheet.group_connectwise_admin,1,1,1,1
+access_connectwise_timesheet_line_user,connectwise.timesheet.line.user,model_connectwise_timesheet_line,,1,0,1,0
+access_connectwise_timesheet_line_admin,connectwise.timesheet.line.admin,model_connectwise_timesheet_line,connectwise_timesheet.group_connectwise_admin,1,1,1,1
 access_import_connectwise_xml,import.connectwise.xml.wizard,model_import_connectwise_xml_wizard,base.group_user,1,1,1,0

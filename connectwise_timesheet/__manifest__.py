@@ -9,7 +9,7 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'views/timesheet_views.xml',
-        'views/import_connectwise_xml_views.xml',
+        'wizard/import_connectwise_xml.xml',
     ],
     'installable': True,
     'application': True,
