@@ -1,0 +1,16 @@
+<odoo>
+
+    <record id="view_daily_progress_form_inherit_connectwise"
+            model="ir.ui.view">
+        <field name="name">daily.progress.form.inherit.connectwise</field>
+        <field name="model">daily.progress</field>
+        <field name="inherit_id" ref="prime_sol_custom.view_daily_progress_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_of_project']" position="after">
+                <field name="connectwise_id" readonly="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -210,8 +210,8 @@ class DailyProgress(models.Model):
                 raise ValidationError('Billable Hours % must be a positive number.')
             if not (0 <= record.billable_hours <= 100):
                 raise ValidationError('Billable Hours % must be between 0 and 100.')
-            if len(str(record.billable_hours).split('.')[1]) > 2:
-                raise ValidationError('Billable Hours % must have up to two decimal places.')
+            # if len(str(record.billable_hours).split('.')[1]) > 2:
+            #     raise ValidationError('Billable Hours % must have up to two decimal places.')
 
     @api.onchange('date_of_project')
     def onchange_date_of_project(self):
