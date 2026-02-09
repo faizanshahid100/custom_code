@@ -62,10 +62,21 @@ class EmployeeAttendanceRegister(models.TransientModel):
         return list(result.values())
 
     def check_attendance(self):
+        import logging
+        _logger = logging.getLogger(__name__)
+        
         data = []
+        start_datetime = datetime.datetime.combine(self.start_date, datetime.time.min)
+        end_datetime = datetime.datetime.combine(self.end_date, datetime.time.max)
+        
+        _logger.info(f"=== ATTENDANCE CHECK DEBUG === Start: {self.start_date}, End: {self.end_date}")
+        
         report = self.env['hr.attendance'].sudo().search(
-            [('employee_id', 'in', self.employee_ids.ids), ('check_in', '>=', self.start_date + timedelta(hours=-8)),
-             ('check_in', '<=', self.end_date + timedelta(days=1))])  # Slight buffer for timezone shift
+            [('employee_id', 'in', self.employee_ids.ids), 
+             ('check_in', '>=', start_datetime - timedelta(hours=12)),
+             ('check_in', '<=', end_datetime + timedelta(hours=12))])
+        
+        _logger.info(f"Found {len(report)} attendance records")
 
         for rec in report:
             if rec.employee_id.country_id.name == 'Philippines':
@@ -79,17 +90,21 @@ class EmployeeAttendanceRegister(models.TransientModel):
                 check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
 
             if check_in and check_out:
-                work_hours = round(rec.worked_hours, 1)
-                data.append({
-                    'date': check_in.date().day,
-                    'month': check_in.date().month,
-                    'year': check_in.date().year,
-                    'state': work_hours,
-                    'employee': rec.employee_id.id,
-                    'department': rec.employee_id.department_id.id,
-                })
+                # Use UTC check-in date for consistency
+                utc_date = rec.check_in.date()
+                if self.start_date <= utc_date <= self.end_date:
+                    work_hours = round(rec.worked_hours, 1)
+                    data.append({
+                        'date': utc_date.day,
+                        'month': utc_date.month,
+                        'year': utc_date.year,
+                        'state': work_hours,
+                        'employee': rec.employee_id.id,
+                        'department': rec.employee_id.department_id.id,
+                    })
+                    _logger.info(f"Employee {rec.employee_id.id}: {rec.check_in} UTC → Date: {utc_date}")
 
-        # Remove less time duplicates attendance if any
+        _logger.info(f"Total processed records: {len(data)}")
         return self.remove_lower_state_duplicates(data)
         # res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
         # return res_list
@@ -144,12 +159,14 @@ class EmployeeAttendanceRegister(models.TransientModel):
         leave_records = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', emp.id),
             ('state', '=', 'validate'),
-            ('request_date_from', '>=', start_date),
+            ('request_date_from', '<=', end_date),
+            ('request_date_to', '>=', start_date),
         ])
         leave_dates = []
         for leave in leave_records:
-            current_day = leave.request_date_from
-            while current_day <= leave.request_date_to:
+            current_day = max(leave.request_date_from, start_date)
+            end_day = min(leave.request_date_to, end_date)
+            while current_day <= end_day:
                 leave_dates.append(f'{current_day.day}-{current_day.month}-{current_day.year}')
                 current_day += timedelta(days=1)
         return leave_dates
