@@ -92,6 +92,7 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
                     'charge_to': elem.get('textbox82'),
                     'work_role': elem.get('textbox83'),
                     'actual_hours': float(elem.get('textbox86', 0.0)),
+                    'is_ticket_closed': (elem.get('textbox85') or '').strip().lower() == 'yes',
                     'notes': self._clean_text(elem.get('textbox99')),
                 })
 

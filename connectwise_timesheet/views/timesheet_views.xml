@@ -70,6 +70,7 @@
                                     <field name="charge_to"/>
                                     <field name="work_role"/>
                                     <field name="actual_hours" widget="float_time"/>
+                                    <field name="is_ticket_closed"/>
                                     <field name="notes"/>
                                 </tree>
                             </field>

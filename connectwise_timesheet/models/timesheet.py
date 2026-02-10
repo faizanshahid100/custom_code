@@ -85,13 +85,13 @@ class ConnectwiseTimesheet(models.Model):
         DailyProgress = self.env['daily.progress']
         for rec in self:
             # Filter billable and non-billable lines only once
-            billable_lines = rec.line_ids.filtered(lambda l: not l.internal_ticket)
+            billable_lines = rec.line_ids.filtered(lambda l: not l.internal_ticket and l.is_ticket_closed)
             non_billable_lines = rec.line_ids.filtered(lambda l: l.internal_ticket )
 
             # Sum hours and count tickets
             billable_hours = sum(billable_lines.mapped('actual_hours'))
             non_billable_hours = sum(non_billable_lines.mapped('actual_hours'))
-            tickets = len(billable_lines)
+            tickets = len(rec.line_ids.filtered(lambda l: not l.internal_ticket and l.is_ticket_closed))
             total_hours = billable_hours + non_billable_hours
 
             # Update computed fields
@@ -139,4 +139,5 @@ class ConnectwiseTimesheetLine(models.Model):
     charge_to = fields.Char(string='Charge To')
     work_role = fields.Char(string='Work Role')
     actual_hours = fields.Float(string='Actual Hours')
+    is_ticket_closed = fields.Boolean(string='Is Ticket Closed')
     notes = fields.Text(string='Notes')
