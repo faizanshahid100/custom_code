@@ -4,9 +4,11 @@ from itertools import count
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+
 class ConnectwiseTimesheet(models.Model):
     _name = 'connectwise.timesheet'
     _rec_name = 'employee_id'
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = 'ConnectWise Daily Timesheet'
     _order = 'work_date desc'
 
@@ -14,11 +16,12 @@ class ConnectwiseTimesheet(models.Model):
         'hr.employee',
         string='Employee',
         required=True,
-        default=lambda self: self.env.user.employee_id
+        default=lambda self: self.env.user.employee_id,
+        tracking=True,
     )
 
-    work_date = fields.Date(string='Date', required=True)
-    total_hours = fields.Float(string='Total Working Hours', default=1)
+    work_date = fields.Date(string='Date', required=True, tracking=True)
+    total_hours = fields.Float(string='Total Working Hours', tracking=True)
     billable_hours = fields.Float(
         string='Billable Hours',
         compute='_compute_hours',
@@ -39,7 +42,7 @@ class ConnectwiseTimesheet(models.Model):
     line_ids = fields.One2many(
         'connectwise.timesheet.line',
         'timesheet_id',
-        string='Timesheet Lines'
+        string='Timesheet Lines', tracking=True
     )
 
     def _compute_is_connectwise_admin(self):
@@ -86,7 +89,7 @@ class ConnectwiseTimesheet(models.Model):
         for rec in self:
             # Filter billable and non-billable lines only once
             billable_lines = rec.line_ids.filtered(lambda l: not l.internal_ticket and l.is_ticket_closed)
-            non_billable_lines = rec.line_ids.filtered(lambda l: l.internal_ticket )
+            non_billable_lines = rec.line_ids.filtered(lambda l: l.internal_ticket)
 
             # Sum hours and count tickets
             billable_hours = sum(billable_lines.mapped('actual_hours'))
@@ -124,6 +127,7 @@ class ConnectwiseTimesheet(models.Model):
 
 class ConnectwiseTimesheetLine(models.Model):
     _name = 'connectwise.timesheet.line'
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _description = 'ConnectWise Timesheet Line'
 
     timesheet_id = fields.Many2one(
@@ -133,11 +137,12 @@ class ConnectwiseTimesheetLine(models.Model):
         required=True
     )
 
-    ticket = fields.Char(string='Ticket')
-    internal_ticket = fields.Char(string='Internal Ticket', help='If write anything in this field the line/ticket will be considered non-billable')
-    timespan = fields.Char(string='Time Span')
-    charge_to = fields.Char(string='Charge To')
-    work_role = fields.Char(string='Work Role')
-    actual_hours = fields.Float(string='Actual Hours')
-    is_ticket_closed = fields.Boolean(string='Is Ticket Closed')
-    notes = fields.Text(string='Notes')
+    ticket = fields.Char(string='Ticket', tracking=True)
+    internal_ticket = fields.Char(string='Internal Ticket', tracking=True,
+                                  help='If write anything in this field the line/ticket will be considered non-billable')
+    timespan = fields.Char(string='Time Span', tracking=True)
+    charge_to = fields.Char(string='Charge To', tracking=True)
+    work_role = fields.Char(string='Work Role', tracking=True)
+    actual_hours = fields.Float(string='Actual Hours', tracking=True)
+    is_ticket_closed = fields.Boolean(string='Is Ticket Closed', tracking=True)
+    notes = fields.Text(string='Notes', tracking=True)
