@@ -4,6 +4,7 @@ from datetime import datetime
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import html
 
 
 class ImportConnectwiseXMLWizard(models.TransientModel):
@@ -26,6 +27,9 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
     # ---------------------------------------------------------
     def _tag(self, element):
         return element.tag.split('}', 1)[-1]
+
+    def _clean_text(self, text):
+        return html.unescape(text or '')
 
     def action_import(self):
         xml_data = base64.b64decode(self.xml_file)
@@ -88,7 +92,7 @@ class ImportConnectwiseXMLWizard(models.TransientModel):
                     'charge_to': elem.get('textbox82'),
                     'work_role': elem.get('textbox83'),
                     'actual_hours': float(elem.get('textbox86', 0.0)),
-                    'notes': elem.get('textbox99'),
+                    'notes': self._clean_text(elem.get('textbox99')),
                 })
 
         return {

@@ -82,30 +82,45 @@ class ConnectwiseTimesheet(models.Model):
 
     @api.depends('line_ids.actual_hours', 'line_ids.ticket')
     def _compute_hours(self):
+        DailyProgress = self.env['daily.progress']
         for rec in self:
-            billable_lines = rec.line_ids.filtered(lambda l: l.ticket != '0 - ')
-            non_billable_lines = rec.line_ids.filtered(lambda l: l.ticket == '0 - ')
-            rec.billable_hours = sum(billable_lines.mapped('actual_hours'))
-            rec.non_billable_hours = sum(non_billable_lines.mapped('actual_hours'))
-            rec.tickets = len(billable_lines)
+            # Filter billable and non-billable lines only once
+            billable_lines = rec.line_ids.filtered(lambda l: not l.internal_ticket)
+            non_billable_lines = rec.line_ids.filtered(lambda l: l.internal_ticket )
 
-            tickets = len(rec.line_ids.filtered(lambda l: l.ticket != '0 - '))
+            # Sum hours and count tickets
             billable_hours = sum(billable_lines.mapped('actual_hours'))
-            total_hours = sum(rec.line_ids.mapped('actual_hours'))
-            billable_percentage = float((billable_hours / total_hours) * 100)
-            if tickets and billable_hours:
+            non_billable_hours = sum(non_billable_lines.mapped('actual_hours'))
+            tickets = len(billable_lines)
+            total_hours = billable_hours + non_billable_hours
+
+            # Update computed fields
+            rec.billable_hours = billable_hours
+            rec.non_billable_hours = non_billable_hours
+            rec.tickets = tickets
+
+            progress = DailyProgress.search(
+                [('connectwise_id', 'in', rec.ids)],
+                limit=1
+            )
+            # ⛔ Avoid zero division and empty timesheet sync
+            if total_hours > 0 and tickets > 0 and not progress:
+                billable_percentage = (billable_hours / total_hours) * 100
                 rec._sync_daily_progress(tickets, billable_percentage)
 
-    # @api.model
-    # def create(self, vals):
-    #     record = super().create(vals)
-    #     record._sync_daily_progress()
-    #     return record
-
     def write(self, vals):
+        """Override write to update daily.progress after any change."""
         res = super().write(vals)
-        self._sync_daily_progress()
+
+        # After write, recompute fields and sync daily.progress
+        for rec in self:
+            total_hours = rec.billable_hours + rec.non_billable_hours
+            if total_hours > 0 and rec.tickets > 0:
+                billable_percentage = (rec.billable_hours / total_hours) * 100
+                rec._sync_daily_progress(rec.tickets, billable_percentage)
+
         return res
+
 
 class ConnectwiseTimesheetLine(models.Model):
     _name = 'connectwise.timesheet.line'
@@ -119,7 +134,7 @@ class ConnectwiseTimesheetLine(models.Model):
     )
 
     ticket = fields.Char(string='Ticket')
-    internal_ticket = fields.Char(string='Internal Ticket')
+    internal_ticket = fields.Char(string='Internal Ticket', help='If write anything in this field the line/ticket will be considered non-billable')
     timespan = fields.Char(string='Time Span')
     charge_to = fields.Char(string='Charge To')
     work_role = fields.Char(string='Work Role')

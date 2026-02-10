@@ -33,9 +33,9 @@
                 <field name="work_date"/>
                 <field name="employee_id"/>
                 <field name="tickets"/>
-                <field name="total_hours" widget="float_time"/>
                 <field name="billable_hours" widget="float_time"/>
                 <field name="non_billable_hours" widget="float_time"/>
+                <field name="total_hours" widget="float_time"/>
             </tree>
         </field>
     </record>
@@ -49,13 +49,13 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="employee_id"/>
+                            <field name="employee_id" required="1"/>
                             <field name="billable_hours" widget="float_time"/>
-                            <field name="tickets"/>
+                            <field name="non_billable_hours" widget="float_time"/>
                         </group>
                         <group>
-                            <field name="work_date"/>
-                            <field name="non_billable_hours" widget="float_time"/>
+                            <field name="work_date" required="1"/>
+                            <field name="tickets"/>
                             <field name="total_hours" widget="float_time"/>
                         </group>
                     </group>
