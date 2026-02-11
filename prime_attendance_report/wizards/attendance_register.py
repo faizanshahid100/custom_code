@@ -90,24 +90,21 @@ class EmployeeAttendanceRegister(models.TransientModel):
                 check_out = rec.check_out + timedelta(hours=5) if rec.check_out else None
 
             if check_in and check_out:
-                # Use UTC check-in date for consistency
-                utc_date = rec.check_in.date()
-                if self.start_date <= utc_date <= self.end_date:
+                local_date = check_in.date()
+                if self.start_date <= local_date <= self.end_date:
                     work_hours = round(rec.worked_hours, 1)
                     data.append({
-                        'date': utc_date.day,
-                        'month': utc_date.month,
-                        'year': utc_date.year,
+                        'date': local_date.day,
+                        'month': local_date.month,
+                        'year': local_date.year,
                         'state': work_hours,
                         'employee': rec.employee_id.id,
                         'department': rec.employee_id.department_id.id,
                     })
-                    _logger.info(f"Employee {rec.employee_id.id}: {rec.check_in} UTC → Date: {utc_date}")
+                    _logger.info(f"Employee {rec.employee_id.id}: {check_in}  Date: {local_date}")
 
         _logger.info(f"Total processed records: {len(data)}")
         return self.remove_lower_state_duplicates(data)
-        # res_list = [i for n, i in enumerate(data) if i not in data[n + 1:]]
-        # return res_list
 
     def calculate_employee_fix_off_days(self, emp, start_date, end_date):
         if not emp.resource_calendar_id:
