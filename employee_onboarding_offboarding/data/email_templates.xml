@@ -179,7 +179,8 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,misbah.yasir@primesystemsolutions.com,{{object.offer_submitter_id.login}}
+        <field name="email_cc">
+            sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,misbah.yasir@primesystemsolutions.com,{{object.offer_submitter_id.login}}
         </field>
         <field name="body_html" type="html">
             <p>Dear
@@ -221,7 +222,9 @@
                     <t t-out="
                         'Hybrid (%s)' % ', '.join(object.onsite_day_ids.mapped('name'))
                         if object.work_location == 'hybrid'
-                        else dict(onsite='Onsite, Lahore', remote='Remote').get(object.work_location, '')
+                        else ('Onsite, %s' % object.work_city if object.work_location == 'onsite'
+                              else 'Remote' if object.work_location == 'remote'
+                              else '')
                     "/>
                 </li>
                 <li>
@@ -331,7 +334,8 @@
         <field name="email_from">hr@primesystemsolutions.com</field>
         <field name="subject">Offer Letter - Prime System Solutions</field>
         <field name="email_to">{{object.personal_email}}</field>
-        <field name="email_cc">sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,{{object.offer_submitter_id.login}}
+        <field name="email_cc">
+            sadia.hamid@primesystemsolutions.com,umair.zafar@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,{{object.offer_submitter_id.login}}
         </field>
         <field name="body_html" type="html">
             <p>Dear
