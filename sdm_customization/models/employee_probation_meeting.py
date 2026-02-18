@@ -240,6 +240,8 @@ class EmployeeProbationMeeting(models.Model):
     # Long-Term Alignment
     what_success_look_like = fields.Text(string='What would “success” look like for you over the next 12 months?')
 
+    notes = fields.Html(string='Notes')
+
 
     def action_resolve(self):
         """Mark record as Completed"""

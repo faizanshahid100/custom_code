@@ -248,6 +248,9 @@
                             <br/>
                             <field name="is_mail_sent" widget="boolean_toggle" invisible="1"/>
                         </page>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Type '/' for commands"/>
+                        </page>
 
                         <!--                        <page string="Send Reason Email">-->
                         <!--                            <group>-->
