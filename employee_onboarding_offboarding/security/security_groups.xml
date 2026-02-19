@@ -16,7 +16,8 @@
     <record id="group_onboarding_offboarding_admin" model="res.groups">
         <field name="name">Onboarding/Offboarding Admin</field>
         <field name="category_id" ref="employee_onboarding_offboarding.onboarding_offboarding_category_id"/>
-        <field name="implied_ids" eval="[(4, ref('employee_onboarding_offboarding.group_onboarding_offboarding_user'))]"/>
+        <field name="implied_ids"
+               eval="[(4, ref('employee_onboarding_offboarding.group_onboarding_offboarding_user'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
     <record id="group_ceo" model="res.groups">
@@ -79,5 +80,11 @@
         <field name="model_id" ref="model_checklist_requests"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('employee_onboarding_offboarding.group_onboarding_offboarding_admin'))]"/>
+    </record>
+    <record id="hr_offer_admin_rule" model="ir.rule">
+        <field name="name">HR Offer Admin: All Records</field>
+        <field name="model_id" ref="model_hr_offer"/>
+        <field name="groups" eval="[(4, ref('employee_onboarding_offboarding.group_onboarding_offboarding_admin'))]"/>
+        <field name="domain_force">[(1,'=',1)]</field>
     </record>
 </odoo>

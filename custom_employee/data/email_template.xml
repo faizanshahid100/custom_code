@@ -8,7 +8,7 @@
             <field name="subject">Probation Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
             <field name="email_to">myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
-            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,joshua.barros@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
 
@@ -66,7 +66,7 @@
             <field name="subject">1-Month Milestone: {{ object.name }}</field>
             <field name="email_from">hr@primesystemsolutions.com</field>
             <field name="email_to">myle.gruet@primesystemsolutions.com,ashar.muzaffar@primesystemsolutions.com,ahmad.yar@primesystemsolutions.com</field>
-            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com</field>
+            <field name="email_cc">sadia.hamid@primesystemsolutions.com,salman@primesystemsolutions.com,adnan@primesystemsolutions.com,daniyal.ahmed@primesystemsolutions.com,hassan.zia@primesystemsolutions.com,sharo.domingo@primesystemsolutions.com,patricia.reyes@primesystemsolutions.com,joshua.barros@primesystemsolutions.com</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <t t-set="anniversary_date" t-value="object.joining_date + relativedelta(months=1)"/>

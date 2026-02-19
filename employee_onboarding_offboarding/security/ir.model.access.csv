@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_offer,hr.offer.user,model_hr_offer,,1,1,1,1
+access_hr_offer,hr.offer.user,model_hr_offer,employee_onboarding_offboarding.group_onboarding_offboarding_admin,1,1,1,1
 access_hr_offer_sendback_wizard,hr.offer.sendback.wizard,model_hr_offer_sendback_wizard,,1,1,1,1
 
 access_employee_onboard_admin,access_employee.onboard,model_employee_onboard,employee_onboarding_offboarding.group_onboarding_offboarding_admin,1,1,1,1
