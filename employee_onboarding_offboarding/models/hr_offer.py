@@ -43,7 +43,7 @@ class HrOffer(models.Model):
         string='Candidate CV(Documents)',
         help="Upload CV and documents related to the Candidate"
     )
-    candidate_cv = fields.Binary("Candidate CV", tracking=True)
+    candidate_cv = fields.Binary("Candidate CV")
 
     # Client Assignment
     client_id = fields.Many2one("res.partner", string="Client", required=True, domain="[('is_company','=',True)]", tracking=True)
