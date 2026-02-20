@@ -82,6 +82,9 @@
                     <button name="action_reject" type="object" string="Reject" class="btn-danger"
                             states="submitted,approved,send_offer"
                             groups="employee_onboarding_offboarding.group_ceo"/>
+                    <button name="action_revert_to_new" type="object" string="Revert to New" class="btn-danger"
+                            states="submitted,approved,send_offer,send_contract"
+                            groups="employee_onboarding_offboarding.group_onboarding_offboarding_admin"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,modification,approved,rejected"/>
                 </header>

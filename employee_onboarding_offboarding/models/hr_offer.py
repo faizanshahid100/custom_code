@@ -496,6 +496,9 @@ class HrOffer(models.Model):
     def action_reject(self):
         self.write({"state": "rejected"})
 
+    def action_revert_to_new(self):
+        self.write({"state": "draft"})
+
     def request_official_email(self):
         for record in self:
             # Get IT Support users
