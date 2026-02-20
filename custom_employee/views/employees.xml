@@ -132,6 +132,7 @@
                         <group>
                             <group name="attachment" string="Attachments">
                                 <field name="attachment_ids" widget="many2many_binary"/>
+                                <field name="candidate_cv"/>
                             </group>
                             <group string="HR Probation Feedback" name="hr_probation_feedback">
                                 <field name="hr_probation_feedback"/>

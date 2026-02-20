@@ -129,6 +129,7 @@ class HREmployeeInherit(models.Model):
         string='Employee Documents',
         help="Upload multiple documents related to the employee"
     )
+    candidate_cv = fields.Binary("Candidate CV", tracking=True)
 
     @api.model
     def create(self, vals):

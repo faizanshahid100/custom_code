@@ -112,6 +112,7 @@
                             <field name="probation_period"
                                    attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                             <field name="attachment_ids" widget="many2many_binary"/>
+                            <field name="candidate_cv"/>
                         </group>
 
                         <group string="Client Assignment">

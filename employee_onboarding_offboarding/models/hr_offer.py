@@ -43,6 +43,7 @@ class HrOffer(models.Model):
         string='Candidate CV(Documents)',
         help="Upload CV and documents related to the Candidate"
     )
+    candidate_cv = fields.Binary("Candidate CV", tracking=True)
 
     # Client Assignment
     client_id = fields.Many2one("res.partner", string="Client", required=True, domain="[('is_company','=',True)]", tracking=True)
@@ -128,8 +129,8 @@ class HrOffer(models.Model):
 
     # Workflow Actions
     def action_submit(self):
-        if not self.attachment_ids:
-            raise ValidationError('Candidate CV/Documents are mandatory. Please attach a CV or related documents.')
+        if not self.candidate_cv:
+            raise ValidationError('Candidate CV are mandatory. Please attach a CV or related documents.')
         self.write({
             "state": "submitted",
             "offer_submitter_id":self.env.user.id
