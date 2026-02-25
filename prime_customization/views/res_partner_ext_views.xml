@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_res_partner_form_ext" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='contact_addresses']//field[@name='child_ids']//form//field[@name='email']" position="after">
+                <field name="designation"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_generate_members_report" string="Generate Members Report" type="object" class="oe_highlight"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_generate_members_report" model="ir.actions.server">
+        <field name="name">Generate Members Report</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_generate_members_report()</field>
+    </record>
+</odoo>
