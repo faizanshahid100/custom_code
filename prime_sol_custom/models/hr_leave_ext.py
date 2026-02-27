@@ -143,57 +143,57 @@ class HrLeaveExt(models.Model):
 
         return record
 
-    @api.constrains('request_date_from', 'request_date_to', 'holiday_status_id')
-    def _check_leave_constraints(self):
-        today = fields.Date.today()
-
-        for leave in self:
-            employee = leave.employee_id
-            leave_type = leave.holiday_status_id.name.strip().lower()
-
-            if not leave.request_date_from or not leave.request_date_to:
-                continue
-
-            # PK Parental Leaves
-            if leave_type == 'pk parental leaves':
-                if employee.gender == 'male' and leave.number_of_days_display > 3:
-                    raise ValidationError(_("Paternity Leaves cannot exceed 3 days."))
-
-                if employee.gender == 'female':
-                    if leave.number_of_days_display > 45:
-                        raise ValidationError(_("Maternity Leaves cannot exceed 45 days."))
-
-                    if employee.joining_date and (leave.request_date_from - employee.joining_date).days < 180:
-                        raise ValidationError(
-                            _("Employee must have completed 6 months of service for Maternity Leave.")
-                        )
-
-            # Standard Time-Off (ERP Manager exemption applies ONLY here)
-            elif leave_type == 'standard time-off':
-
-                # ERP Manager → no restriction
-                if self.env.user.has_group('base.group_erp_manager'):
-                    continue
-
-                # 1️⃣ Single-day leave → 48 hours before or after
-                if leave.number_of_days_display == 1:
-                    allowed_last_date = leave.request_date_from + timedelta(days=2)
-
-                    if today > allowed_last_date:
-                        raise ValidationError(
-                            _("Single-day leave must be applied before or within 48 hours after availing the leave.")
-                        )
-
-                # 2️⃣ More than 1 day → 2 weeks in advance
-                elif leave.number_of_days_display > 1 and (leave.request_date_from - today).days < 14:
-                    raise ValidationError(
-                        _("More than 1 day leave must be applied at least 2 weeks in advance.")
-                    )
-
-            # Bereavement Leaves
-            elif leave_type == 'bereavement leaves':
-                if leave.number_of_days_display > 3:
-                    raise ValidationError(_("Bereavement Leaves cannot exceed 3 days."))
+    # @api.constrains('request_date_from', 'request_date_to', 'holiday_status_id')
+    # def _check_leave_constraints(self):
+    #     today = fields.Date.today()
+    #
+    #     for leave in self:
+    #         employee = leave.employee_id
+    #         leave_type = leave.holiday_status_id.name.strip().lower()
+    #
+    #         if not leave.request_date_from or not leave.request_date_to:
+    #             continue
+    #
+    #         # PK Parental Leaves
+    #         if leave_type == 'pk parental leaves':
+    #             if employee.gender == 'male' and leave.number_of_days_display > 3:
+    #                 raise ValidationError(_("Paternity Leaves cannot exceed 3 days."))
+    #
+    #             if employee.gender == 'female':
+    #                 if leave.number_of_days_display > 45:
+    #                     raise ValidationError(_("Maternity Leaves cannot exceed 45 days."))
+    #
+    #                 if employee.joining_date and (leave.request_date_from - employee.joining_date).days < 180:
+    #                     raise ValidationError(
+    #                         _("Employee must have completed 6 months of service for Maternity Leave.")
+    #                     )
+    #
+    #         # Standard Time-Off (ERP Manager exemption applies ONLY here)
+    #         elif leave_type == 'standard time-off':
+    #
+    #             # ERP Manager → no restriction
+    #             if self.env.user.has_group('base.group_erp_manager'):
+    #                 continue
+    #
+    #             # 1️⃣ Single-day leave → 48 hours before or after
+    #             if leave.number_of_days_display == 1:
+    #                 allowed_last_date = leave.request_date_from + timedelta(days=2)
+    #
+    #                 if today > allowed_last_date:
+    #                     raise ValidationError(
+    #                         _("Single-day leave must be applied before or within 48 hours after availing the leave.")
+    #                     )
+    #
+    #             # 2️⃣ More than 1 day → 2 weeks in advance
+    #             elif leave.number_of_days_display > 1 and (leave.request_date_from - today).days < 14:
+    #                 raise ValidationError(
+    #                     _("More than 1 day leave must be applied at least 2 weeks in advance.")
+    #                 )
+    #
+    #         # Bereavement Leaves
+    #         elif leave_type == 'bereavement leaves':
+    #             if leave.number_of_days_display > 3:
+    #                 raise ValidationError(_("Bereavement Leaves cannot exceed 3 days."))
 
     def action_approve(self):
         res = super(HrLeaveExt, self).action_approve()
