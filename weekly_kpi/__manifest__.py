@@ -15,7 +15,7 @@
         Records are auto-generated every Monday via scheduled action.
     """,
     'category': 'Human Resources',
-    'author': 'Custom',
+    'author': 'Farooq Butt',
     'depends': [
         'hr',
         'mail',
@@ -27,6 +27,7 @@
         'data/cron.xml',
         'views/weekly_kpi_views.xml',
         'views/weekly_business_kpi_views.xml',
+        'views/attendance_percentage_views.xml',
     ],
     'installable': True,
     'application': True,

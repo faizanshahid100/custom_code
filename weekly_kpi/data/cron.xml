@@ -28,5 +28,17 @@
             <field name="nextcall">2026-03-02 00:10:00</field>
             <field name="user_id" ref="base.user_root"/>
         </record>
+        <record id="ir_cron_generate_attendance_percentage" model="ir.cron">
+            <field name="name">Generate Last Week Attendance Percentage</field>
+            <field name="model_id" ref="model_attendance_percentage"/>
+            <field name="state">code</field>
+            <field name="code">model.generate_last_week()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="nextcall">2026-03-02 01:00:00</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
     </data>
 </odoo>

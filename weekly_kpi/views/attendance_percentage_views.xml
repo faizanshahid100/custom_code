@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         LIST VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_attendance_percentage_list" model="ir.ui.view">
+        <field name="name">attendance.percentage.list</field>
+        <field name="model">attendance.percentage</field>
+        <field name="arch" type="xml">
+            <tree string="Weekly Attendance Percentage"
+                  decoration-success="status == 'full'"
+                  decoration-info="status == 'partial'"
+                  decoration-danger="status == 'absent'"
+                  decoration-muted="status == 'no_data'">
+
+                <field name="week_of_year"      string="Week"/>
+                <field name="year"              string="Year"/>
+                <field name="week_start_date"   string="Week Start"/>
+                <field name="week_end_date"     string="Week End"/>
+                <field name="employee_id"       string="Employee"/>
+                <field name="department_id"     string="Department"/>
+                <field name="country_id"        string="Country"/>
+                <field name="working_days"      string="Working Days"/>
+                <field name="first_check_in"    string="Check-In (Mon)"/>
+                <field name="attendance_count"  string="Attendance Count"/>
+                <field name="time_off_count"    string="Time-Off Count"/>
+                <field name="total_present"     string="Total (Att.+Leave)"/>
+                <field name="attendance_pct"    string="Attendance %" widget="float"/>
+                <field name="status"            string="Status"/>
+
+                <!-- hidden for decorations -->
+                <field name="status" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         FORM VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_attendance_percentage_form" model="ir.ui.view">
+        <field name="name">attendance.percentage.form</field>
+        <field name="model">attendance.percentage</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Attendance Percentage">
+                <header>
+                    <button name="action_refresh"
+                            string="Refresh"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="absent,partial,full"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+
+                    <!-- Compulsory fields -->
+                    <group>
+                        <group string="Employee">
+                            <field name="employee_id"/>
+                            <field name="department_id" readonly="1"/>
+                            <field name="country_id"    readonly="1"/>
+                        </group>
+                        <group string="Week Period">
+                            <field name="week_start_date"/>
+                            <field name="week_end_date"  readonly="1"/>
+                            <field name="week_of_year"   readonly="1"/>
+                            <field name="year"           readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Attendance Data -->
+                    <group string="Attendance Data">
+                        <group string="Schedule">
+                            <field name="working_days"     readonly="1"/>
+                            <field name="first_check_in"   readonly="1"/>
+                        </group>
+                        <group string="Counts">
+                            <field name="attendance_count" readonly="1"/>
+                            <field name="time_off_count"   readonly="1"/>
+                            <field name="total_present"    readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Summary -->
+                    <group string="Summary">
+                        <group>
+                            <field name="attendance_pct"
+                                   readonly="1"
+                                   string="Attendance %"
+                                   widget="float"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SEARCH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_attendance_percentage_search" model="ir.ui.view">
+        <field name="name">attendance.percentage.search</field>
+        <field name="model">attendance.percentage</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="country_id"/>
+                <field name="week_of_year"/>
+                <field name="year"/>
+                <separator/>
+                <filter string="Full (100%)"  name="full"    domain="[('status','=','full')]"/>
+                <filter string="Partial"      name="partial" domain="[('status','=','partial')]"/>
+                <filter string="Absent"       name="absent"  domain="[('status','=','absent')]"/>
+                <filter string="No Data"      name="no_data" domain="[('status','=','no_data')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee"   name="by_emp"     context="{'group_by': 'employee_id'}"/>
+                    <filter string="Department" name="by_dept"    context="{'group_by': 'department_id'}"/>
+                    <filter string="Country"    name="by_country" context="{'group_by': 'country_id'}"/>
+                    <filter string="Week"       name="by_week"    context="{'group_by': 'week_of_year'}"/>
+                    <filter string="Year"       name="by_year"    context="{'group_by': 'year'}"/>
+                    <filter string="Status"     name="by_status"  context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         PIVOT VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_attendance_percentage_pivot" model="ir.ui.view">
+        <field name="name">attendance.percentage.pivot</field>
+        <field name="model">attendance.percentage</field>
+        <field name="arch" type="xml">
+            <pivot string="Attendance % Pivot" disable_linking="True">
+                <field name="employee_id"    type="row"/>
+                <field name="week_of_year"   type="col"/>
+                <field name="attendance_pct" type="measure"/>
+                <field name="working_days"   type="measure"/>
+                <field name="attendance_count" type="measure"/>
+                <field name="time_off_count"   type="measure"/>
+                <field name="total_present"    type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         GRAPH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_attendance_percentage_graph" model="ir.ui.view">
+        <field name="name">attendance.percentage.graph</field>
+        <field name="model">attendance.percentage</field>
+        <field name="arch" type="xml">
+            <graph string="Attendance %" type="bar" stacked="False">
+                <field name="employee_id"    type="row"/>
+                <field name="attendance_pct" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         ACTION + MENUS
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="action_attendance_percentage" model="ir.actions.act_window">
+        <field name="name">Weekly Attendance Percentage</field>
+        <field name="res_model">attendance.percentage</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_attendance_percentage_search"/>
+        <field name="context">{'search_default_last_week': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No attendance records yet.</p>
+            <p>Records are auto-generated every Monday for the previous week.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_attendance_percentage_root"
+              name="Attendance Reports"
+              groups="sdm_customization.group_sdm"
+              sequence="91"/>
+    <menuitem id="menu_attendance_percentage"
+              name="Weekly Attendance %"
+              parent="menu_attendance_percentage_root"
+              action="action_attendance_percentage"
+              sequence="1"/>
+
+</odoo>

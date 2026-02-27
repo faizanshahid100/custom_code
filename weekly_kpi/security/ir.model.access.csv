@@ -3,3 +3,5 @@ access_weekly_kpi_manager,weekly.kpi.manager,model_weekly_kpi,hr.group_hr_manage
 access_weekly_kpi_user,weekly.kpi.user,model_weekly_kpi,base.group_user,1,0,0,0
 access_weekly_business_kpi_manager,weekly.business.kpi.manager,model_weekly_business_kpi,hr.group_hr_manager,1,1,1,1
 access_weekly_business_kpi_user,weekly.business.kpi.user,model_weekly_business_kpi,base.group_user,1,0,0,0
+access_attendance_percentage_manager,attendance.percentage.manager,model_attendance_percentage,hr.group_hr_manager,1,1,1,1
+access_attendance_percentage_user,attendance.percentage.user,model_attendance_percentage,base.group_user,1,0,0,0
