@@ -39,7 +39,7 @@ class DailyProgress(models.Model):
     ticket_percentage = fields.Float(string='Weekly Ticket %')
 
     avg_resolution_time = fields.Integer(string='Avg. Resolution Time (min.)')
-    csat_new = fields.Float(string='CSAT %')
+    csat_new = fields.Float(string='Call %')
     billable_hours = fields.Float(string='Billable Hours %')
     non_billable_hours = fields.Float(string='Non-Billable Hours %', compute='_compute_non_billable_hours', store=True)
     no_calls_duration = fields.Integer(string='Number of Calls Attended')

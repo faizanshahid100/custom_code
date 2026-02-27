@@ -67,8 +67,9 @@ class HREmployeeInherit(models.Model):
     rotation_based = fields.Char(string="Rotation Based")
     pss_group = fields.Selection([
         ('technical', 'Technical'),
-        ('non_technical', 'Non-Technical'),
-    ], string='PSS Group')
+        ('non_technical', 'Business'),
+        ("management", "Management"),
+    ], string='PSS Group', required=1)
     emp_contract_type = fields.Char(string="Rotation Based")
     contract_start = fields.Date(string="Contract Start")
     client_joining_date = fields.Date(string="Joining Date Client")

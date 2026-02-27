@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         LIST VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_kpi_list" model="ir.ui.view">
+        <field name="name">weekly.kpi.list</field>
+        <field name="model">weekly.kpi</field>
+        <field name="arch" type="xml">
+            <tree string="Weekly KPI Achievement"
+                  decoration-success="total_kpi_score == 100"
+                  decoration-info="total_kpi_score &gt;= 90 and total_kpi_score &lt; 100"
+                  decoration-warning="total_kpi_score &gt;= 80 and total_kpi_score &lt; 90"
+                  decoration-danger="total_kpi_score &gt; 0 and total_kpi_score &lt; 80">
+
+                <field name="week_of_year"        string="Week"/>
+                <field name="year_of_kpi"         string="Year"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="active_target_count"  string="# Targets"/>
+                <field name="weight_per_target"    string="Weight/Target %" optional="hide"/>
+                <field name="working_days_count"   string="Days"/>
+
+                <!-- Hidden flags -->
+                <field name="active_ticket_resolved"     invisible="1"/>
+                <field name="active_cast"                invisible="1"/>
+                <field name="active_avg_resolution_time" invisible="1"/>
+                <field name="active_billable_hours"      invisible="1"/>
+
+                <!-- Tickets Resolved -->
+                <field name="target_ticket_resolved"
+                       optional="show"
+                       attrs="{'invisible': [('active_ticket_resolved','=',False)]}"/>
+                <field name="achieved_ticket_resolved"
+                       optional="show"
+                       attrs="{'invisible': [('active_ticket_resolved','=',False)]}"/>
+                <field name="pct_ticket_resolved"
+                       string="Tickets Score %"
+                       attrs="{'invisible': [('active_ticket_resolved','=',False)]}"/>
+
+                <!-- CAST / Calls -->
+                <field name="target_cast"
+                       optional="show"
+                       attrs="{'invisible': [('active_cast','=',False)]}"/>
+                <field name="achieved_cast"
+                       optional="show"
+                       attrs="{'invisible': [('active_cast','=',False)]}"/>
+                <field name="pct_cast"
+                       string="Calls Score %"
+                       attrs="{'invisible': [('active_cast','=',False)]}"/>
+
+                <!-- Avg Resolution Time -->
+                <field name="target_avg_resolution_time"
+                       optional="show"
+                       attrs="{'invisible': [('active_avg_resolution_time','=',False)]}"/>
+                <field name="achieved_avg_resolution_time"
+                       optional="show"
+                       attrs="{'invisible': [('active_avg_resolution_time','=',False)]}"/>
+                <field name="pct_avg_resolution_time"
+                       string="Response Time Score %"
+                       attrs="{'invisible': [('active_avg_resolution_time','=',False)]}"/>
+
+                <!-- Billable Hours -->
+                <field name="target_billable_hours"
+                       optional="show"
+                       attrs="{'invisible': [('active_billable_hours','=',False)]}"/>
+                <field name="achieved_billable_hours"
+                       optional="show"
+                       attrs="{'invisible': [('active_billable_hours','=',False)]}"/>
+                <field name="pct_billable_hours"
+                       string="Billable Score %"
+                       attrs="{'invisible': [('active_billable_hours','=',False)]}"/>
+
+                <field name="alert_tickets"   optional="hide"/>
+                <field name="total_kpi_score" string="Total KPI %"/>
+                <field name="kpi_grade"       string="Grade"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         FORM VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_kpi_form" model="ir.ui.view">
+        <field name="name">weekly.kpi.form</field>
+        <field name="model">weekly.kpi</field>
+        <field name="arch" type="xml">
+            <form string="Weekly KPI Achievement">
+                <header>
+                    <button name="action_refresh"
+                            string="Refresh Scores"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                        <h3><field name="kpi_grade" readonly="1"/></h3>
+                    </div>
+
+                    <group>
+                        <group string="Employee">
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group string="Week Period">
+                            <field name="week_start_date"/>
+                            <field name="week_end_date"    readonly="1"/>
+                            <field name="week_of_year"     readonly="1"/>
+                            <field name="year_of_kpi"      readonly="1"/>
+                            <field name="working_days_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Target Weighting">
+                            <field name="active_target_count" readonly="1"/>
+                            <field name="weight_per_target"   readonly="1"/>
+                            <field name="alert_tickets"       readonly="1"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="manager_note"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="KPI Scores">
+                            <group>
+                                <!-- Tickets Resolved -->
+                                <group string="Tickets Resolved"
+                                       attrs="{'invisible': [('active_ticket_resolved','=',False)]}">
+                                    <field name="active_ticket_resolved" invisible="1"/>
+                                    <field name="target_ticket_resolved"   readonly="1"/>
+                                    <field name="achieved_ticket_resolved" readonly="1"/>
+                                    <field name="pct_ticket_resolved" string="Weighted Score (%)" readonly="1"/>
+                                </group>
+
+                                <!-- Calls % -->
+                                <group string="Calls %"
+                                       attrs="{'invisible': [('active_cast','=',False)]}">
+                                    <field name="active_cast" invisible="1"/>
+                                    <field name="target_cast"   readonly="1"/>
+                                    <field name="achieved_cast" readonly="1"/>
+                                    <field name="pct_cast" string="Weighted Score (%)" readonly="1"/>
+                                </group>
+                            </group>
+
+                            <group>
+                                <!-- Response Time -->
+                                <group string="Response Time %"
+                                       attrs="{'invisible': [('active_avg_resolution_time','=',False)]}">
+                                    <field name="active_avg_resolution_time" invisible="1"/>
+                                    <field name="target_avg_resolution_time"   readonly="1"/>
+                                    <field name="achieved_avg_resolution_time" readonly="1"/>
+                                    <field name="pct_avg_resolution_time" string="Weighted Score (%)" readonly="1"/>
+                                </group>
+
+                                <!-- Billable Hours -->
+                                <group string="Billable Hours %"
+                                       attrs="{'invisible': [('active_billable_hours','=',False)]}">
+                                    <field name="active_billable_hours" invisible="1"/>
+                                    <field name="target_billable_hours"   readonly="1"/>
+                                    <field name="achieved_billable_hours" string="Avg Billable % This Week" readonly="1"/>
+                                    <field name="pct_billable_hours" string="Weighted Score (%)" readonly="1"/>
+                                </group>
+                            </group>
+
+                            <group>
+                                <group string="Total KPI Score">
+                                    <field name="total_kpi_score" string="Total Score (%)" readonly="1"/>
+                                    <field name="kpi_grade" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SEARCH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_kpi_search" model="ir.ui.view">
+        <field name="name">weekly.kpi.search</field>
+        <field name="model">weekly.kpi</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="week_of_year"/>
+                <field name="year_of_kpi"/>
+                <separator/>
+                <filter string="Excellent (100%)"  name="excellent" domain="[('total_kpi_score','=',100)]"/>
+                <filter string="Good (90-99%)"     name="good"      domain="[('total_kpi_score','&gt;=',90),('total_kpi_score','&lt;',100)]"/>
+                <filter string="Average (80-89%)"  name="avg"       domain="[('total_kpi_score','&gt;=',80),('total_kpi_score','&lt;',90)]"/>
+                <filter string="Below Target"      name="below"     domain="[('total_kpi_score','&gt;',0),('total_kpi_score','&lt;',80)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee"   name="by_emp"   context="{'group_by':'employee_id'}"/>
+                    <filter string="Department" name="by_dept"  context="{'group_by':'department_id'}"/>
+                    <filter string="Week"       name="by_week"  context="{'group_by':'week_of_year'}"/>
+                    <filter string="Year"       name="by_year"  context="{'group_by':'year_of_kpi'}"/>
+                    <filter string="Grade"      name="by_grade" context="{'group_by':'kpi_grade'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         PIVOT VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_kpi_pivot" model="ir.ui.view">
+        <field name="name">weekly.kpi.pivot</field>
+        <field name="model">weekly.kpi</field>
+        <field name="arch" type="xml">
+            <pivot string="KPI Pivot" disable_linking="True">
+                <field name="employee_id"  type="row"/>
+                <field name="week_of_year" type="col"/>
+                <field name="total_kpi_score"         type="measure"/>
+                <field name="pct_ticket_resolved"     type="measure"/>
+                <field name="pct_cast"                type="measure"/>
+                <field name="pct_avg_resolution_time" type="measure"/>
+                <field name="pct_billable_hours"      type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         GRAPH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_kpi_graph" model="ir.ui.view">
+        <field name="name">weekly.kpi.graph</field>
+        <field name="model">weekly.kpi</field>
+        <field name="arch" type="xml">
+            <graph string="KPI Scores" type="bar" stacked="False">
+                <field name="employee_id"     type="row"/>
+                <field name="total_kpi_score" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         ACTION + MENUS
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="action_weekly_kpi" model="ir.actions.act_window">
+        <field name="name">Weekly KPI Achievement</field>
+        <field name="res_model">weekly.kpi</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_weekly_kpi_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No KPI records yet.</p>
+            <p>Click <strong>New</strong> to create a record manually, or run the scheduled action to auto-generate for the current week.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_weekly_kpi_root"
+              name="Weekly KPI"
+              groups="sdm_customization.group_sdm"
+              sequence="90"/>
+    <menuitem id="menu_weekly_kpi_list"
+              name="KPI Achievement"
+              parent="menu_weekly_kpi_root"
+              action="action_weekly_kpi"
+              sequence="1"/>
+
+</odoo>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         LIST VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_business_kpi_list" model="ir.ui.view">
+        <field name="name">weekly.business.kpi.list</field>
+        <field name="model">weekly.business.kpi</field>
+        <field name="arch" type="xml">
+            <tree string="Weekly Business KPI Tracker"
+                  decoration-success="filing_status == 'filed'"
+                  decoration-danger="filing_status == 'not_filed'">
+
+                <field name="week_of_year"   string="Week"/>
+                <field name="year_of_kpi"    string="Year"/>
+                <field name="week_start_date" string="Week Start"/>
+                <field name="week_end_date"   string="Week End"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="filing_status"  string="Status"/>
+                <field name="filed_date"     string="Filed On"
+                       attrs="{'invisible': [('kpi_filed', '=', False)]}"/>
+                <field name="business_kpi_id" string="KPI Record"
+                       attrs="{'invisible': [('kpi_filed', '=', False)]}"/>
+                <field name="kpi_filed" invisible="1"/>
+                <button name="action_open_business_kpi"
+                        string="View KPI"
+                        type="object"
+                        icon="fa-external-link"
+                        attrs="{'invisible': [('kpi_filed', '=', False)]}"/>
+                <button name="action_refresh"
+                        string="Refresh"
+                        type="object"
+                        icon="fa-refresh"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         FORM VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_business_kpi_form" model="ir.ui.view">
+        <field name="name">weekly.business.kpi.form</field>
+        <field name="model">weekly.business.kpi</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Business KPI">
+                <header>
+                    <button name="action_refresh"
+                            string="Refresh Status"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"/>
+                    <button name="action_open_business_kpi"
+                            string="View Filed KPI"
+                            type="object"
+                            icon="fa-external-link"
+                            attrs="{'invisible': [('kpi_filed', '=', False)]}"/>
+                    <!-- Status bar -->
+                    <field name="filing_status" widget="statusbar"
+                           statusbar_visible="not_filed,filed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name" readonly="1"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Employee">
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group string="Week Period">
+                            <field name="week_start_date"/>
+                            <field name="week_end_date"  readonly="1"/>
+                            <field name="week_of_year"   readonly="1"/>
+                            <field name="year_of_kpi"    readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Filed -->
+                    <group string="Filing Status"
+                           attrs="{'invisible': [('kpi_filed', '=', False)]}">
+                        <group>
+                            <field name="kpi_filed"      readonly="1"/>
+                            <field name="filed_date"     readonly="1"/>
+                            <field name="business_kpi_id" readonly="1" string="KPI Record"/>
+                        </group>
+                    </group>
+
+                    <!-- Not Filed -->
+                    <group string="Filing Status"
+                           attrs="{'invisible': [('kpi_filed', '=', True)]}">
+                        <div class="alert alert-warning" role="alert" style="margin:8px;">
+                            <strong>⚠ KPI Not Filed</strong> — This employee has not submitted
+                            their weekly KPI in <em>Daily Progress Business</em> for this week.
+                        </div>
+                        <field name="kpi_filed" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         SEARCH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_business_kpi_search" model="ir.ui.view">
+        <field name="name">weekly.business.kpi.search</field>
+        <field name="model">weekly.business.kpi</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="week_of_year"/>
+                <field name="year_of_kpi"/>
+                <separator/>
+                <filter string="Filed"     name="filed"     domain="[('filing_status', '=', 'filed')]"/>
+                <filter string="Not Filed" name="not_filed" domain="[('filing_status', '=', 'not_filed')]"/>
+                <separator/>
+                <filter string="This Week" name="this_week"
+                        domain="[('week_start_date', '=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee"   name="by_emp"    context="{'group_by': 'employee_id'}"/>
+                    <filter string="Department" name="by_dept"   context="{'group_by': 'department_id'}"/>
+                    <filter string="Week"       name="by_week"   context="{'group_by': 'week_of_year'}"/>
+                    <filter string="Year"       name="by_year"   context="{'group_by': 'year_of_kpi'}"/>
+                    <filter string="Status"     name="by_status" context="{'group_by': 'filing_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         GRAPH VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_business_kpi_graph" model="ir.ui.view">
+        <field name="name">weekly.business.kpi.graph</field>
+        <field name="model">weekly.business.kpi</field>
+        <field name="arch" type="xml">
+            <graph string="Business KPI Filing Status" type="bar">
+                <field name="department_id" type="row"/>
+                <field name="filing_status" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         PIVOT VIEW
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="view_weekly_business_kpi_pivot" model="ir.ui.view">
+        <field name="name">weekly.business.kpi.pivot</field>
+        <field name="model">weekly.business.kpi</field>
+        <field name="arch" type="xml">
+            <pivot string="Business KPI Filing" disable_linking="True">
+                <field name="employee_id"  type="row"/>
+                <field name="week_of_year" type="col"/>
+                <field name="kpi_filed"    type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         WINDOW ACTION
+    ══════════════════════════════════════════════════════════════════════ -->
+    <record id="action_weekly_business_kpi" model="ir.actions.act_window">
+        <field name="name">Weekly Business KPI Tracker</field>
+        <field name="res_model">weekly.business.kpi</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_weekly_business_kpi_search"/>
+        <field name="context">{'search_default_not_filed': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No records yet.</p>
+            <p>Records are auto-generated every Monday for all Business employees.
+               You can also run <strong>Generate Weekly Business KPI Tracker</strong>
+               from Settings → Technical → Scheduled Actions.</p>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         MENU  (reuses parent menu from weekly_kpi_views.xml)
+    ══════════════════════════════════════════════════════════════════════ -->
+    <menuitem id="menu_weekly_business_kpi"
+              name="Business KPI Tracker"
+              parent="menu_weekly_kpi_root"
+              action="action_weekly_business_kpi"
+              sequence="2"/>
+
+</odoo>

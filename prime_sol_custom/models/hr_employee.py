@@ -25,9 +25,10 @@ class HrEmployee(models.Model):
     d_no_of_call_attended = fields.Integer('No Of Call Attended')
 
     ticket_resolved = fields.Integer('Ticket Resolved')
-    avg_resolution_time = fields.Integer('Avg.Resolution Time')
-    CAST = fields.Integer('CAST %')
-    billable_hours = fields.Integer('Billable Hours')
+    alert_tickets = fields.Integer('Alert Tickets')
+    avg_resolution_time = fields.Float('Response Time %')
+    CAST = fields.Integer('Calls %')
+    billable_hours = fields.Integer('Billable Hours %')
 
     dayofweek = fields.Selection([
         ('0', 'Monday'),

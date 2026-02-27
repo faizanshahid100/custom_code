@@ -15,7 +15,10 @@
                 </field>
                 <xpath expr="//notebook/page[last()]" position="after">
                     <page string="Daily Target" name="daily_target">
-                        <group><field name="kpi_measurement"/></group>
+                        <group>
+                            <group><field name="kpi_measurement"/></group>
+                            <group><field name="pss_group"/></group>
+                        </group>
                         <group>
                             <group>
                                 <field name="d_ticket_resolved"/>
@@ -30,11 +33,16 @@
                     </page>
                     <page string="Weekly Target" name="weekly_target">
                         <group>
+                            <group><field name="kpi_measurement"/></group>
+                            <group><field name="pss_group"/></group>
+                        </group>
+                        <group string="Weekly Target">
                             <group>
                                 <field name="ticket_resolved"/>
-                                <field name="avg_resolution_time"/>
+                                <field name="alert_tickets"/>
                             </group>
                             <group>
+                                <field name="avg_resolution_time"/>
                                 <field name="CAST"/>
                                 <field name="billable_hours"/>
                             </group>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Tech employees: generate weekly KPI records every Monday at 00:05 -->
+        <record id="ir_cron_generate_weekly_kpi" model="ir.cron">
+            <field name="name">Generate Weekly KPI Records (Tech)</field>
+            <field name="model_id" ref="model_weekly_kpi"/>
+            <field name="state">code</field>
+            <field name="code">model.generate_for_week()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="nextcall">2026-03-02 00:05:00</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- Business employees: generate weekly tracker records every Monday at 00:10 -->
+        <record id="ir_cron_generate_weekly_business_kpi" model="ir.cron">
+            <field name="name">Generate Weekly Business KPI Tracker</field>
+            <field name="model_id" ref="model_weekly_business_kpi"/>
+            <field name="state">code</field>
+            <field name="code">model.generate_for_week()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="nextcall">2026-03-02 00:10:00</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

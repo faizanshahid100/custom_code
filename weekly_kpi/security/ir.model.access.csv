@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_weekly_kpi_manager,weekly.kpi.manager,model_weekly_kpi,hr.group_hr_manager,1,1,1,1
+access_weekly_kpi_user,weekly.kpi.user,model_weekly_kpi,base.group_user,1,0,0,0
+access_weekly_business_kpi_manager,weekly.business.kpi.manager,model_weekly_business_kpi,hr.group_hr_manager,1,1,1,1
+access_weekly_business_kpi_user,weekly.business.kpi.user,model_weekly_business_kpi,base.group_user,1,0,0,0
