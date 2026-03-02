@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════
+         Project Role
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_project_role_tree" model="ir.ui.view">
+        <field name="name">ceo.project.role.tree</field>
+        <field name="model">ceo.project.role</field>
+        <field name="arch" type="xml">
+            <tree string="Project Roles" editable="bottom">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ceo_project_role_form" model="ir.ui.view">
+        <field name="name">ceo.project.role.form</field>
+        <field name="model">ceo.project.role</field>
+        <field name="arch" type="xml">
+            <form string="Project Role">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ceo_project_role" model="ir.actions.act_window">
+        <field name="name">Project Roles</field>
+        <field name="res_model">ceo.project.role</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         Scope of Work
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_scope_work_tree" model="ir.ui.view">
+        <field name="name">ceo.scope.work.tree</field>
+        <field name="model">ceo.scope.work</field>
+        <field name="arch" type="xml">
+            <tree string="Scope of Work" editable="bottom">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ceo_scope_work_form" model="ir.ui.view">
+        <field name="name">ceo.scope.work.form</field>
+        <field name="model">ceo.scope.work</field>
+        <field name="arch" type="xml">
+            <form string="Scope of Work">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ceo_scope_work" model="ir.actions.act_window">
+        <field name="name">Scope of Work</field>
+        <field name="res_model">ceo.scope.work</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         KPI Deliverable
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_kpi_deliverable_tree" model="ir.ui.view">
+        <field name="name">ceo.kpi.deliverable.tree</field>
+        <field name="model">ceo.kpi.deliverable</field>
+        <field name="arch" type="xml">
+            <tree string="KPI Deliverables" editable="bottom">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ceo_kpi_deliverable_form" model="ir.ui.view">
+        <field name="name">ceo.kpi.deliverable.form</field>
+        <field name="model">ceo.kpi.deliverable</field>
+        <field name="arch" type="xml">
+            <form string="KPI Deliverable">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ceo_kpi_deliverable" model="ir.actions.act_window">
+        <field name="name">KPI Deliverables</field>
+        <field name="res_model">ceo.kpi.deliverable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         Kadence
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_kadence_tree" model="ir.ui.view">
+        <field name="name">ceo.kadence.tree</field>
+        <field name="model">ceo.kadence</field>
+        <field name="arch" type="xml">
+            <tree string="Kadence" editable="bottom">
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ceo_kadence_form" model="ir.ui.view">
+        <field name="name">ceo.kadence.form</field>
+        <field name="model">ceo.kadence</field>
+        <field name="arch" type="xml">
+            <form string="Kadence">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ceo_kadence" model="ir.actions.act_window">
+        <field name="name">Kadence</field>
+        <field name="res_model">ceo.kadence</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

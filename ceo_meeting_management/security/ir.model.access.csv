@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ceo_meeting,access_ceo_meeting,model_ceo_meeting,ceo_meeting_management.group_ceo_meeting_user,1,1,1,1
+access_ceo_project_role,access_ceo_project_role,model_ceo_project_role,ceo_meeting_management.group_ceo_meeting_user,1,1,1,1
+access_ceo_scope_work,access_ceo_scope_work,model_ceo_scope_work,ceo_meeting_management.group_ceo_meeting_user,1,1,1,1
+access_ceo_kpi_deliverable,access_ceo_kpi_deliverable,model_ceo_kpi_deliverable,ceo_meeting_management.group_ceo_meeting_user,1,1,1,1
+access_ceo_kadence,access_ceo_kadence,model_ceo_kadence,ceo_meeting_management.group_ceo_meeting_user,1,1,1,1

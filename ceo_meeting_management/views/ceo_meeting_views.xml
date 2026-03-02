@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════
+         Form View
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_meeting_form" model="ir.ui.view">
+        <field name="name">ceo.meeting.form</field>
+        <field name="model">ceo.meeting</field>
+        <field name="arch" type="xml">
+            <form string="CEO Meeting">
+                <sheet>
+
+                    <!-- ── 1. Basic Profile ── -->
+                    <group string="1. Basic Profile">
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="designation" readonly="1"/>
+                            <field name="client_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="reporting_manager_id" readonly="1"/>
+                            <field name="working_since" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- ── 2. Current Engagement ── -->
+                    <group string="2. Current Engagement">
+                        <field name="project_role_ids" widget="many2many_tags" colspan="2"/>
+                        <field name="scope_of_work_ids" widget="many2many_tags" colspan="2"/>
+                        <field name="kpi_deliverable_ids" widget="many2many_tags" colspan="2"/>
+                        <field name="kadence_ids" widget="many2many_tags" colspan="2"/>
+                    </group>
+
+                    <!-- ── 3. Performance Snapshot ── -->
+                    <group string="3. Performance Snapshot">
+                        <group>
+                            <field name="last_performance_rating"/>
+                            <field name="last_feedback"/>
+                            <field name="last_achievement"/>
+                        </group>
+                        <group>
+                            <field name="last_escalation"/>
+                            <field name="last_achievement_detail"/>
+                        </group>
+                    </group>
+
+                    <!-- ── 4. Touch Points History ── -->
+                    <group string="4. Touch Points History">
+                        <group string="CEO Interaction">
+                            <field name="last_ceo_interaction_date"/>
+                            <field name="last_ceo_interaction_summary"/>
+                        </group>
+                        <group string="Client Interaction">
+                            <field name="last_client_interaction_date"/>
+                            <field name="last_client_interaction_summary"/>
+                        </group>
+                        <group>
+                            <field name="internal_review_meeting" colspan="2"/>
+                        </group>
+                    </group>
+
+                    <!-- ── 5. Risk & Flags ── -->
+                    <group string="5. Risk &amp; Flags">
+                        <group>
+                            <field name="retention_risk"
+                                   decoration-danger="retention_risk == 'high'"
+                                   decoration-warning="retention_risk == 'medium'"
+                                   decoration-success="retention_risk == 'low'"/>
+                            <field name="performance_risk"/>
+                        </group>
+                        <group>
+                            <field name="client_satisfaction_status"
+                                   decoration-success="client_satisfaction_status == 'green'"
+                                   decoration-warning="client_satisfaction_status == 'yellow'"
+                                   decoration-danger="client_satisfaction_status == 'red'"/>
+                        </group>
+                    </group>
+
+                    <!-- ── 6. Meeting Objective ── -->
+                    <group string="6. Meeting Objective">
+                        <group>
+                            <field name="purpose_of_meeting"/>
+                            <field name="expected_outcome"/>
+                        </group>
+                        <group>
+                            <field name="key_questions_for_ceo"/>
+                            <field name="next_meeting_appointment"/>
+                        </group>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         Tree View
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_meeting_tree" model="ir.ui.view">
+        <field name="name">ceo.meeting.tree</field>
+        <field name="model">ceo.meeting</field>
+        <field name="arch" type="xml">
+            <tree string="CEO Meetings">
+                <field name="employee_id"/>
+                <field name="designation"/>
+                <field name="reporting_manager_id"/>
+                <field name="last_performance_rating"/>
+                <field name="retention_risk"
+                       decoration-danger="retention_risk == 'high'"
+                       decoration-warning="retention_risk == 'medium'"
+                       decoration-success="retention_risk == 'low'"
+                       widget="badge"/>
+                <field name="performance_risk" widget="badge"/>
+                <field name="client_satisfaction_status"
+                       decoration-success="client_satisfaction_status == 'green'"
+                       decoration-warning="client_satisfaction_status == 'yellow'"
+                       decoration-danger="client_satisfaction_status == 'red'"
+                       widget="badge"/>
+                <field name="next_meeting_appointment"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         Search View
+    ══════════════════════════════════════════ -->
+    <record id="view_ceo_meeting_search" model="ir.ui.view">
+        <field name="name">ceo.meeting.search</field>
+        <field name="model">ceo.meeting</field>
+        <field name="arch" type="xml">
+            <search string="Search CEO Meetings">
+                <field name="employee_id"/>
+                <field name="designation"/>
+                <field name="reporting_manager_id"/>
+                <separator/>
+                <filter name="filter_high_retention" string="High Retention Risk"
+                        domain="[('retention_risk', '=', 'high')]"/>
+                <filter name="filter_red_client" string="Red Client Satisfaction"
+                        domain="[('client_satisfaction_status', '=', 'red')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_retention" string="Retention Risk"
+                            context="{'group_by': 'retention_risk'}"/>
+                    <filter name="group_client_status" string="Client Satisfaction"
+                            context="{'group_by': 'client_satisfaction_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         Window Action
+    ══════════════════════════════════════════ -->
+    <record id="action_ceo_meeting" model="ir.actions.act_window">
+        <field name="name">CEO Meetings</field>
+        <field name="res_model">ceo.meeting</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_ceo_meeting_search"/>
+        <field name="groups_id" eval="[(4, ref('ceo_meeting_management.group_ceo_meeting_user'))]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first CEO Meeting record
+            </p>
+        </field>
+    </record>
+
+</odoo>

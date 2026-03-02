@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_ceo_meeting_root"
+              name="CEO Meeting Management"
+              sequence="90"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <!-- Meetings Menu -->
+    <menuitem id="menu_ceo_meeting_main"
+              name="Meetings"
+              parent="menu_ceo_meeting_root"
+              sequence="10"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <menuitem id="menu_ceo_meeting_list"
+              name="CEO Meetings"
+              parent="menu_ceo_meeting_main"
+              action="action_ceo_meeting"
+              sequence="10"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_ceo_meeting_config"
+              name="Configuration"
+              parent="menu_ceo_meeting_root"
+              sequence="90"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <menuitem id="menu_ceo_project_roles"
+              name="Project Roles"
+              parent="menu_ceo_meeting_config"
+              action="action_ceo_project_role"
+              sequence="10"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <menuitem id="menu_ceo_scope_work"
+              name="Scope of Work"
+              parent="menu_ceo_meeting_config"
+              action="action_ceo_scope_work"
+              sequence="20"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <menuitem id="menu_ceo_kpi_deliverables"
+              name="KPI Deliverables"
+              parent="menu_ceo_meeting_config"
+              action="action_ceo_kpi_deliverable"
+              sequence="30"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+    <menuitem id="menu_ceo_kadence"
+              name="Kadence"
+              parent="menu_ceo_meeting_config"
+              action="action_ceo_kadence"
+              sequence="40"
+              groups="ceo_meeting_management.group_ceo_meeting_user"/>
+
+</odoo>

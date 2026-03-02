@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Category -->
+    <record id="module_category_ceo_meeting" model="ir.module.category">
+        <field name="name">CEO Meeting Management</field>
+        <field name="description">Access control for CEO Meeting Management module</field>
+        <field name="sequence">100</field>
+    </record>
+
+    <!-- Security Group -->
+    <record id="group_ceo_meeting_user" model="res.groups">
+        <field name="name">CEO Meeting</field>
+        <field name="category_id" ref="module_category_ceo_meeting"/>
+        <field name="comment">Members of this group can access CEO Meeting Management module.</field>
+    </record>
+
+</odoo>
