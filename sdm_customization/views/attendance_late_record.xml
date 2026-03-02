@@ -11,6 +11,7 @@
                 <field name="minutes_overdue" readonly="1"/>
                 <field name="is_connect_sdm" widget="boolean_toggle" readonly="1"/>
                 <field name="remarks"/>
+                <field name="no_show_today" widget="boolean_toggle" readonly="1"/>
             </tree>
         </field>
     </record>

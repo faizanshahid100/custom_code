@@ -10,6 +10,7 @@
                 <field name="minutes_overdue" widget="html"/>
                 <field name="is_connect_sdm" widget="boolean_toggle" readonly="0"/>
                 <field name="remarks"/>
+                <field name="no_show_today" widget="boolean_toggle" readonly="0"/>
                 <field name="current_instances" readonly="1"/>
             </tree>
         </field>

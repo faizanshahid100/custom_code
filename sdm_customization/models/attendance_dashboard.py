@@ -19,6 +19,7 @@ class AttendanceDashboard(models.Model):
     hours_overdue = fields.Integer(string='Hours Overdue', readonly=True)
     is_connect_sdm = fields.Boolean('Is SDM Connect', default=False)
     remarks = fields.Char('Remarks')
+    no_show_today = fields.Boolean('No Show Today', default=False)
     current_instances = fields.Integer(
         string='This Month Instances',
         compute='_compute_current_instances',
@@ -99,6 +100,8 @@ class AttendanceDashboard(models.Model):
                 ('employee_id', '=', emp.id),
                 ('date', '=', today)
             ], limit=1)
+            if late_record and late_record.no_show_today:
+                continue
 
             late_vals = {
                 'employee_id': emp.id,
@@ -185,7 +188,7 @@ class AttendanceDashboard(models.Model):
         res = super(AttendanceDashboard, self).write(vals)
 
         today = fields.Date.today()
-        sync_fields = {'remarks', 'is_connect_sdm'}
+        sync_fields = {'remarks', 'is_connect_sdm', 'no_show_today'}
 
         # Only run if relevant fields are updated
         if any(f in vals for f in sync_fields):
@@ -209,12 +212,12 @@ class AttendanceDashboard(models.Model):
                     self.is_connect_sdm = True
 
                 # Sync is_connect_sdm
-                if 'is_connect_sdm' in vals:
+                elif 'is_connect_sdm' in vals:
                     updates['is_connect_sdm'] = vals['is_connect_sdm']
-                else:
-                    # If remarks are updated, also set is_connect_sdm True
-                    updates['is_connect_sdm'] = True
 
+                # ── Sync no_show_today ──────────────────────────────────────
+                if 'no_show_today' in vals:
+                    updates['no_show_today'] = vals['no_show_today']
                 late_record.sudo().write(updates)
 
         return res
@@ -237,4 +240,3 @@ class AttendanceDashboard(models.Model):
     def action_manual_refresh(self):
         """Button to refresh from UI for testing"""
         return self.env['attendance.dashboard'].refresh()
-
