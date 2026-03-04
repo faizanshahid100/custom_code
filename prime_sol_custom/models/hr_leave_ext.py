@@ -195,6 +195,11 @@ class HrLeaveExt(models.Model):
                 if leave.number_of_days_display > 3:
                     raise ValidationError(_("Bereavement Leaves cannot exceed 3 days."))
 
+            # TODO: Remove when PH Leave validation received
+            else:
+                if leave.number_of_days_display > 2:
+                    raise ValidationError(_("Leaves cannot exceed 2 days."))
+
     def action_approve(self):
         res = super(HrLeaveExt, self).action_approve()
 

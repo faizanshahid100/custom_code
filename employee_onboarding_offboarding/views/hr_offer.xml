@@ -114,7 +114,8 @@
                                    attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
                             <field name="probation_period"
                                    attrs="{'readonly': [('state', 'in', ('send_contract', 'hired'))]}"/>
-                            <field name="candidate_cv"/>
+                            <field name="candidate_cv" widget="binary" filename="cv_filename"/>
+                            <field name="cv_filename" invisible="1"/>
                         </group>
 
                         <group string="Client Assignment">

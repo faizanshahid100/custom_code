@@ -19,7 +19,7 @@ class AttendanceDashboard(models.Model):
     hours_overdue = fields.Integer(string='Hours Overdue', readonly=True)
     is_connect_sdm = fields.Boolean('Is SDM Connect', default=False)
     remarks = fields.Char('Remarks')
-    no_show_today = fields.Boolean('No Show Today', default=False)
+    no_show_today = fields.Boolean('Need To Remove', default=False)
     current_instances = fields.Integer(
         string='This Month Instances',
         compute='_compute_current_instances',

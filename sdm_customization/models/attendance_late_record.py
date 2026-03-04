@@ -12,7 +12,7 @@ class AttendanceLateRecord(models.Model):
     minutes_overdue = fields.Integer(string='Total Late Minutes', readonly=True)
     is_connect_sdm = fields.Boolean('Is SDM Connect', default=False)
     remarks = fields.Char('Remarks')
-    no_show_today = fields.Boolean('No Show Today', default=False)
+    no_show_today = fields.Boolean('Need To Remove', default=False)
 
     _sql_constraints = [
         ('unique_employee_date', 'unique(employee_id, date)', 'A record already exists for this employee and date!')
