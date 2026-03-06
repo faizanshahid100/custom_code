@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tree View -->
+    <record id="view_employee_attendance_kpi_tree" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.tree</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Attendance &amp; KPI" decoration-success="attendance_type == 'present'"
+                  decoration-muted="attendance_type in ('weekend', 'gazetted')" 
+                  decoration-warning="attendance_type == 'leave'"
+                  decoration-danger="attendance_type == 'absent'">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="attendance_type"/>
+                <field name="ticket_resolved" sum="Total Tickets"/>
+                <field name="CAST" sum="Total Calls"/>
+                <field name="billable_hours" sum="Total Hours"/>
+                <field name="avg_resolution_time" avg="Avg Response Time"/>
+                <field name="kpi_percentage" avg="Avg KPI %"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_attendance_kpi_form" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.form</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <form string="Employee Attendance &amp; KPI">
+                <header>
+                    <button name="fetch_kpi_data_from_daily_progress" 
+                            string="Refresh KPI Data" 
+                            type="object" 
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Basic Information">
+                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="date"/>
+                            <field name="attendance_type" readonly="1"/>
+                        </group>
+                        <group string="Performance Metrics">
+                            <field name="kpi_percentage" widget="percentage"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="KPI Details">
+                            <group>
+                                <group string="Resolved Tickets">
+                                    <field name="ticket_resolved"/>
+                                    <label for="employee_id" string="Target"/>
+                                    <div>
+                                        <field name="employee_id" invisible="1"/>
+                                        <span><field name="employee_id" readonly="1" string="Target" 
+                                              class="oe_inline" 
+                                              options="{'no_open': True}" 
+                                              attrs="{'invisible': [('employee_id', '=', False)]}"/>
+                                              : <field name="employee_id" readonly="1" 
+                                              attrs="{'invisible': [('employee_id', '=', False)]}"
+                                              options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                              related="employee_id.target_ticket_resolved"/>
+                                        </span>
+                                    </div>
+                                </group>
+                                
+                                <group string="Calls">
+                                    <field name="CAST"/>
+                                    <label for="employee_id" string="Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                              attrs="{'invisible': [('employee_id', '=', False)]}"
+                                              options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                              related="employee_id.target_calls"/>
+                                        </span>
+                                    </div>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Billable Hours">
+                                    <field name="billable_hours"/>
+                                    <label for="employee_id" string="Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                              attrs="{'invisible': [('employee_id', '=', False)]}"
+                                              options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                              related="employee_id.target_billable_hours"/>
+                                        </span>
+                                    </div>
+                                </group>
+                                
+                                <group string="Response Time">
+                                    <field name="avg_resolution_time" widget="float_time"/>
+                                    <label for="employee_id" string="Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                              attrs="{'invisible': [('employee_id', '=', False)]}"
+                                              options="{'no_open': True}" class="oe_inline"
+                                              widget="float_time" nolabel="1" 
+                                              related="employee_id.target_avg_resolution_time"/>
+                                        </span>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_employee_attendance_kpi_search" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.search</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <search string="Search Attendance &amp; KPI">
+                <field name="employee_id"/>
+                <field name="date"/>
+                <field name="attendance_type"/>
+                
+                <filter string="Today" name="today" 
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week" 
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Month" name="this_month" 
+                        domain="[('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-%d'))]"/>
+                
+                <separator/>
+                <filter string="Present" name="present" domain="[('attendance_type', '=', 'present')]"/>
+                <filter string="Absent" name="absent" domain="[('attendance_type', '=', 'absent')]"/>
+                <filter string="Leave" name="leave" domain="[('attendance_type', '=', 'leave')]"/>
+                <filter string="Weekend" name="weekend" domain="[('attendance_type', '=', 'weekend')]"/>
+                <filter string="Gazetted Holiday" name="gazetted" domain="[('attendance_type', '=', 'gazetted')]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                    <filter string="Attendance Type" name="group_attendance_type" context="{'group_by': 'attendance_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_employee_attendance_kpi_pivot" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.pivot</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <pivot string="Attendance &amp; KPI Analysis">
+                <field name="employee_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="ticket_resolved" type="measure"/>
+                <field name="CAST" type="measure"/>
+                <field name="billable_hours" type="measure"/>
+                <field name="kpi_percentage" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_employee_attendance_kpi_graph" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.graph</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <graph string="KPI Performance" type="line">
+                <field name="date"/>
+                <field name="kpi_percentage" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_employee_attendance_kpi_calendar" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.calendar</field>
+        <field name="model">employee.attendance.kpi</field>
+        <field name="arch" type="xml">
+            <calendar string="Attendance Calendar" date_start="date" color="attendance_type" mode="month">
+                <field name="employee_id"/>
+                <field name="attendance_type"/>
+                <field name="kpi_percentage"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_employee_attendance_kpi" model="ir.actions.act_window">
+        <field name="name">Attendance &amp; KPI Tracking</field>
+        <field name="res_model">employee.attendance.kpi</field>
+        <field name="view_mode">tree,form,pivot,graph,calendar</field>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first attendance &amp; KPI record
+            </p>
+            <p>
+                Track employee attendance and monitor KPI performance daily.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_employee_attendance_kpi_root"
+              name="Attendance &amp; KPI"
+              sequence="10"
+              web_icon="employee_attendance_kpi,static/description/icon.png"/>
+
+    <menuitem id="menu_employee_attendance_kpi"
+              name="Daily Records"
+              parent="menu_employee_attendance_kpi_root"
+              action="action_employee_attendance_kpi"
+              sequence="10"/>
+
+</odoo>

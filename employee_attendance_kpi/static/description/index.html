@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Employee Attendance & KPI Tracking</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #714B67;
+            border-bottom: 3px solid #714B67;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #875A7B;
+            margin-top: 30px;
+        }
+        .feature-box {
+            background: #f8f9fa;
+            border-left: 4px solid #875A7B;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .kpi-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .kpi-card h3 {
+            color: #875A7B;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #875A7B;
+            color: white;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-present { background: #d4edda; color: #155724; }
+        .badge-absent { background: #f8d7da; color: #721c24; }
+        .badge-leave { background: #fff3cd; color: #856404; }
+        .badge-weekend { background: #d1ecf1; color: #0c5460; }
+        .badge-gazetted { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>📊 Employee Attendance & KPI Tracking</h1>
+    
+    <div class="feature-box">
+        <h2>🎯 Overview</h2>
+        <p>
+            A comprehensive Odoo module that combines employee attendance tracking with 
+            Key Performance Indicator (KPI) monitoring. Automatically creates daily records 
+            for all employees and calculates weighted KPI performance based on assigned targets.
+        </p>
+    </div>
+
+    <h2>✨ Key Features</h2>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <h3>📅 Smart Attendance Tracking</h3>
+            <p>Automatically determines attendance status:</p>
+            <ul>
+                <li><span class="badge badge-present">Present</span> Active attendance</li>
+                <li><span class="badge badge-absent">Absent</span> No record found</li>
+                <li><span class="badge badge-leave">Leave</span> Approved leave</li>
+                <li><span class="badge badge-weekend">Weekend</span> Non-working day</li>
+                <li><span class="badge badge-gazetted">Gazetted</span> Public holiday</li>
+            </ul>
+        </div>
+        
+        <div class="kpi-card">
+            <h3>📈 KPI Monitoring</h3>
+            <p>Track four key performance metrics:</p>
+            <ul>
+                <li>🎫 Resolved Tickets</li>
+                <li>📞 Calls</li>
+                <li>⏰ Billable Hours</li>
+                <li>⚡ Response Time</li>
+            </ul>
+        </div>
+        
+        <div class="kpi-card">
+            <h3>⚖️ Weighted Performance</h3>
+            <p>Intelligent KPI percentage calculation based on assigned metrics</p>
+            <table style="margin-top: 10px; font-size: 14px;">
+                <tr>
+                    <th>KPIs</th>
+                    <th>Weight</th>
+                </tr>
+                <tr><td>1 KPI</td><td>100%</td></tr>
+                <tr><td>2 KPIs</td><td>50% each</td></tr>
+                <tr><td>3 KPIs</td><td>33.33% each</td></tr>
+                <tr><td>4 KPIs</td><td>25% each</td></tr>
+            </table>
+        </div>
+        
+        <div class="kpi-card">
+            <h3>🤖 Automation</h3>
+            <p>Daily automated record creation:</p>
+            <ul>
+                <li>Runs every day at 1:00 AM</li>
+                <li>Creates records for all active employees</li>
+                <li>Fetches KPI data from daily.progress</li>
+                <li>Calculates performance metrics</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>🎨 Multiple Views</h2>
+    <div class="feature-box">
+        <ul>
+            <li><strong>List View:</strong> Color-coded attendance overview with KPI summaries</li>
+            <li><strong>Form View:</strong> Detailed daily record with KPI breakdown and targets</li>
+            <li><strong>Pivot View:</strong> Analyze performance across employees and time periods</li>
+            <li><strong>Graph View:</strong> Visualize KPI trends over time</li>
+            <li><strong>Calendar View:</strong> Monthly attendance calendar</li>
+        </ul>
+    </div>
+
+    <h2>⚙️ Configuration</h2>
+    <div class="feature-box">
+        <h3>Set Employee KPI Targets</h3>
+        <p>Navigate to: <strong>HR → Employees → KPI Targets Tab</strong></p>
+        <p>Configure daily targets for each employee. Set to 0 to disable a KPI.</p>
+        
+        <h3>Example Configurations:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Tickets</th>
+                    <th>Calls</th>
+                    <th>Billable Hours</th>
+                    <th>Response Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Support Agent</td>
+                    <td>10</td>
+                    <td>30</td>
+                    <td>0</td>
+                    <td>1.5h</td>
+                </tr>
+                <tr>
+                    <td>Developer</td>
+                    <td>3</td>
+                    <td>0</td>
+                    <td>7</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Sales Rep</td>
+                    <td>0</td>
+                    <td>50</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>🔌 Integration</h2>
+    <div class="feature-box">
+        <p>Integrates seamlessly with:</p>
+        <ul>
+            <li><strong>daily.progress</strong> model for KPI data</li>
+            <li><strong>hr.attendance</strong> for presence tracking</li>
+            <li><strong>hr.leave</strong> for leave management</li>
+            <li><strong>resource.calendar.leaves</strong> for holidays</li>
+        </ul>
+    </div>
+
+    <h2>📦 Installation</h2>
+    <div class="feature-box">
+        <ol>
+            <li>Copy module to Odoo addons directory</li>
+            <li>Update Apps List</li>
+            <li>Search for "Employee Attendance & KPI Tracking"</li>
+            <li>Click Install</li>
+            <li>Configure employee KPI targets</li>
+            <li>Done! Records will be created automatically</li>
+        </ol>
+    </div>
+
+    <h2>📋 Requirements</h2>
+    <div class="feature-box">
+        <ul>
+            <li>Odoo 14.0+ (compatible with 14, 15, 16, 17)</li>
+            <li>HR module installed</li>
+            <li>daily.progress model (or similar) for KPI data source</li>
+        </ul>
+    </div>
+
+    <h2>📞 Support</h2>
+    <div class="feature-box">
+        <p>For detailed documentation, see:</p>
+        <ul>
+            <li><strong>README.md</strong> - Complete module documentation</li>
+            <li><strong>INSTALLATION_GUIDE.md</strong> - Step-by-step setup instructions</li>
+            <li><strong>DAILY_PROGRESS_REFERENCE.py</strong> - Sample model structure</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+        <p style="color: #875A7B; font-weight: bold; font-size: 18px;">
+            Transform your HR management with intelligent attendance tracking and performance monitoring!
+        </p>
+    </div>
+</body>
+</html>

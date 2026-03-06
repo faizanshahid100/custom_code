@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit Employee Form View -->
+    <record id="view_employee_form_kpi_targets" model="ir.ui.view">
+        <field name="name">hr.employee.form.kpi.targets</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add KPI Targets Page in Notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="KPI Targets" name="kpi_targets">
+                    <group>
+                        <group string="Daily KPI Targets">
+                            <field name="assigned_kpi_count" readonly="1"/>
+                            <separator colspan="2"/>
+                        </group>
+                        <group string="Information">
+                            <div colspan="2" class="alert alert-info" role="alert">
+                                <h4>KPI Weight Distribution</h4>
+                                <ul>
+                                    <li>1 KPI assigned: 100% weight</li>
+                                    <li>2 KPIs assigned: 50% weight each</li>
+                                    <li>3 KPIs assigned: 33.33% weight each</li>
+                                    <li>4 KPIs assigned: 25% weight each</li>
+                                </ul>
+                                <p><strong>Note:</strong> Set target to 0 to disable a KPI</p>
+                            </div>
+                        </group>
+                    </group>
+                    
+                    <group string="Attendance &amp; KPI Records">
+                        <field name="attendance_kpi_ids" nolabel="1" context="{'default_employee_id': active_id}">
+                            <tree decoration-success="attendance_type == 'present'" 
+                                  decoration-muted="attendance_type in ('weekend', 'gazetted')" 
+                                  decoration-warning="attendance_type == 'leave'"
+                                  decoration-danger="attendance_type == 'absent'">
+                                <field name="date"/>
+                                <field name="attendance_type"/>
+                                <field name="ticket_resolved"/>
+                                <field name="CAST"/>
+                                <field name="billable_hours"/>
+                                <field name="avg_resolution_time" widget="float_time"/>
+                                <field name="kpi_percentage" widget="percentage"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+</odoo>
