@@ -2,7 +2,7 @@ from email.policy import default
 
 from PIL.ImageChops import offset
 from odoo import models, fields, api, _
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from odoo.exceptions import ValidationError
 
 
@@ -49,6 +49,23 @@ class HrEmployee(models.Model):
     positive_feedback_count = fields.Integer(string="Positive Feedback", compute="_compute_feedback_counts")
     negative_feedback_count = fields.Integer(string="Negative Feedback", compute="_compute_feedback_counts")
     total_feedback_count = fields.Integer(string="Total Feedback", compute="_compute_feedback_counts")
+    total_tenure = fields.Char(
+        string="Total Tenure",
+        compute="_compute_total_tenure",
+        store=False
+    )
+
+    @api.depends('joining_date')
+    def _compute_total_tenure(self):
+        for rec in self:
+            if rec.joining_date:
+                today = date.today()
+                delta = today - rec.joining_date
+                years = delta.days // 365
+                months = (delta.days % 365) // 30
+                rec.total_tenure = f"{years} Years {months} Months"
+            else:
+                rec.total_tenure = ""
 
     @api.depends('feedback_ids.feedback_type')
     def _compute_feedback_counts(self):
