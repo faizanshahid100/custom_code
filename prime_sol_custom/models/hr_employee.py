@@ -15,6 +15,10 @@ class HrEmployee(models.Model):
     working_hours_type = fields.Selection([('peak', 'Peak Hours'), ('off', 'Off Hours')], string="Working Hours Type", default='peak')
 
     kpi_measurement = fields.Selection([('na', 'N/A' ), ('billable', 'Billable'), ('kpi', 'KPI')], default='na', required=1)
+    is_kpi_set = fields.Selection([
+        ('no', 'No'),
+        ('yes', 'Yes'),
+    ], string='KPI Set', default='no')
     d_ticket_resolved = fields.Integer('Ticket Resolved')
     d_avg_resolution_time = fields.Integer('Avg.Resolution Time')
     d_CAST = fields.Integer('CAST %')

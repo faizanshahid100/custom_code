@@ -1,9 +1,9 @@
 {
     'name': 'Prime Customization',
     'version': '1.0',
-    'depends': ['base'],
+    'depends': ['base', 'hr'],
     'data': [
-        'views/res_partner_ext_views.xml'
+        'views/res_partner_ext_views.xml',
     ],
     'external_dependencies': {
         'python': ['xlsxwriter'],

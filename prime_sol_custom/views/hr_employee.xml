@@ -33,8 +33,13 @@
                     </page>
                     <page string="Weekly Target" name="weekly_target">
                         <group>
-                            <group><field name="kpi_measurement"/></group>
-                            <group><field name="pss_group"/></group>
+                            <group>
+                                <field name="kpi_measurement"/>
+                                <field name="is_kpi_set"/>
+                            </group>
+                            <group>
+                                <field name="pss_group"/>
+                            </group>
                         </group>
                         <group string="Weekly Target">
                             <group>
