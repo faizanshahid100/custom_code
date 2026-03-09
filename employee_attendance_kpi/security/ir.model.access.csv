@@ -2,3 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_employee_attendance_kpi_user,employee.attendance.kpi.user,model_employee_attendance_kpi,hr.group_hr_user,1,1,1,0
 access_employee_attendance_kpi_manager,employee.attendance.kpi.manager,model_employee_attendance_kpi,hr.group_hr_manager,1,1,1,1
 access_employee_attendance_kpi_employee,employee.attendance.kpi.employee,model_employee_attendance_kpi,base.group_user,1,0,0,0
+access_employee_attendance_kpi_weekly_user,employee.attendance.kpi.weekly.user,model_employee_attendance_kpi_weekly,hr.group_hr_user,1,1,1,0
+access_employee_attendance_kpi_weekly_manager,employee.attendance.kpi.weekly.manager,model_employee_attendance_kpi_weekly,hr.group_hr_manager,1,1,1,1
+access_employee_attendance_kpi_weekly_employee,employee.attendance.kpi.weekly.employee,model_employee_attendance_kpi_weekly,base.group_user,1,0,0,0

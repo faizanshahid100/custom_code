@@ -11,6 +11,7 @@
                   decoration-warning="attendance_type == 'leave'"
                   decoration-danger="attendance_type == 'absent'">
                 <field name="date"/>
+                <field name="week_number"/>
                 <field name="employee_id"/>
                 <field name="attendance_type"/>
                 <field name="ticket_resolved" sum="Total Tickets"/>
@@ -39,6 +40,7 @@
                         <group string="Basic Information">
                             <field name="employee_id" options="{'no_create': True}"/>
                             <field name="date"/>
+                            <field name="week_number" readonly="1"/>
                             <field name="attendance_type" readonly="1"/>
                         </group>
                         <group string="Performance Metrics">
@@ -123,6 +125,7 @@
             <search string="Search Attendance &amp; KPI">
                 <field name="employee_id"/>
                 <field name="date"/>
+                <field name="week_number"/>
                 <field name="attendance_type"/>
                 
                 <filter string="Today" name="today" 
@@ -141,6 +144,7 @@
                 
                 <group expand="0" string="Group By">
                     <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Week/Sprint" name="group_week" context="{'group_by': 'week_number'}"/>
                     <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
                     <filter string="Attendance Type" name="group_attendance_type" context="{'group_by': 'attendance_type'}"/>
                 </group>
@@ -155,6 +159,7 @@
         <field name="arch" type="xml">
             <pivot string="Attendance &amp; KPI Analysis">
                 <field name="employee_id" type="row"/>
+                <field name="week_number" type="row"/>
                 <field name="date" interval="month" type="col"/>
                 <field name="ticket_resolved" type="measure"/>
                 <field name="CAST" type="measure"/>
@@ -183,6 +188,7 @@
         <field name="arch" type="xml">
             <calendar string="Attendance Calendar" date_start="date" color="attendance_type" mode="month">
                 <field name="employee_id"/>
+                <field name="week_number"/>
                 <field name="attendance_type"/>
                 <field name="kpi_percentage"/>
             </calendar>

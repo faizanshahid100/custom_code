@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tree View -->
+    <record id="view_employee_attendance_kpi_weekly_tree" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.tree</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Weekly Attendance &amp; KPI" 
+                  decoration-success="attendance_percentage >= 90"
+                  decoration-warning="attendance_percentage >= 70 and attendance_percentage &lt; 90"
+                  decoration-danger="attendance_percentage &lt; 70">
+                <field name="year"/>
+                <field name="week_number"/>
+                <field name="week_start_date"/>
+                <field name="week_end_date"/>
+                <field name="employee_id"/>
+                <field name="working_days"/>
+                <field name="present_days"/>
+                <field name="absent_days"/>
+                <field name="attendance_percentage"/>
+                <field name="total_tickets_resolved" sum="Total Tickets"/>
+                <field name="total_CAST" sum="Total CAST"/>
+                <field name="total_billable_hours" sum="Total Hours"/>
+                <field name="total_resolution_time" sum="Total Response Time"/>
+                <field name="weekly_kpi_percentage" avg="Avg KPI %"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_attendance_kpi_weekly_form" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.form</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <form string="Employee Weekly Attendance &amp; KPI">
+                <header>
+                    <button name="recompute_all_fields" 
+                            string="Refresh Weekly Data" 
+                            type="object" 
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Basic Information">
+                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="year"/>
+                            <field name="week_number"/>
+                            <field name="week_number_int" invisible="1"/>
+                        </group>
+                        <group string="Week Period">
+                            <field name="week_start_date"/>
+                            <field name="week_end_date"/>
+                            <field name="total_days"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Attendance Summary">
+                            <group>
+                                <group string="Days Breakdown">
+                                    <field name="working_days"/>
+                                    <field name="present_days"/>
+                                    <field name="absent_days"/>
+                                    <field name="leave_days"/>
+                                </group>
+                                <group string="Non-Working Days">
+                                    <field name="weekend_days"/>
+                                    <field name="gazetted_days"/>
+                                    <field name="attendance_percentage"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="KPI Totals">
+                            <group>
+                                <group string="Weekly Totals">
+                                    <field name="total_tickets_resolved"/>
+                                    <label for="employee_id" string="Weekly Target"/>
+                                    <div>
+                                        <field name="employee_id" invisible="1"/>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                                  attrs="{'invisible': [('employee_id', '=', False)]}"
+                                                  options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                                  related="employee_id.weekly_ticket_target"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <field name="total_CAST"/>
+                                    <label for="employee_id" string="Weekly Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                                  attrs="{'invisible': [('employee_id', '=', False)]}"
+                                                  options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                                  related="employee_id.weekly_calls_target"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <field name="total_billable_hours"/>
+                                    <label for="employee_id" string="Weekly Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                                  attrs="{'invisible': [('employee_id', '=', False)]}"
+                                                  options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                                  related="employee_id.weekly_billable_hours_target"/>
+                                        </span>
+                                    </div>
+                                </group>
+                                
+                                <group string="Response Time &amp; Performance">
+                                    <field name="total_resolution_time" widget="float_time"/>
+                                    <label for="employee_id" string="Weekly Target"/>
+                                    <div>
+                                        <span>
+                                            <field name="employee_id" readonly="1" 
+                                                  attrs="{'invisible': [('employee_id', '=', False)]}"
+                                                  options="{'no_open': True}" class="oe_inline" nolabel="1"
+                                                  related="employee_id.weekly_response_time_target"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <field name="weekly_kpi_percentage"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_employee_attendance_kpi_weekly_search" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.search</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <search string="Search Weekly Attendance &amp; KPI">
+                <field name="employee_id"/>
+                <field name="year"/>
+                <field name="week_number"/>
+                <field name="week_start_date"/>
+                
+                <filter string="Current Week" name="current_week" 
+                        domain="[('week_start_date', '&lt;=', context_today()), ('week_end_date', '&gt;=', context_today())]"/>
+                <filter string="Current Year" name="current_year" 
+                        domain="[('year', '=', context_today().year)]"/>
+                <filter string="Last 4 Weeks" name="last_4_weeks" 
+                        domain="[('week_start_date', '&gt;=', (context_today() - relativedelta(weeks=4)).strftime('%Y-%m-%d'))]"/>
+                
+                <separator/>
+                <filter string="Good Attendance (>=90%)" name="good_attendance" 
+                        domain="[('attendance_percentage', '&gt;=', 90)]"/>
+                <filter string="Average Attendance (70-90%)" name="average_attendance" 
+                        domain="[('attendance_percentage', '&gt;=', 70), ('attendance_percentage', '&lt;', 90)]"/>
+                <filter string="Poor Attendance (&lt;70%)" name="poor_attendance" 
+                        domain="[('attendance_percentage', '&lt;', 70)]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Year" name="group_year" context="{'group_by': 'year'}"/>
+                    <filter string="Week/Sprint" name="group_week" context="{'group_by': 'week_number'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_employee_attendance_kpi_weekly_pivot" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.pivot</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <pivot string="Weekly Attendance &amp; KPI Analysis">
+                <field name="employee_id" type="row"/>
+                <field name="week_number" type="row"/>
+                <field name="year" type="col"/>
+                <field name="total_tickets_resolved" type="measure"/>
+                <field name="total_CAST" type="measure"/>
+                <field name="total_billable_hours" type="measure"/>
+                <field name="total_resolution_time" type="measure"/>
+                <field name="attendance_percentage" type="measure"/>
+                <field name="weekly_kpi_percentage" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_employee_attendance_kpi_weekly_graph" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.graph</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <graph string="Weekly KPI Performance" type="line">
+                <field name="week_number"/>
+                <field name="weekly_kpi_percentage" type="measure"/>
+                <field name="attendance_percentage" type="measure"/>
+                <field name="total_resolution_time" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Calendar View -->
+    <record id="view_employee_attendance_kpi_weekly_calendar" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.calendar</field>
+        <field name="model">employee.attendance.kpi.weekly</field>
+        <field name="arch" type="xml">
+            <calendar string="Weekly Attendance Calendar" date_start="week_start_date" date_stop="week_end_date" 
+                      color="employee_id" mode="month">
+                <field name="employee_id"/>
+                <field name="week_number"/>
+                <field name="attendance_percentage"/>
+                <field name="weekly_kpi_percentage"/>
+                <field name="total_resolution_time"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Server Action for Manual Update -->
+    <record id="action_update_weekly_records" model="ir.actions.server">
+        <field name="name">Refresh Weekly Records</field>
+        <field name="model_id" ref="model_employee_attendance_kpi_weekly"/>
+        <field name="binding_model_id" ref="model_employee_attendance_kpi_weekly"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.recompute_all_fields()
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_employee_attendance_kpi_weekly" model="ir.actions.act_window">
+        <field name="name">Weekly Attendance &amp; KPI Tracking</field>
+        <field name="res_model">employee.attendance.kpi.weekly</field>
+        <field name="view_mode">tree,form,pivot,graph,calendar</field>
+        <field name="context">{'search_default_current_year': 1, 'search_default_last_4_weeks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first weekly attendance &amp; KPI record
+            </p>
+            <p>
+                Track employee weekly attendance and monitor KPI performance.
+                Weekly records are automatically generated from daily records.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_employee_attendance_kpi_weekly"
+              name="Weekly Records"
+              parent="menu_employee_attendance_kpi_root"
+              action="action_employee_attendance_kpi_weekly"
+              sequence="15"/>
+
+</odoo>

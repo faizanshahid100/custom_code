@@ -16,6 +16,15 @@
                             <field name="assigned_kpi_count" readonly="1"/>
                             <separator colspan="2"/>
                         </group>
+                        <group string="Weekly KPI Targets">
+                            <field name="weekly_ticket_target"/>
+                            <field name="weekly_calls_target"/>
+                            <field name="weekly_billable_hours_target"/>
+                            <field name="weekly_response_time_target"/>
+                        </group>
+                    </group>
+                    
+                    <group>
                         <group string="Information">
                             <div colspan="2" class="alert alert-info" role="alert">
                                 <h4>KPI Weight Distribution</h4>
@@ -30,19 +39,41 @@
                         </group>
                     </group>
                     
-                    <group string="Attendance &amp; KPI Records">
+                    <group string="Daily Attendance &amp; KPI Records">
                         <field name="attendance_kpi_ids" nolabel="1" context="{'default_employee_id': active_id}">
                             <tree decoration-success="attendance_type == 'present'" 
                                   decoration-muted="attendance_type in ('weekend', 'gazetted')" 
                                   decoration-warning="attendance_type == 'leave'"
                                   decoration-danger="attendance_type == 'absent'">
                                 <field name="date"/>
+                                <field name="week_number"/>
                                 <field name="attendance_type"/>
                                 <field name="ticket_resolved"/>
                                 <field name="CAST"/>
                                 <field name="billable_hours"/>
                                 <field name="avg_resolution_time" widget="float_time"/>
                                 <field name="kpi_percentage" widget="percentage"/>
+                            </tree>
+                        </field>
+                    </group>
+                    
+                    <group string="Weekly Attendance &amp; KPI Records">
+                        <field name="weekly_attendance_kpi_ids" nolabel="1" context="{'default_employee_id': active_id}">
+                            <tree decoration-success="attendance_percentage >= 90"
+                                  decoration-warning="attendance_percentage >= 70 and attendance_percentage &lt; 90"
+                                  decoration-danger="attendance_percentage &lt; 70">
+                                <field name="year"/>
+                                <field name="week_number"/>
+                                <field name="week_start_date"/>
+                                <field name="week_end_date"/>
+                                <field name="present_days"/>
+                                <field name="absent_days"/>
+                                <field name="attendance_percentage"/>
+                                <field name="total_tickets_resolved"/>
+                                <field name="total_CAST"/>
+                                <field name="total_billable_hours"/>
+                                <field name="total_resolution_time" widget="float_time"/>
+                                <field name="weekly_kpi_percentage"/>
                             </tree>
                         </field>
                     </group>
