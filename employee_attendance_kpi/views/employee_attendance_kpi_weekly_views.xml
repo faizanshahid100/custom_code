@@ -15,6 +15,7 @@
                 <field name="week_start_date"/>
                 <field name="week_end_date"/>
                 <field name="employee_id"/>
+                <field name="department_id"/>
                 <field name="working_days"/>
                 <field name="present_days"/>
                 <field name="absent_days"/>
@@ -44,6 +45,7 @@
                     <group>
                         <group string="Basic Information">
                             <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
                             <field name="year"/>
                             <field name="week_number"/>
                             <field name="week_number_int" invisible="1"/>

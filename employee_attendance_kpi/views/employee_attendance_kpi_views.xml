@@ -13,6 +13,7 @@
                 <field name="date"/>
                 <field name="week_number"/>
                 <field name="employee_id"/>
+                <field name="department_id"/>
                 <field name="attendance_type"/>
                 <field name="ticket_resolved" sum="Total Tickets"/>
                 <field name="CAST" sum="Total Calls"/>
@@ -39,6 +40,7 @@
                     <group>
                         <group string="Basic Information">
                             <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
                             <field name="date"/>
                             <field name="week_number" readonly="1"/>
                             <field name="attendance_type" readonly="1"/>

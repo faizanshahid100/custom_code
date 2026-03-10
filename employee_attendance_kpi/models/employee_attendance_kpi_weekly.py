@@ -13,6 +13,7 @@ class EmployeeAttendanceKPIWeekly(models.Model):
     _rec_name = 'display_name'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True, ondelete='cascade')
+    department_id = fields.Many2one('hr.department',related='employee_id.department_id', store=True, string='Department')
     year = fields.Integer(string='Year', required=True)
     week_number = fields.Char(string='Week/Sprint', required=True, help='Week number in format Sprint_X')
     week_number_int = fields.Integer(string='Week Number', required=True, help='Integer week number for sorting')

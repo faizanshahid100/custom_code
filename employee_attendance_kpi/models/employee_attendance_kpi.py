@@ -13,6 +13,7 @@ class EmployeeAttendanceKPI(models.Model):
     _rec_name = 'display_name'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True, ondelete='cascade')
+    department_id = fields.Many2one('hr.department', related='employee_id.department_id', store=True, string='Department')
     date = fields.Date(string='Date', required=True, default=fields.Date.today)
     
     # Week Number (Sprint)
