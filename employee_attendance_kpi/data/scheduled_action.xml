@@ -29,6 +29,20 @@
             <field name="active" eval="True"/>
             <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=2, minute=0, second=0)"/>
         </record>
+
+        <!-- Scheduled Action for Weekly Business KPI Record Creation -->
+        <record id="ir_cron_create_weekly_business_kpi" model="ir.cron">
+            <field name="name">Create Weekly Business KPI Records</field>
+            <field name="model_id" ref="model_employee_attendance_kpi_weekly_business"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_weekly_business_records()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=3, minute=0, second=0)"/>
+        </record>
         
     </data>
     
@@ -39,9 +53,7 @@
             <field name="name">Update Last 30 Days Records</field>
             <field name="model_id" ref="model_employee_attendance_kpi"/>
             <field name="state">code</field>
-            <field name="code">
-model.update_last_n_days_records(days=30)
-            </field>
+            <field name="code">model.update_last_n_days_records(days=30)</field>
         </record>
         
         <!-- Menu for Manual Update -->
@@ -49,7 +61,7 @@ model.update_last_n_days_records(days=30)
                   name="Update Last 30 Days"
                   parent="menu_employee_attendance_kpi_root"
                   action="action_update_last_30_days"
-                  sequence="20"/>
+                  sequence="25"/>
         
     </data>
 </odoo>

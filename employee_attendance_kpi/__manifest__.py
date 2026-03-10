@@ -16,6 +16,7 @@
         'views/employee_attendance_kpi_views.xml',
         'views/employee_attendance_kpi_weekly_views.xml',
         'views/hr_employee_views.xml',
+        'views/employee_attendance_kpi_weekly_business_views.xml',
     ],
     'installable': True,
     'application': True,

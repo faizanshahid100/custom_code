@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_employee_attendance_kpi_weekly_business_tree" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.business.tree</field>
+        <field name="model">employee.attendance.kpi.weekly.business</field>
+        <field name="arch" type="xml">
+            <tree string="Weekly Business Records">
+                <field name="week_number"/>
+                <field name="week_start_date"/>
+                <field name="week_end_date"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="kpi_count" sum="Total KPI Count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_employee_attendance_kpi_weekly_business_form" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.business.form</field>
+        <field name="model">employee.attendance.kpi.weekly.business</field>
+        <field name="arch" type="xml">
+            <form string="Weekly Business Record">
+                <header>
+                    <button name="recompute_all_fields"
+                            string="Refresh Data"
+                            type="object"
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Employee Information">
+                            <field name="employee_id" options="{'no_create': True}"/>
+                            <field name="department_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Week Period">
+                            <field name="week_number"/>
+                            <field name="week_number_int" invisible="1"/>
+                            <field name="year"/>
+                            <field name="week_start_date"/>
+                            <field name="week_end_date"/>
+                        </group>
+                    </group>
+                    <group string="Business KPI">
+                        <field name="kpi_count"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_employee_attendance_kpi_weekly_business_search" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.business.search</field>
+        <field name="model">employee.attendance.kpi.weekly.business</field>
+        <field name="arch" type="xml">
+            <search string="Search Weekly Business Records">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="week_number"/>
+                <field name="year"/>
+
+                <filter string="Current Week" name="current_week"
+                        domain="[('week_start_date', '&lt;=', context_today()), ('week_end_date', '&gt;=', context_today())]"/>
+                <filter string="Current Year" name="current_year"
+                        domain="[('year', '=', context_today().year)]"/>
+                <filter string="Last 4 Weeks" name="last_4_weeks"
+                        domain="[('week_start_date', '&gt;=', (context_today() - relativedelta(weeks=4)).strftime('%Y-%m-%d'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
+                    <filter string="Week/Sprint" name="group_week" context="{'group_by': 'week_number'}"/>
+                    <filter string="Year" name="group_year" context="{'group_by': 'year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View -->
+    <record id="view_employee_attendance_kpi_weekly_business_pivot" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.business.pivot</field>
+        <field name="model">employee.attendance.kpi.weekly.business</field>
+        <field name="arch" type="xml">
+            <pivot string="Weekly Business KPI Analysis">
+                <field name="employee_id" type="row"/>
+                <field name="week_number" type="col"/>
+                <field name="kpi_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View -->
+    <record id="view_employee_attendance_kpi_weekly_business_graph" model="ir.ui.view">
+        <field name="name">employee.attendance.kpi.weekly.business.graph</field>
+        <field name="model">employee.attendance.kpi.weekly.business</field>
+        <field name="arch" type="xml">
+            <graph string="Weekly Business KPI Count" type="bar">
+                <field name="week_number"/>
+                <field name="kpi_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_employee_attendance_kpi_weekly_business" model="ir.actions.act_window">
+        <field name="name">Weekly Business Records</field>
+        <field name="res_model">employee.attendance.kpi.weekly.business</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="context">{'search_default_current_year': 1, 'search_default_last_4_weeks': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No weekly business records found
+            </p>
+            <p>
+                Weekly business records are automatically generated and track how many
+                times each employee created a record in Business KPI during each sprint.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_employee_attendance_kpi_weekly_business"
+              name="Weekly Business Records"
+              parent="menu_employee_attendance_kpi_root"
+              action="action_employee_attendance_kpi_weekly_business"
+              sequence="20"/>
+
+</odoo>
