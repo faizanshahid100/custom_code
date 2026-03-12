@@ -53,12 +53,12 @@
             <field name="name">Update Last 30 Days Records</field>
             <field name="model_id" ref="model_employee_attendance_kpi"/>
             <field name="state">code</field>
-            <field name="code">model.update_last_n_days_records(days=30)</field>
+            <field name="code">model.update_last_n_days_records(days=15)</field>
         </record>
         
         <!-- Menu for Manual Update -->
         <menuitem id="menu_update_last_30_days"
-                  name="Update Last 30 Days"
+                  name="Update Last 15 Days"
                   parent="menu_employee_attendance_kpi_root"
                   action="action_update_last_30_days"
                   sequence="25"/>

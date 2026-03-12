@@ -369,7 +369,7 @@ class EmployeeAttendanceKPI(models.Model):
         return created_records
 
     @api.model
-    def update_last_n_days_records(self, days=30):
+    def update_last_n_days_records(self, days=15):
         """
         Update attendance KPI records for the last N days
         This ensures that retroactive entries are properly reflected
