@@ -126,6 +126,7 @@
               name="Weekly Business Records"
               parent="menu_employee_attendance_kpi_root"
               action="action_employee_attendance_kpi_weekly_business"
+              groups="sdm_customization.group_sdm"
               sequence="20"/>
 
 </odoo>

@@ -9,7 +9,7 @@
     """,
     'author': 'Farooq Butt | Prime System Slutions',
     'website': 'https://www.primesystemsolutions.com',
-    'depends': ['hr', 'hr_holidays', 'base', 'prime_sol_custom'],
+    'depends': ['hr', 'hr_holidays', 'base', 'prime_sol_custom', 'sdm_customization'],
     'data': [
         'security/ir.model.access.csv',
         'data/scheduled_action.xml',

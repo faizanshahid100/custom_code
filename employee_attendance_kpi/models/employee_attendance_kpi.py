@@ -433,7 +433,7 @@ class EmployeeAttendanceKPI(models.Model):
         # Create today's records
         self.create_daily_records()
         
-        # Update last 30 days to catch any retroactive entries
-        self.update_last_n_days_records(days=30)
+        if datetime.today().weekday() == 4:
+            self.update_last_n_days_records(days=15)
         
         return True
