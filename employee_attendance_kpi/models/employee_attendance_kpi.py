@@ -433,7 +433,7 @@ class EmployeeAttendanceKPI(models.Model):
         # Create today's records
         self.create_daily_records()
         
-        if datetime.today().weekday() == 4:
+        if fields.Date.today().weekday() in (0, 4):
             self.update_last_n_days_records(days=15)
         
         return True
